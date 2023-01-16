@@ -1,0 +1,19 @@
+stages:
+  - dockerbuild-push
+
+package:
+  only:
+    - main
+  image: docker:latest     #도커 위에서 빌드를 한다
+  stage: dockerbuild-push
+  services:
+    - docker:dind          #도커 안에서 도커를 빌드할 때 주는 옵션
+  variables:
+    IMG_TAG: ${CI_REGISTRY_IMAGE}:latest #환경 변수 설정, CI_REGISTRY_IMAGE : 이미지에 사용하는 이름
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $IMG_TAG .
+    - docker push $IMG_TAG
+  after_script:
+    - docker logout
