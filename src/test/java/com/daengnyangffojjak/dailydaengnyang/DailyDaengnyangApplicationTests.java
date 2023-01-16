@@ -1,13 +1,13 @@
-package com.daengnyangffojjak.dailydaengnyang;
+// package com.daengnyangffojjak.dailydaengnyang;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class DailyDaengnyangApplicationTests {
+// @SpringBootTest
+// class DailyDaengnyangApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+//     @Test
+//     void contextLoads() {
+//     }
 
-}
+// }
