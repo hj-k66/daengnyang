@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.domain.dto.user;
+package com.daengnyangffojjak.dailydaengnyang.domain.dto;
 
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorResponse;
 import lombok.AllArgsConstructor;
