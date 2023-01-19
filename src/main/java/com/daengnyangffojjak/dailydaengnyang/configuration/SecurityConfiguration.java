@@ -31,11 +31,10 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE,"/api/v1/**").authenticated()
                         .requestMatchers(HttpMethod.PUT,"/api/v1/**").authenticated()
                 )
-                //CustomAccessDeniedHadler,CustomAuthenticationEntryPoint 차후 추가
-//                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHadler())
-//                .and()
-//                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-//                .and()
+                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHadler())
+                .and()
+                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
                 .and()
