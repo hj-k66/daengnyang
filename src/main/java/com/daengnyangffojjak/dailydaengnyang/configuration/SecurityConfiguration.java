@@ -1,8 +1,8 @@
 package com.daengnyangffojjak.dailydaengnyang.configuration;
 
 
+import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,9 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    private final UserService userService;
-    @Value("${jwt.token.secret}")
-    private String secretKey;
+    private final JwtTokenUtil jwtTokenUtil;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -40,7 +39,7 @@ public class SecurityConfiguration {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
                 .and()
-                .addFilterBefore(new JwtTokenFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
+                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
                 .addFilterBefore(new JwtExceptionFilter(), JwtTokenFilter.class)
                 .build();
     }

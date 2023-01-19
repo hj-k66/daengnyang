@@ -1,8 +1,10 @@
 package com.daengnyangffojjak.dailydaengnyang.configuration;
 
+import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -45,28 +47,24 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if(authorizationHeader.startsWith("Bearer ")){
             try{
-                String userName = JwtTokenUtil.getUserName(token, secretKey);
-                //UserName Token에서 꺼내기
-                log.info("userName : {}", userName);
-                //UserDetail 가져오기 >> UserRole
-                User user = userService.getUserByUserName(userName);
-                log.info("userName:{}, userRole:{}", user.getUserName(), user.getRole());
+
+                UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
 
 
                 //문열어주기 >> 허용
                 //Role 바인딩
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUserName(), null, List.of(new SimpleGrantedAuthority(user.getRole().name())));
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
             }catch (IllegalArgumentException e){
-                throw new SNSException(ErrorCode.INVALID_TOKEN);
+                throw new SecurityCustomException(ErrorCode.INVALID_TOKEN);
             }catch (ExpiredJwtException e){
                 log.info("만료된 토큰입니다.");
-                throw new SNSException(ErrorCode.INVALID_TOKEN,"토큰 기한 만료");
+                throw new SecurityCustomException(ErrorCode.INVALID_TOKEN,"토큰 기한 만료");
             }catch (SignatureException e){
                 log.info("서명이 일치하지 않습니다.");
-                throw new SNSException(ErrorCode.INVALID_TOKEN,"서명 불일치");
+                throw new SecurityCustomException(ErrorCode.INVALID_TOKEN,"서명 불일치");
             }
         }
         else{
