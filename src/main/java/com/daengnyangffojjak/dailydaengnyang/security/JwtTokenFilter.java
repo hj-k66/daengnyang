@@ -1,10 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.security;
 
-import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
-import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,33 +37,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             token = authorizationHeader.split(" ")[1];
         } catch (Exception e) {
             log.error("token 추출에 실패했습니다.");
-            filterChain.doFilter(request,response);
+            filterChain.doFilter(request, response);
             return;
         }
 
-        if(authorizationHeader.startsWith("Bearer ")){
-            try{
-
-                UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
-
-
-                //문열어주기 >> 허용
-                //Role 바인딩
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-            }catch (IllegalArgumentException e){
-                throw new SecurityCustomException(ErrorCode.INVALID_TOKEN);
-            }catch (ExpiredJwtException e){
-                log.info("만료된 토큰입니다.");
-                throw new SecurityCustomException(ErrorCode.INVALID_TOKEN,"토큰 기한 만료");
-            }catch (SignatureException e){
-                log.info("서명이 일치하지 않습니다.");
-                throw new SecurityCustomException(ErrorCode.INVALID_TOKEN,"서명 불일치");
-            }
-        }
-        else{
+        if (authorizationHeader.startsWith("Bearer ")) {
+            UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
+            //문열어주기 >> 허용
+            //Role 바인딩
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        } else {
             log.error("헤더를 가져오는 과정에서 에러가 났습니다. 헤더가 null이거나 잘못되었습니다.");
         }
         filterChain.doFilter(request, response);
