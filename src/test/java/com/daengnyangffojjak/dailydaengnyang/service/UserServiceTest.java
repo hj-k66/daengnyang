@@ -59,7 +59,7 @@ class UserServiceTest {
             UserException e = assertThrows(UserException.class,
                     () -> userService.join(new UserJoinRequest("user", "password", "잘못된이메일")));
             //then
-            assertEquals(ErrorCode.INVALID_VALUE, e.getErrorCode());
+            assertEquals(ErrorCode.INVALID_EMAIL, e.getErrorCode());
         }
     }
 }
