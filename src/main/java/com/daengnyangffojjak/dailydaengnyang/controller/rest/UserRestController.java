@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,10 +24,8 @@ public class UserRestController {
         return ResponseEntity.created(URI.create("/api/v1/users/"+userJoinResponse.getId()))     //성공 시 상태코드 : 201
                 .body(Response.success(userJoinResponse));
     }
-    @GetMapping
-    public String test(){
-        return "success";
+    @GetMapping(value = "/test")
+    public Map<String, String> test(){
+        return new HashMap<>(){{put("test", "ok");}};
     }
-
-
 }
