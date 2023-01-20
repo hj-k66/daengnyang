@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.configuration;
+package com.daengnyangffojjak.dailydaengnyang.security;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorResponse;

@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.configuration;
+package com.daengnyangffojjak.dailydaengnyang.security;
 
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
