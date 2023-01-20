@@ -12,6 +12,11 @@ import java.sql.SQLException;
 @Slf4j
 @RestControllerAdvice
 public class ExceptionManager {
+    @ExceptionHandler(SecurityCustomException.class)
+    public ResponseEntity<?> SecurityCustomExceptionHandler(SecurityCustomException e){
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+    }
     @ExceptionHandler(UserException.class)
     public ResponseEntity<?> userExceptionHandler(UserException e){
         return ResponseEntity.status(e.getErrorCode().getStatus())
