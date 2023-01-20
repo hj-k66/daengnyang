@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.exception;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +12,11 @@ import java.sql.SQLException;
 @Slf4j
 @RestControllerAdvice
 public class ExceptionManager {
+    @ExceptionHandler(SecurityCustomException.class)
+    public ResponseEntity<?> SecurityCustomExceptionHandler(SecurityCustomException e){
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+    }
     @ExceptionHandler(UserException.class)
     public ResponseEntity<?> userExceptionHandler(UserException e){
         return ResponseEntity.status(e.getErrorCode().getStatus())
