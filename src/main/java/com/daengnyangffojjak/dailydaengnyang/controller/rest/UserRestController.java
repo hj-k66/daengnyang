@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
@@ -28,6 +28,4 @@ public class UserRestController {
     public Map<String, String> test(){
         return new HashMap<>(){{put("test", "ok");}};
     }
-
-
 }

@@ -17,11 +17,11 @@ public class UserService {
     private final BCryptPasswordEncoder encoder;
 
 
-    public UserJoinResponse join(UserJoinRequest request) {
+    public UserJoinResponse join(UserJoinRequest userJoinRequest) {
         //아이디 중복 시 예외 발생
-        userRepository.findByUserName(request.getUserName())
+        userRepository.findByUserName(userJoinRequest.getUserName())
                 .ifPresent(user -> {throw new UserException(ErrorCode.DUPLICATED_USER_NAME);});
-        String email = request.getEmail();
+        String email = userJoinRequest.getEmail();
         if(!email.contains("@") || !email.contains(".")){     //이메일 형식 체크
             throw new UserException(ErrorCode.INVALID_VALUE, "이메일 형식이 바르지 않습니다.");
         }
@@ -30,7 +30,7 @@ public class UserService {
                 .ifPresent(user -> {throw new UserException(ErrorCode.DUPLICATED_EMAIL);});
 
         //비밀 번호 인코딩해서 DB 저장
-        User saved = userRepository.save(request.toEntity(encoder.encode(request.getPassword())));
+        User saved = userRepository.save(userJoinRequest.toEntity(encoder.encode(userJoinRequest.getPassword())));
 
         return UserJoinResponse.from(saved);
     }
