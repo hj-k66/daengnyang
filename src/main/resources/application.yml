@@ -40,3 +40,6 @@ server:
   servlet:
     encoding:
       force-response: true
+jwt:
+  token:
+    secret: MyNickNameisDaengAndNameisYang
