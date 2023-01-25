@@ -1,15 +1,20 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +38,18 @@ public class Schedule extends BaseEntity {
     private Boolean isCompleted;    //일정 수행 여부
     private LocalDateTime dueDate;      //예정일
 
+    public Schedule of(Pet pet, User user, ScheduleCreateRequest scheduleCreateRequest){
+        return Schedule.builder()
+                .user(user)
+                .pet(pet)
+                .tag(scheduleCreateRequest.getTagId())
+                .category(scheduleCreateRequest.getCategory())
+                .title(scheduleCreateRequest.getTitle())
+                .body(scheduleCreateRequest.getBody())
+                .assigneeId(scheduleCreateRequest.getAssigneeId())
+                .place(scheduleCreateRequest.getPlace())
+                .isCompleted(scheduleCreateRequest.isCompleted())
+                .dueDate(scheduleCreateRequest.getDueDate())
+                .build();
+    }
 }
