@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/common :: head('게시판')">
+  <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <link href="starter-template.css" rel="stylesheet"/>
+
+  <title>게시판</title>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('post')"></nav>
+
+<div class="container">
+  <h2>안녕</h2>
+  <p class="lead">안녕하세요 상세조회 페이지입니다.<br>수정과 삭제, 리스트로 돌아가기를 할 수 있습니다</p>
+  <form action="#" th:action="@{/posts/modify}" th:object="${post}" method="post">
+    <input type="hidden" th:field="*{id}">
+    <div class="form-group">
+      <label for="title">제목</label>
+      <input type="text" class="form-control" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
+             id="title" placeholder="제목을 작성하세요." th:field="*{title}">
+      <div id="validationServer03Feedback" class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">
+        제목 에러 메세지.
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="content">내용</label>
+      <textarea class="form-control" id="content" placeholder="내용을 작성하세요." th:field="*{body}" rows="3"
+                th:classappend="${#fields.hasErrors('body')} ? 'is-invalid'"></textarea>
+      <div id="validationServer04Feedback" class="invalid-feedback" th:if="${#fields.hasErrors('body')}" th:errors="*{body}">
+        내용 에러 메세지.
+      </div>
+    </div>
+    <div class="text-right">
+      <button type="submit" class="btn btn-primary">수정</button>
+      <a type="delete" class="btn btn-warning" th:href="@{/posts/delete(id=${post.id})}">삭제</a>
+      <a type="button" class="btn btn-danger" th:href="@{/posts/list}">취소</a>
+
+    </div>
+  </form>
+
+
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

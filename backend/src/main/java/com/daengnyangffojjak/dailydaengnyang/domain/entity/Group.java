@@ -9,6 +9,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @Where(clause = "deleted_at is NULL")
+@Table(name = "\"Group\"")
 public class Group extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
