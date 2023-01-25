@@ -23,12 +23,13 @@ public class UserGroup {
     private Group group;
     @Column(nullable = false)
     private String roleInGroup;
-
-    public static UserGroup from(User user, Group group, String roleInGroup){
+    private boolean isOwner;
+    public static UserGroup from(User user, Group group, String roleInGroup, boolean isOwner){
         return UserGroup.builder()
                 .user(user)
                 .group(group)
                 .roleInGroup(roleInGroup)
+                .isOwner(isOwner)
                 .build();
     }
 }
