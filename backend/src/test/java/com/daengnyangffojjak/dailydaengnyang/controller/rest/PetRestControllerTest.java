@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(PetRestController.class)
-class PetRestControllerTest {
+class PetRestControllerTest extends ControllerTest{
 
     @Autowired
     MockMvc mockMvc;
@@ -50,18 +50,18 @@ class PetRestControllerTest {
     void add_Pet_success() throws Exception {
         //given
 
-        Pet pet = Pet.builder()
+        PetAddRequest petAddRequest = PetAddRequest.builder()
                 .name("멍뭉이")
                 .species(Species.DOG)
                 .breed("진돗개")
                 .sex(Sex.MALE)
                 .birthday(null)
                 .weight(5.5)
-                .group()
+                //.group()
                 //.user(user) 필요 pet 등록할때 같이 user 정보를 저장해야 함
                 .build();
         PetResultResponse petResultResponse = PetResultResponse.builder()
-                .id((long) 1)
+                .id(1l)
                 .name("멍뭉이")
                 .age(null)
                 .createdAt(null)
