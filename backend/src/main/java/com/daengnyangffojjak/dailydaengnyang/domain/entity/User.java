@@ -32,6 +32,7 @@ public class User extends BaseEntity implements OAuth2User, UserDetails  {
     private String userName;
     @Column(unique = true, nullable = false)
     private String email;
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
 

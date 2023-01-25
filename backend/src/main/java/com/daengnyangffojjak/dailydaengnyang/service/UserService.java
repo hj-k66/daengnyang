@@ -34,4 +34,8 @@ public class UserService {
 
         return UserJoinResponse.from(saved);
     }
+    public User getUserByUserName(String userName){
+        return userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));
+    }
 }
