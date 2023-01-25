@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+    <meta charset="UTF-8">
+
+    <title>개묘한 이야기</title>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>반려동물 등록</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+            <form role="form" action="home">
+                <div class="form-group">
+
+                    <label th:for="species">
+                        종
+                    </label>
+                    <br>
+                    <label><input type="radio" name="species" value="dog"> 강아지</label>
+                    <label><input type="radio" name="species" value="cat"> 고양이</label>
+                </div>
+
+                <div class="form-group">
+
+                    <label for="breed">
+                        품종
+                    </label>
+                    <input type="text" class="form-control" id="breed" />
+                </div>
+
+                <div class="form-group">
+
+                    <label for="petName">
+                        이름
+                    </label>
+                    <input type="text" class="form-control" id="petName" />
+                </div>
+
+                <div class="form-group">
+
+                    <label for="birthday">
+                        생일
+                    </label>
+                    <input type="text" class="form-control" id="birthday" />
+                </div>
+
+                <div class="form-group">
+
+                    <label th:for="sex">
+                        성별
+                    </label>
+                    <br>
+                    <label><input type="radio" name="sex" value="male"> 남자</label>
+                    <label><input type="radio" name="sex" value="female"> 여자</label>
+                </div>
+
+                <div class="form-group">
+
+                    <label for="weight">
+                        몸무게
+                    </label>
+                    <input type="text" class="form-control" id="weight" />
+                </div>
+
+
+
+
+                <br>
+                <button type="submit" class="btn btn-primary">
+                    작성 완료
+                </button>
+            </form>
+            <br>
+            <button type="button" class="btn active btn-secondary" onclick="location.href = 'groupjoin'">
+                뒤로가기
+            </button>
+            <button type="button" class="btn active btn-secondary" onclick="location.href = 'home'">
+                건너뛰기
+            </button>
+
+
+
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+        </div>
+    </div>
+</div>
+</body>
+</html>

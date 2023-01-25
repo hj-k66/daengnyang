@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+    <meta charset="UTF-8">
+    <title>개묘한 이야기</title>
+</head>
+<body>
+<!--
+유효성 검사 그룹 이름 필수
+건너뛰기 클릭시 유효성 검사 무시
+-->
+
+
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>그룹 생성</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-4">
+            <form role="form" action="petjoin">
+                <div class="form-group">
+
+                    <label for="groupName">
+                        그룹 이름
+                    </label>
+                    <input type="text" class="form-control" id="groupName" />
+                </div>
+
+                <br>
+                <button type="submit" class="btn btn-primary">
+                    다음
+                </button>
+            </form>
+            <br>
+            <button type="button" class="btn active btn-secondary" onclick="location.href = 'petjoin'">
+                건너뛰기
+            </button>
+
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
