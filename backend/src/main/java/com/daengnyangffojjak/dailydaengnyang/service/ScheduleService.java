@@ -8,6 +8,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
@@ -30,11 +31,11 @@ public class ScheduleService {
 
         // 유저가 없는 경우
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new UserException(INVALID_PERMISSION));
+                .orElseThrow(() -> new ScheduleException(INVALID_PERMISSION));
 
         // 펫이 없는 경우
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new UserException(PETID_NOT_FOUND));
+                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
         // 일정 저장
         Schedule schedule = new Schedule();
@@ -52,22 +53,22 @@ public class ScheduleService {
 
         // 유저가 없는 경우
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new UserException(INVALID_PERMISSION));
+                .orElseThrow(() -> new ScheduleException(INVALID_PERMISSION));
 
         // 펫이 없는 경우
         Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new UserException(PETID_NOT_FOUND));
+                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
         // 일정이 없는 경우
         Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new UserException(SCHEDULE_NOT_FOUND));
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
         // 로그인유저 != 일정작성유저
         Long loginUserId = user.getId();
         Long scheduleWriteUserId = schedule.getUser().getId();
 
         if (!Objects.equals(scheduleWriteUserId, loginUserId)){
-            throw new UserException(ErrorCode.INVALID_PERMISSION, "사용자가 권한이 없습니다.");
+            throw new ScheduleException(ErrorCode.INVALID_PERMISSION, "사용자가 권한이 없습니다.");
         }
 
         // 수정된 일정 저장
