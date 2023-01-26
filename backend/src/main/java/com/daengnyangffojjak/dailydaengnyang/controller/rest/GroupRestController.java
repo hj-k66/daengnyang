@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,12 @@ public class GroupRestController {
                                                                   @PathVariable Long groupId){
         GroupUserListResponse groupUserResponse = groupService.getGroupUsers(groupId, user.getUsername());
         return Response.success(groupUserResponse);
+    }
+    @GetMapping(value = "/{groupId}/pets")
+    public Response<GroupPetListResponse> getGroupPets(@AuthenticationPrincipal UserDetails user,
+                                                       @PathVariable Long groupId){
+        GroupPetListResponse groupPetResponse = groupService.getGroupPets(groupId, user.getUsername());
+        return Response.success(groupPetResponse);
     }
 
 }
