@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
@@ -21,7 +22,7 @@ public class PetShowResponse {
     private Species species;
     private String breed;
     private Sex sex;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 

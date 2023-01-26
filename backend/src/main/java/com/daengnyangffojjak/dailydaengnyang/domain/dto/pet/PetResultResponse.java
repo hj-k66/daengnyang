@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 public class PetResultResponse {
     private Long id;
     private String name;
-    private LocalDateTime age; // 이거 생일로 하면 안돼요?
+    private LocalDate age; // 이거 생일로 하면 안돼요?
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 

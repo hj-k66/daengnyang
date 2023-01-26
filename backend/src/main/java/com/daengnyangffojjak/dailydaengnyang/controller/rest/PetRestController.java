@@ -25,10 +25,10 @@ public class PetRestController {
 
     /** pet 등록하기 **/
     @PostMapping("/{groupId}/pets")
-    public ResponseEntity<Response<PetResultResponse>> addPet(@PathVariable Long groupsId,
+    public ResponseEntity<Response<PetResultResponse>> addPet(@PathVariable Long groupId,
                                                               @RequestBody PetAddRequest groupAddRequest,
                                                               Authentication authentication) {
-        return ResponseEntity.ok().body(Response.success(petService.add(groupsId, groupAddRequest, authentication)));
+        return ResponseEntity.ok().body(Response.success(petService.add(groupId, groupAddRequest, authentication)));
     }
 
     /** pet 조회 **/

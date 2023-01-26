@@ -9,7 +9,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 @Builder
 @AllArgsConstructor
@@ -29,7 +32,7 @@ public class Pet extends BaseEntity{
     private String name;
     @Enumerated(EnumType.STRING)
     private Sex sex;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
     private double weight;
 
     // pet 수정
@@ -40,5 +43,19 @@ public class Pet extends BaseEntity{
         this.sex = petAddRequest.getSex();
         this.birthday = petAddRequest.getBirthday();
         this.weight = petAddRequest.getWeight();
+    }
+
+    public String getAge(){     //1년령 이상은 나이, 1년령 이하는 개월수로 반환
+        LocalDate now = LocalDate.now();
+        LocalDate birthday = this.birthday;
+
+        long months = ChronoUnit.MONTHS.between(birthday, now); //
+
+        if(months < 12){
+            return months + "개월";
+        } else {
+            Period prd = Period.between(birthday, now);
+            return prd.getYears() +"살";
+        }
     }
 }

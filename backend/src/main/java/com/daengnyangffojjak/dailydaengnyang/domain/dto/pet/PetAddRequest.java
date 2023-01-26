@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -20,7 +21,7 @@ public class PetAddRequest {
     private Species species;
     private String breed;
     private Sex sex;
-    private LocalDateTime birthday;
+    private LocalDate birthday;
     private double weight;
     private LocalDateTime createdAt;
 
