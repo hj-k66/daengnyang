@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 @Entity
@@ -35,16 +33,16 @@ public class Pet {
     private double weight;
 
     public String getAge(){     //1년령 이상은 나이, 1년령 이하는 개월수로 반환
-        LocalDate now = LocalDate.now();
+        LocalDate today = LocalDate.now();
         LocalDate birthday = this.birthday;
 
-        long months = ChronoUnit.MONTHS.between(birthday, now); //
+        long months = ChronoUnit.MONTHS.between(birthday, today); //태어난지 12개월 넘었는 지
+        long years = ChronoUnit.YEARS.between(birthday, today);
 
         if(months < 12){
             return months + "개월";
         } else {
-            Period prd = Period.between(birthday, now);
-            return prd.getYears() +"살";
+            return years +"살";
         }
     }
 }
