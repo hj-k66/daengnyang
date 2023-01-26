@@ -1,0 +1,6 @@
+[[Group-API]]
+== Group API
+
+[[Group-만들기]]
+=== Group 그룹 만들기
+operation::group-create/success[snippets='http-request,request-fields,http-response,response-fields']

@@ -4,25 +4,17 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import static com.daengnyangffojjak.dailydaengnyang.utils.RestDocsConfiguration.field;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -81,7 +73,6 @@ class GroupRestControllerTest extends ControllerTest{
     @Nested
     @DisplayName("그룹 사용자 리스트")
     class GroupUserList{
-
         @Test
         @DisplayName("그룹 생성 성공")
         void success() throws Exception {

@@ -3,10 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 import ch.qos.logback.core.boolex.EvaluationException;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -14,6 +11,7 @@ import org.hibernate.annotations.Where;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Where(clause = "deleted_at is NULL")
 @Table(name = "\"Group\"")
 public class Group extends BaseEntity {
