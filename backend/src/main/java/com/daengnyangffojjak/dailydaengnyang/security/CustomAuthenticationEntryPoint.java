@@ -8,28 +8,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 @Component
 @Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
-    @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.info("인증 실패, 로그인 하지 않았습니다.");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        SecurityCustomException securityCustomException = new SecurityCustomException(ErrorCode.INVALID_PERMISSION, "로그인 하지 않은 사용자입니다.");
-        ErrorResponse errorResponse = new ErrorResponse(securityCustomException.getErrorCode(), securityCustomException.toString());
-        Response<ErrorResponse> error = Response.error(errorResponse);
+	@Override
+	public void commence(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException) throws IOException, ServletException {
+		log.info("인증 실패, 로그인 하지 않았습니다.");
 
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
-        response.getWriter().write(objectMapper.writeValueAsString(error)); //Response객체를 response의 바디값으로 파싱
-    }
+		ObjectMapper objectMapper = new ObjectMapper();
+		SecurityCustomException securityCustomException = new SecurityCustomException(
+				ErrorCode.INVALID_PERMISSION, "로그인 하지 않은 사용자입니다.");
+		ErrorResponse errorResponse = new ErrorResponse(securityCustomException.getErrorCode(),
+				securityCustomException.toString());
+		Response<ErrorResponse> error = Response.error(errorResponse);
+
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("utf-8");
+		response.getWriter()
+				.write(objectMapper.writeValueAsString(error)); //Response객체를 response의 바디값으로 파싱
+	}
 }

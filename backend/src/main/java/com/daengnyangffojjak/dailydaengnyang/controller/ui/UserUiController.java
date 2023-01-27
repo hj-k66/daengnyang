@@ -6,19 +6,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserUiController {
 
-    @GetMapping("/login")
-    public String login() {
-        return "users/login";
-    }
+	@GetMapping("/login")
+	public String login() {
+		return "users/login";
+	}
 
-    @GetMapping("/join")
-    public String join() {
-        return "users/join";
-    }
+	@GetMapping("/join")
+	public String join() {
+		return "users/join";
+	}
 
 
 }
