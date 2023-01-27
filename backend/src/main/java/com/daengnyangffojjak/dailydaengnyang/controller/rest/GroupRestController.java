@@ -1,6 +1,8 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupInviteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
@@ -51,5 +53,12 @@ public class GroupRestController {
 		return Response.success(groupPetResponse);
 	}
 
+	@PostMapping(value = "/{groupId}/invite")
+	public Response<MessageResponse> inviteUser(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long groupId, @RequestBody GroupInviteRequest groupInviteRequest) {
+		MessageResponse messageResponse = groupService.inviteMember(groupId,
+				user.getUsername(), groupInviteRequest);
+		return Response.success(messageResponse);
+	}
 }
 
