@@ -13,7 +13,7 @@ package:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t $IMG_TAG .
+    - docker build -t $IMG_TAG ./backend
     - docker push $IMG_TAG
   after_script:
     - docker logout

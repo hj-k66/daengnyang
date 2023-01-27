@@ -1,13 +1,17 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
-import lombok.Getter;
-
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +34,16 @@ public class Schedule extends BaseEntity {
     private String place;           //추후 지도 연동 시 좌표로 변경 가능
     private Boolean isCompleted;    //일정 수행 여부
     private LocalDateTime dueDate;      //예정일
+
+
+    public void changeToSchedule(ScheduleModifyRequest scheduleModifyRequest) {
+        this.category = scheduleModifyRequest.getCategory();
+        this.title = scheduleModifyRequest.getTitle();
+        this.body = scheduleModifyRequest.getBody();
+        this.assigneeId = scheduleModifyRequest.getAssigneeId();
+        this.place = scheduleModifyRequest.getPlace();
+        this.dueDate = scheduleModifyRequest.getDueDate();
+
+    }
+
 }
