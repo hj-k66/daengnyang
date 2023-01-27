@@ -1,11 +1,11 @@
 package com.daengnyangffojjak.dailydaengnyang.configuration;
 
 
+import com.daengnyangffojjak.dailydaengnyang.security.CustomAccessDeniedHadler;
+import com.daengnyangffojjak.dailydaengnyang.security.CustomAuthenticationEntryPoint;
+import com.daengnyangffojjak.dailydaengnyang.security.JwtExceptionFilter;
+import com.daengnyangffojjak.dailydaengnyang.security.JwtTokenFilter;
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
-import com.daengnyangffojjak.dailydaengnyang.utils.security.CustomAccessDeniedHadler;
-import com.daengnyangffojjak.dailydaengnyang.utils.security.CustomAuthenticationEntryPoint;
-import com.daengnyangffojjak.dailydaengnyang.utils.security.JwtExceptionFilter;
-import com.daengnyangffojjak.dailydaengnyang.utils.security.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

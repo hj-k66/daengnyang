@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/v1")
+@RequestMapping
 @RequiredArgsConstructor
 public class PetUiController {
 
-    @PostMapping("/groups/{groupId}/pets")
-    public String petRegistration(@PathVariable Integer groupId){
-        return "users/join_pet";
-    }
+	@PostMapping("/groups/{groupId}/pets")
+	public String petRegistration(@PathVariable Integer groupId) {
+		return "users/join_pet";
+	}
 }
