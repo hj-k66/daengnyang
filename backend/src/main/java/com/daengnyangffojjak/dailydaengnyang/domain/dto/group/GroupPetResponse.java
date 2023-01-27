@@ -12,17 +12,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupPetResponse {
-    private Long id;
-    private String name;
-    private Species species;
-    private String age;
 
-    public static GroupPetResponse from(Pet pet){
-        return GroupPetResponse.builder()
-                .id(pet.getId())
-                .name(pet.getName())
-                .species(pet.getSpecies())
-                .age(pet.getAge())
-                .build();
-    }
+	private Long id;
+	private String name;
+	private Species species;
+	private String age;
+
+	public static GroupPetResponse from(Pet pet) {
+		return GroupPetResponse.builder()
+				.id(pet.getId())
+				.name(pet.getName())
+				.species(pet.getSpecies())
+				.age(pet.getAge())
+				.build();
+	}
 }

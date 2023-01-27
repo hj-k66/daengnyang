@@ -1,8 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import jakarta.persistence.*;
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.security;
+package com.daengnyangffojjak.dailydaengnyang.utils.security;
 
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
