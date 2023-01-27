@@ -13,5 +13,4 @@ include::User-API.adoc[]
 
 include::Schedule-API.adoc[]
 
-
 include::Group-API.adoc[]

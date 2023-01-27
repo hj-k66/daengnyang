@@ -1,9 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
@@ -19,8 +16,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import java.time.LocalDateTime;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -45,6 +41,9 @@ class ScheduleRestControllerTest extends ControllerTest{
     // 일정수정
     ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(Category.HOSPITAL, "수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", dateTime);
     ScheduleModifyResponse scheduleModifyResponse = new ScheduleModifyResponse(1L,"수정 병원", dateTime);
+
+    // 일정삭제
+    ScheduleDeleteResponse scheduleDeleteResponse = new ScheduleDeleteResponse("일정이 삭제되었습니다.");
 
     // ----------------------------------------------------------------------------------------------------------------
 
@@ -242,5 +241,103 @@ class ScheduleRestControllerTest extends ControllerTest{
 
             verify(scheduleService).modify(1L, 1L, scheduleModifyRequest, "user");
         }
+
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    @Nested
+    @DisplayName("일정삭제")
+    class ScheduleDelete{
+        @Test
+        @DisplayName("일정삭제 성공")
+        void delete_success() throws Exception {
+            given(scheduleService.delete(1L, 1L, "user"))
+                    .willReturn(scheduleDeleteResponse);
+
+            mockMvc.perform(
+                            RestDocumentationRequestBuilders.delete("/api/v1/pets/{petId}/schedules/{scheduleId}", 1L, 1L))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result.msg").value("일정이 삭제되었습니다."))
+                    .andDo(
+                            restDocs.document(
+                                    pathParameters(
+                                            parameterWithName("petId").description("반려동물 번호"),
+                                            parameterWithName("scheduleId").description("일정 번호")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("resultCode").description("결과코드"),
+                                            fieldWithPath("result.msg").description("결과메시지")
+                                    )
+                            )
+                    );
+            verify(scheduleService).delete(1L, 1L, "user");
+        }
+
+        @Test
+        @DisplayName("일정삭제 실패 - 유저가 없는 경우")
+        void delete_fail_username_not_found() throws Exception {
+            given(scheduleService.delete(1L, 1L, "user"))
+                    .willThrow(new ScheduleException(ErrorCode.USERNAME_NOT_FOUND));
+
+            mockMvc.perform(
+                            delete("/api/v1/pets/1/schedules/1"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.result.errorCode").value("USERNAME_NOT_FOUND"))
+                    .andExpect(jsonPath("$.result.message").value("Not founded"))
+                    .andDo(print());
+
+            verify(scheduleService).delete(1L, 1L, "user");
+        }
+
+        @Test
+        @DisplayName("일정삭제 실패 - 등록되지 않은 반려동물일 경우")
+        void delete_fail_pet_not_found() throws Exception {
+            given(scheduleService.delete(1L, 1L, "user"))
+                    .willThrow(new ScheduleException(ErrorCode.PET_NOT_FOUND));
+
+            mockMvc.perform(
+                            delete("/api/v1/pets/1/schedules/1"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.result.errorCode").value("PET_NOT_FOUND"))
+                    .andExpect(jsonPath("$.result.message").value("등록된 반려동물이 아닙니다."))
+                    .andDo(print());
+
+            verify(scheduleService).delete(1L, 1L, "user");
+        }
+
+        @Test
+        @DisplayName("일정삭제 실패 - 등록된 일정이 없는 경우")
+        void delete_fail_schdule_not_found() throws Exception {
+            given(scheduleService.delete(1L, 1L, "user"))
+                    .willThrow(new ScheduleException(ErrorCode.SCHEDULE_NOT_FOUND));
+
+            mockMvc.perform(
+                            delete("/api/v1/pets/1/schedules/1"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.result.errorCode").value("SCHEDULE_NOT_FOUND"))
+                    .andExpect(jsonPath("$.result.message").value("등록된 일정이 없습니다."))
+                    .andDo(print());
+
+            verify(scheduleService).delete(1L, 1L, "user");
+        }
+
+        @Test
+        @DisplayName("일정삭제 실패 - 로그인유저 != 작성유저")
+        void delete_fail_invalid_permission() throws Exception {
+            given(scheduleService.delete(1L, 1L, "user"))
+                    .willThrow(new ScheduleException(ErrorCode.INVALID_PERMISSION));
+
+            mockMvc.perform(
+                            delete("/api/v1/pets/1/schedules/1"))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.result.errorCode").value("INVALID_PERMISSION"))
+                    .andExpect(jsonPath("$.result.message").value("사용자가 권한이 없습니다."))
+                    .andDo(print());
+
+            verify(scheduleService).delete(1L, 1L, "user");
+        }
+
+    }
+
 }

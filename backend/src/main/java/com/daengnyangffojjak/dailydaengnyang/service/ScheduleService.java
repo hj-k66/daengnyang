@@ -1,9 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
@@ -39,7 +36,7 @@ public class ScheduleService {
                 .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
         // 일정 저장
-        Schedule savedSchedule = scheduleRepository.saveAndFlush(scheduleCreateRequest.toEntity(pet, user));
+        Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
 
         return ScheduleCreateResponse.builder()
                 .message("일정 등록 완료")
@@ -84,4 +81,68 @@ public class ScheduleService {
 
     }
 
+    // 일정 삭제
+    @Transactional
+    public ScheduleDeleteResponse delete(Long petId, Long scheduleId, String userName) {
+
+        // 유저가 없는 경우 예외발생
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+
+        // 펫이 없는 경우 예외발생
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
+
+        // 일정이 없는 경우 예외발생
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        // 로그인유저 != 일정작성유저일 경우 예외발생
+        Long loginUserId = user.getId();
+        Long scheduleWriteUserId = schedule.getUser().getId();
+
+        if (!Objects.equals(scheduleWriteUserId, loginUserId)){
+            throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        // 일정 삭제
+        scheduleRepository.delete(schedule);
+
+        return ScheduleDeleteResponse.builder()
+                .msg("일정이 삭제되었습니다.")
+                .build();
+
+    }
+
+    // 일정 상세 조회(단건)
+    public ScheduleResponse get(Long petId, Long scheduleId, String userName) {
+
+        // 유저가 없는 경우 예외발생
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+
+        // 펫이 없는 경우 예외발생
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
+
+        // 일정이 없는 경우 예외발생
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        return ScheduleResponse.builder()
+                .id(schedule.getId())
+                .userId(user.getId())
+                .petId(pet.getId())
+                .petName(pet.getName())
+                .category(schedule.getCategory())
+                .title(schedule.getTitle())
+                .body(schedule.getBody())
+                .assigneeId(schedule.getAssigneeId())
+                .place(schedule.getPlace())
+                .dueDate(schedule.getDueDate())
+                .createdAt(schedule.getCreatedAt())
+                .lastModifiedAt(schedule.getLastModifiedAt())
+                .build();
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
