@@ -1,9 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.*;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -74,7 +72,7 @@ class GroupRestControllerTest extends ControllerTest{
     @DisplayName("그룹 사용자 리스트")
     class GroupUserList{
         @Test
-        @DisplayName("그룹 생성 성공")
+        @DisplayName("사용자 조회 성공")
         void success() throws Exception {
             GroupUserListResponse groupUserResponse = new GroupUserListResponse(
                     List.of(new GroupUserResponse(1L, "user", "mom", true),
@@ -104,6 +102,42 @@ class GroupRestControllerTest extends ControllerTest{
                             )
                     );
             verify(groupService).getGroupUsers(1L, "user");
+        }
+    }
+    @Nested
+    @DisplayName("그룹 반려동물 리스트")
+    class GroupPetList{
+        @Test
+        @DisplayName("반려동물 조회 성공")
+        void success() throws Exception {
+            GroupPetListResponse petListResponse = new GroupPetListResponse(
+                    List.of(new GroupPetResponse(1L, "hoon", Species.CAT, "4살"),
+                            new GroupPetResponse(2L, "hoon2", Species.CAT, "4개월")),
+                    2);
+            given(groupService.getGroupPets(1L, "user")).willReturn(petListResponse);
+
+            mockMvc.perform(
+                            RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets", 1L)
+                                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+                    .andExpect(jsonPath("$.result.pets").exists())
+                    .andDo(
+                            restDocs.document(
+                                    pathParameters(
+                                            parameterWithName("groupId").description("그룹 번호")
+                                    ),
+                                    responseFields(
+                                            fieldWithPath("resultCode").description("결과코드"),
+                                            fieldWithPath("result.pets").description("그룹 내 반려동물 리스트"),
+                                            fieldWithPath("result.pets[].id").description("반려동물 번호"),
+                                            fieldWithPath("result.pets[].name").description("반려동물 이름"),
+                                            fieldWithPath("result.pets[].species").description("종"),
+                                            fieldWithPath("result.pets[].age").description("나이"),
+                                            fieldWithPath("result.count").description("그룹 내 반려동물 수"))
+                            )
+                    );
+            verify(groupService).getGroupPets(1L, "user");
         }
     }
 }

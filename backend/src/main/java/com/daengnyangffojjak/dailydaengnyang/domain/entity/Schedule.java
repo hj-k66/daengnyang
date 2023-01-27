@@ -31,10 +31,11 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private String title;
     private String body;
-    private Long assigneeId;        //책임차 user-id
+    private Long assigneeId;        //책임자 user-id
     private String place;           //추후 지도 연동 시 좌표로 변경 가능
     private Boolean isCompleted;    //일정 수행 여부
     private LocalDateTime dueDate;      //예정일
+
 
     public void changeToSchedule(ScheduleModifyRequest scheduleModifyRequest) {
         this.category = scheduleModifyRequest.getCategory();
