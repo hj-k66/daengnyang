@@ -1,0 +1,9 @@
+[[Schedule-API]]
+== Schedule API
+
+[[Schedule-만들기]]
+=== Schedule 일정 만들기
+operation::schedule-create/create_success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+[[Schedule-수정하기]]
+=== Schedule 일정 수정하기
+operation::schedule-modify/modify_success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
