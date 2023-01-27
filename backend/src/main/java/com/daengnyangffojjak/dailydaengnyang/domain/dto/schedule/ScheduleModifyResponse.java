@@ -3,7 +3,6 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
-
 import java.time.LocalDateTime;
 
 @Getter

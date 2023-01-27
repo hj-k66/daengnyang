@@ -9,10 +9,10 @@ import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +27,8 @@ public class ScheduleRestController {
     public ResponseEntity<Response<ScheduleCreateResponse>> createSchedule(@PathVariable Long petId, @RequestBody ScheduleCreateRequest scheduleCreateRequest, @AuthenticationPrincipal UserDetails user){
         log.debug("petId : {} / scheduleCreateRequest : {} / authentication : {} ", petId, scheduleCreateRequest, user.getUsername());
         ScheduleCreateResponse scheduleCreateResponse = scheduleService.create(petId, scheduleCreateRequest, user.getUsername());
-        return ResponseEntity.ok().body(Response.success(scheduleCreateResponse));
+        return ResponseEntity.created(URI.create("api/v1/pets/"+petId+"/schedules"))
+                .body(Response.success(scheduleCreateResponse));
     }
 
     // 일정 수정
@@ -35,7 +36,8 @@ public class ScheduleRestController {
     public ResponseEntity<Response<ScheduleModifyResponse>> modifySchedule(@PathVariable Long petId, @PathVariable Long scheduleId, @RequestBody ScheduleModifyRequest scheduleModifyRequest, @AuthenticationPrincipal UserDetails user){
         log.debug("scheduleId : {} / scheduleModifyRequest : {} / authentication : {} ", scheduleId, scheduleModifyRequest, user.getUsername());
         ScheduleModifyResponse scheduleModifyResponse = scheduleService.modify(petId, scheduleId, scheduleModifyRequest, user.getUsername());
-        return ResponseEntity.ok().body(Response.success(scheduleModifyResponse));
+        return ResponseEntity.created(URI.create("api/v1/pets/"+petId+"/schedules/"+scheduleId))
+                .body(Response.success(scheduleModifyResponse));
     }
 
 }

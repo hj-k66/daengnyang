@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,16 +35,14 @@ public class Schedule extends BaseEntity {
     private Boolean isCompleted;    //일정 수행 여부
     private LocalDateTime dueDate;      //예정일
 
-    public Schedule of(Pet pet, User user, ScheduleCreateRequest scheduleCreateRequest){
-        return Schedule.builder()
-                .user(user)
-                .pet(pet)
-                .category(scheduleCreateRequest.getCategory())
-                .title(scheduleCreateRequest.getTitle())
-                .body(scheduleCreateRequest.getBody())
-                .assigneeId(scheduleCreateRequest.getAssigneeId())
-                .place(scheduleCreateRequest.getPlace())
-                .dueDate(scheduleCreateRequest.getDueDate())
-                .build();
+    public void changeToSchedule(ScheduleModifyRequest scheduleModifyRequest) {
+        this.category = scheduleModifyRequest.getCategory();
+        this.title = scheduleModifyRequest.getTitle();
+        this.body = scheduleModifyRequest.getBody();
+        this.assigneeId = scheduleModifyRequest.getAssigneeId();
+        this.place = scheduleModifyRequest.getPlace();
+        this.dueDate = scheduleModifyRequest.getDueDate();
+
     }
+
 }

@@ -10,3 +10,5 @@
 :sectlinks:
 
 include::User-API.adoc[]
+
+include::Schedule-API.adoc[]

@@ -35,7 +35,7 @@ class ScheduleRestControllerTest extends ControllerTest{
     @MockBean
     ScheduleService scheduleService;
 
-    // 일정 등록시간, 수정시간을 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간이 계속 안맞음 해결
+    // 일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간이 계속 안맞음 해결
     LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10, 26);
 
     // 일정등록
@@ -43,10 +43,10 @@ class ScheduleRestControllerTest extends ControllerTest{
     ScheduleCreateResponse scheduleCreateResponse = new ScheduleCreateResponse("일정 등록 완료", 1L);
 
     // 일정수정
-    ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(Category.HOSPITAL, "수정 병원", "수정 초음파 재검");
+    ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(Category.HOSPITAL, "수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", dateTime);
     ScheduleModifyResponse scheduleModifyResponse = new ScheduleModifyResponse(1L,"수정 병원", dateTime);
 
-    // -------------------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     @Nested
     @DisplayName("일정등록")
@@ -63,7 +63,7 @@ class ScheduleRestControllerTest extends ControllerTest{
                                     // java 8 부터 LocalDateTime을 가진 객체를 ObjectMapper 함수를 사용하여 가져올 경우 직렬화 또는 역직렬화를 못하는 에러 발생으로 아래의 코드 작성
                                     .content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsBytes(scheduleCreateRequest))
                                     .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.result.message").value("일정 등록 완료"))
                     .andExpect(jsonPath("$.result.id").value(1L))
                     .andDo(
@@ -125,7 +125,7 @@ class ScheduleRestControllerTest extends ControllerTest{
         }
     }
 
-    // -------------------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------
 
     @Nested
     @DisplayName("일정수정")
@@ -140,7 +140,7 @@ class ScheduleRestControllerTest extends ControllerTest{
                             RestDocumentationRequestBuilders.put("/api/v1/pets/{petId}/schedules/{scheduleId}", 1L, 1L)
                                     .content(objectMapper.registerModule(new JavaTimeModule()).writeValueAsBytes(scheduleModifyRequest))
                                     .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.result.id").value(1L))
                     .andExpect(jsonPath("$.result.title").value("수정 병원"))
                     .andExpect(jsonPath("$.result.lastModifiedAt").value("2023/01/25 10:26:00"))
@@ -154,7 +154,10 @@ class ScheduleRestControllerTest extends ControllerTest{
                                     requestFields(
                                             fieldWithPath("category").description("카테고리수정"),
                                             fieldWithPath("title").description("제목수정"),
-                                            fieldWithPath("body").description("내용수정")
+                                            fieldWithPath("body").description("내용수정"),
+                                            fieldWithPath("assigneeId").description("책임자 userId 수정"),
+                                            fieldWithPath("place").description("장소수정"),
+                                            fieldWithPath("dueDate").description("예정날짜수정")
                                     ),
                                     responseFields(
                                             fieldWithPath("resultCode").description("결과코드"),

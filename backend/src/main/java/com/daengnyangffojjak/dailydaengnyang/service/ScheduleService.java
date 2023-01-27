@@ -30,17 +30,16 @@ public class ScheduleService {
     @Transactional
     public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest, String userName) {
 
-        // 유저가 없는 경우
+        // 유저가 없는 경우 예외발생
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
-        // 펫이 없는 경우
+        // 펫이 없는 경우 예외발생
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
         // 일정 저장
-        Schedule schedule = new Schedule();
-        Schedule savedSchedule = scheduleRepository.save(schedule.of(pet, user, scheduleCreateRequest));
+        Schedule savedSchedule = scheduleRepository.saveAndFlush(scheduleCreateRequest.toEntity(pet, user));
 
         return ScheduleCreateResponse.builder()
                 .message("일정 등록 완료")
@@ -53,19 +52,19 @@ public class ScheduleService {
     @Transactional
     public ScheduleModifyResponse modify(Long petId, Long scheduleId, ScheduleModifyRequest scheduleModifyRequest, String userName) {
 
-        // 유저가 없는 경우
+        // 유저가 없는 경우 예외발생
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
-        // 펫이 없는 경우
+        // 펫이 없는 경우 예외발생
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
-        // 일정이 없는 경우
+        // 일정이 없는 경우 예외발생
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-        // 로그인유저 != 일정작성유저
+        // 로그인유저 != 일정작성유저일 경우 예외발생
         Long loginUserId = user.getId();
         Long scheduleWriteUserId = schedule.getUser().getId();
 
@@ -74,8 +73,7 @@ public class ScheduleService {
         }
 
         // 수정된 일정 저장
-        schedule.setTitle(scheduleModifyRequest.getTitle());
-        schedule.setBody(scheduleModifyRequest.getBody());
+        schedule.changeToSchedule(scheduleModifyRequest);
         Schedule savedSchedule = scheduleRepository.saveAndFlush(schedule);
 
         return ScheduleModifyResponse.builder()
