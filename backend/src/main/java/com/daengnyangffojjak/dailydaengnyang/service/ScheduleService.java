@@ -9,12 +9,12 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
-import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.*;
 
@@ -27,11 +27,12 @@ public class ScheduleService {
     private final PetRepository petRepository;
 
     // 일정 등록
+    @Transactional
     public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest, String userName) {
 
         // 유저가 없는 경우
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new ScheduleException(INVALID_PERMISSION));
+                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
         // 펫이 없는 경우
         Pet pet = petRepository.findById(petId)
@@ -49,11 +50,12 @@ public class ScheduleService {
     }
 
     // 일정 수정
+    @Transactional
     public ScheduleModifyResponse modify(Long petId, Long scheduleId, ScheduleModifyRequest scheduleModifyRequest, String userName) {
 
         // 유저가 없는 경우
         User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new ScheduleException(INVALID_PERMISSION));
+                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
         // 펫이 없는 경우
         Pet pet = petRepository.findById(petId)
@@ -68,7 +70,7 @@ public class ScheduleService {
         Long scheduleWriteUserId = schedule.getUser().getId();
 
         if (!Objects.equals(scheduleWriteUserId, loginUserId)){
-            throw new ScheduleException(ErrorCode.INVALID_PERMISSION, "사용자가 권한이 없습니다.");
+            throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
         }
 
         // 수정된 일정 저장
@@ -77,8 +79,9 @@ public class ScheduleService {
         Schedule savedSchedule = scheduleRepository.saveAndFlush(schedule);
 
         return ScheduleModifyResponse.builder()
-                .message("일정 수정 완료")
                 .id(savedSchedule.getId())
+                .title(schedule.getTitle())
+                .lastModifiedAt(schedule.getLastModifiedAt())
                 .build();
 
     }
