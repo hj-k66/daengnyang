@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,13 @@ public class GroupRestController {
 			@PathVariable Long groupId, @RequestBody GroupInviteRequest groupInviteRequest) {
 		MessageResponse messageResponse = groupService.inviteMember(groupId,
 				user.getUsername(), groupInviteRequest);
+		return Response.success(messageResponse);
+	}
+
+	@DeleteMapping(value = "/{groupId}/users")
+	public Response<MessageResponse> leaveGroup(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long groupId) {
+		MessageResponse messageResponse = groupService.leaveGroup(groupId, user.getUsername());
 		return Response.success(messageResponse);
 	}
 }

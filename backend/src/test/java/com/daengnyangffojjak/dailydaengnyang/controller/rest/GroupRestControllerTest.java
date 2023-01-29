@@ -21,6 +21,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListRespo
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
 import java.util.List;
@@ -174,6 +175,49 @@ class GroupRestControllerTest extends ControllerTest {
 									fieldWithPath("result.errorCode").description("에러코드"),
 									fieldWithPath("result.message").description("에러메세지"))));
 			verify(groupService).inviteMember(1L, "user", request);
+		}
+	}
+
+	@Nested
+	@DisplayName("그룹에서 나오기")
+	class LeaveGroup {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			MessageResponse response = new MessageResponse("그룹에서 나왔습니다.");
+			given(groupService.leaveGroup(1L, "user")).willReturn(response);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.delete("/api/v1/groups/{groupId}/users", 1L)
+									.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result.msg").exists())
+					.andDo(restDocs.document(
+							pathParameters(parameterWithName("groupId").description("그룹 번호")),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.msg").description("결과 메세지"))));
+			verify(groupService).leaveGroup(1L, "user");
+		}
+
+		@Test
+		@DisplayName("그룹장이 그룹원이 있는 상태에서 나오는 경우")
+		void fail_그룹장이_나오려고함() throws Exception {
+			given(groupService.leaveGroup(1L, "user")).willThrow(
+					new GroupException(ErrorCode.INVALID_REQUEST, "그룹장은 그룹을 나갈 수 없습니다."));
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.delete("/api/v1/groups/{groupId}/users", 1L)
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isConflict())
+					.andExpect(jsonPath("$.resultCode").value("ERROR"))
+					.andExpect(jsonPath("$.result.errorCode").value("INVALID_REQUEST"))
+					.andDo(restDocs.document(
+							pathParameters(parameterWithName("groupId").description("그룹 번호")),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.errorCode").description("에러코드"),
+									fieldWithPath("result.message").description("에러메세지"))));
+			verify(groupService).leaveGroup(1L, "user");
 		}
 	}
 }

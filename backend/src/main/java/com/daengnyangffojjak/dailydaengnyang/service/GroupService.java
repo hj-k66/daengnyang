@@ -56,12 +56,12 @@ public class GroupService {
 	public GroupPetListResponse getGroupPets(Long groupId, String username) {
 		Group group = getGroupById(groupId);
 		List<UserGroup> userGroupList = getUserGroupListWithUsername(group,
-				username);    //user가 그룹 내 유저인지 체크
+				username); //user가 그룹 내 유저인지 체크
 		List<Pet> pets = petRepository.findAllByGroupId(groupId);
 		return GroupPetListResponse.from(pets);
 	}
 
-	@Transactional
+	@Transactional        //그룹에 유저 초대
 	public MessageResponse inviteMember(Long groupId, String username,
 			GroupInviteRequest groupInviteRequest) {
 		Group group = getGroupById(groupId);
@@ -85,6 +85,32 @@ public class GroupService {
 		return new MessageResponse(invited.getUsername() + "이(가) 그룹에 등록되었습니다.");
 	}
 
+	@Transactional
+	public MessageResponse leaveGroup(Long groupId, String username) {
+		Group group = getGroupById(groupId);
+		List<UserGroup> userGroupList = getUserGroupListWithUsername(group, username);
+		UserGroup loginUserGroup = userGroupList.stream()
+				.filter(userGroup -> username.equals(userGroup.getUser().getUsername()))
+				.findFirst().orElseThrow(() -> new UserException(ErrorCode.INVALID_PERMISSION));
+
+		if (!username.equals(getGroupOwner(userGroupList).getUsername())) {        //그룹장이 아닌 경우 탈퇴
+			loginUserGroup.deleteSoftly();
+			return new MessageResponse("그룹에서 나왔습니다.");
+		}
+
+		//그룹장일 경우 1) 다른 그룹원이 있거나 2) 반려동물이 있으면 못 나감
+		if (userGroupList.size() != 1) {                                  //1) 그룹원이 있는 경우
+			throw new GroupException(ErrorCode.INVALID_REQUEST, "그룹장은 그룹을 나갈 수 없습니다.");
+		}
+		if (petRepository.findAllByGroupId(groupId).size() != 0) {        //2) 반려동물이 있는 경우
+			throw new GroupException(ErrorCode.INVALID_REQUEST, "그룹에 반려동물이 존재하여 나갈 수 없습니다.");
+		}
+		//아무도 없으면 그룹까지 삭제
+		loginUserGroup.deleteSoftly();
+		group.deleteSoftly();
+		return new MessageResponse("그룹이 삭제되었습니다.");
+	}
+
 	private Group getGroupById(Long groupId) {    //그룹 아이디로 그룹 조회, 없으면 예외 발생
 		return groupRepository.findById(groupId)
 				.orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
@@ -106,4 +132,10 @@ public class GroupService {
 		}
 		return userGroupList;
 	}
+
+	private User getGroupOwner(List<UserGroup> userGroupList) {        //그룹장을 반환하는 메서드
+		return userGroupList.stream().filter(UserGroup::isOwner).findFirst().map(UserGroup::getUser)
+				.orElseThrow(() -> new UserException(ErrorCode.GROUP_OWNER_NOT_FOUND));
+	}
+
 }

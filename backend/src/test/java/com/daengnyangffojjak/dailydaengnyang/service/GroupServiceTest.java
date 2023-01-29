@@ -220,4 +220,80 @@ class GroupServiceTest {
 			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
 		}
 	}
+
+	@Nested
+	@DisplayName("그룹에서 나오기")
+	class LeaveGroup {
+
+		@Test
+		@DisplayName("성공 - 그룹장이 아닌 경우")
+		void success_not_owner() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", false),
+					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad", true)
+			);
+
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+
+			MessageResponse response = assertDoesNotThrow(
+					() -> groupService.leaveGroup(1L, "user"));
+
+			assertEquals("그룹에서 나왔습니다.", response.getMsg());
+		}
+
+		@Test
+		@DisplayName("성공 - 그룹장인 경우")
+		void success_owner() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true)
+			);
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+
+			MessageResponse response = assertDoesNotThrow(
+					() -> groupService.leaveGroup(1L, "user"));
+
+			assertEquals("그룹이 삭제되었습니다.", response.getMsg());
+		}
+
+		@Test
+		@DisplayName("그룹장인데 그룹원이 있는 경우")
+		void fail_그룹원이있는경우() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true),
+					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad", false)
+			);
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+
+			GroupException e = assertThrows(GroupException.class,
+					() -> groupService.leaveGroup(1L, "user"));
+
+			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
+			assertEquals("그룹장은 그룹을 나갈 수 없습니다.", e.getMessage());
+		}
+
+		@Test
+		@DisplayName("그룹장인데 반려동물이 있는 경우")
+		void fail_그룹반려동물이이있는경우() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true)
+			);
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(petRepository.findAllByGroupId(1L)).willReturn(List.of(new Pet()));
+
+			GroupException e = assertThrows(GroupException.class,
+					() -> groupService.leaveGroup(1L, "user"));
+
+			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
+			assertEquals("그룹에 반려동물이 존재하여 나갈 수 없습니다.", e.getMessage());
+		}
+
+	}
 }
