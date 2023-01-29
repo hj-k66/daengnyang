@@ -220,4 +220,51 @@ class GroupRestControllerTest extends ControllerTest {
 			verify(groupService).leaveGroup(1L, "user");
 		}
 	}
+
+	@Nested
+	@DisplayName("그룹에서 내보내기")
+	class DeleteGroupMember {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			MessageResponse response = new MessageResponse("그룹에서 내보내기를 성공하였습니다.");
+			given(groupService.deleteMember(1L, "user", 2L)).willReturn(response);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.delete(
+									"/api/v1/groups/{groupId}/users/{userId}", 1L, 2L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result.msg").exists())
+					.andDo(restDocs.document(
+							pathParameters(parameterWithName("groupId").description("그룹 번호"),
+									parameterWithName("userId").description("유저 번호")),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.msg").description("결과 메세지"))));
+			verify(groupService).deleteMember(1L, "user", 2L);
+		}
+
+		@Test
+		@DisplayName("그룹장이 아닌경우")
+		void fail_그룹장이_아닌경우() throws Exception {
+			given(groupService.deleteMember(1L, "user", 2L)).willThrow(
+					new UserException(ErrorCode.INVALID_PERMISSION));
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.delete(
+									"/api/v1/groups/{groupId}/users/{userId}", 1L, 2L))
+
+					.andExpect(status().isUnauthorized())
+					.andExpect(jsonPath("$.resultCode").value("ERROR"))
+					.andExpect(jsonPath("$.result.errorCode").value("INVALID_PERMISSION"))
+					.andDo(restDocs.document(
+							pathParameters(parameterWithName("groupId").description("그룹 번호"),
+									parameterWithName("userId").description("유저 번호")),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.errorCode").description("에러코드"),
+									fieldWithPath("result.message").description("에러메세지"))));
+			verify(groupService).deleteMember(1L, "user", 2L);
+		}
+	}
 }

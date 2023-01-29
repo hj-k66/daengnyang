@@ -51,6 +51,7 @@ public enum ErrorCode {
 	 * Group
 	 **/
 	GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹이 존재하지 않습니다."),
+	GROUP_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹에 해당 유저가 존재하지 않습니다."),
 	GROUP_OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹의 그룹장이 존재하지 않습니다.");
 
 	private final HttpStatus status;

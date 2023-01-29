@@ -25,3 +25,8 @@ operation::group-invite/success[snippets='http-request,path-parameters,request-f
 === Group 나오기
 
 operation::leave-group/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Group-내보내기]]
+=== Group 내보내기
+
+operation::delete-group-member/success[snippets='http-request,path-parameters,http-response,response-fields']

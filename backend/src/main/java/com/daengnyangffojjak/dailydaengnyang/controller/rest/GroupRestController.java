@@ -68,5 +68,13 @@ public class GroupRestController {
 		MessageResponse messageResponse = groupService.leaveGroup(groupId, user.getUsername());
 		return Response.success(messageResponse);
 	}
+
+	@DeleteMapping(value = "/{groupId}/users/{userId}")
+	public Response<MessageResponse> deleteMember(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long groupId, @PathVariable Long userId) {
+		MessageResponse messageResponse = groupService.deleteMember(groupId, user.getUsername(),
+				userId);
+		return Response.success(messageResponse);
+	}
 }
 
