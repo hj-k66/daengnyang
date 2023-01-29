@@ -10,3 +10,6 @@ operation::schedule-modify/modify_success[snippets='http-request,path-parameters
 [[Schedule-삭제하기]]
 === Schedule 일정 삭제하기
 operation::schedule-delete/delete_success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+[[Schedule-상세조회하기]]
+=== Schedule 일정 상세조회하기
+operation::schedule-get/get_success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']

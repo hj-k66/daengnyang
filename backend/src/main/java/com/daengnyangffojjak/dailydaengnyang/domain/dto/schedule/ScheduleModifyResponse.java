@@ -11,11 +11,12 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Builder
 public class ScheduleModifyResponse {
-    private Long id;
-    private String title;
 
-    @LastModifiedDate
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime lastModifiedAt;
+	private Long id;
+	private String title;
+
+	@LastModifiedDate
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
+	private LocalDateTime lastModifiedAt;
 
 }

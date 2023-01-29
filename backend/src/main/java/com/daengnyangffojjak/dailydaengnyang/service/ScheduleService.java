@@ -10,6 +10,8 @@ import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
@@ -19,130 +21,146 @@ import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
-    private final PetRepository petRepository;
+	private final ScheduleRepository scheduleRepository;
+	private final UserRepository userRepository;
+	private final PetRepository petRepository;
 
-    // 일정 등록
-    @Transactional
-    public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest, String userName) {
+	// 일정 등록
+	@Transactional
+	public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest,
+			String userName) {
 
-        // 유저가 없는 경우 예외발생
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+		// 유저가 없는 경우 예외발생
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
-        // 펫이 없는 경우 예외발생
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
+		// 펫이 없는 경우 예외발생
+		Pet pet = petRepository.findById(petId)
+				.orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
-        // 일정 저장
-        Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
+		// 일정 저장
+		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
 
-        return ScheduleCreateResponse.builder()
-                .message("일정 등록 완료")
-                .id(savedSchedule.getId())
-                .build();
+		return ScheduleCreateResponse.builder()
+				.message("일정 등록 완료")
+				.id(savedSchedule.getId())
+				.build();
 
-    }
+	}
 
-    // 일정 수정
-    @Transactional
-    public ScheduleModifyResponse modify(Long petId, Long scheduleId, ScheduleModifyRequest scheduleModifyRequest, String userName) {
+	// 일정 수정
+	@Transactional
+	public ScheduleModifyResponse modify(Long petId, Long scheduleId,
+			ScheduleModifyRequest scheduleModifyRequest, String userName) {
 
-        // 유저가 없는 경우 예외발생
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+		// 유저가 없는 경우 예외발생
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
-        // 펫이 없는 경우 예외발생
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
+		// 펫이 없는 경우 예외발생
+		Pet pet = petRepository.findById(petId)
+				.orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
-        // 일정이 없는 경우 예외발생
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+		// 일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-        // 로그인유저 != 일정작성유저일 경우 예외발생
-        Long loginUserId = user.getId();
-        Long scheduleWriteUserId = schedule.getUser().getId();
+		// 로그인유저 != 일정작성유저일 경우 예외발생
+		Long loginUserId = user.getId();
+		Long scheduleWriteUserId = schedule.getUser().getId();
 
-        if (!Objects.equals(scheduleWriteUserId, loginUserId)){
-            throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
-        }
+		if (!Objects.equals(scheduleWriteUserId, loginUserId)) {
+			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+		}
 
-        // 수정된 일정 저장
-        schedule.changeToSchedule(scheduleModifyRequest);
-        Schedule savedSchedule = scheduleRepository.saveAndFlush(schedule);
+		// 수정된 일정 저장
+		schedule.changeToSchedule(scheduleModifyRequest);
+		Schedule savedSchedule = scheduleRepository.saveAndFlush(schedule);
 
-        return ScheduleModifyResponse.builder()
-                .id(savedSchedule.getId())
-                .title(schedule.getTitle())
-                .lastModifiedAt(schedule.getLastModifiedAt())
-                .build();
+		return ScheduleModifyResponse.builder()
+				.id(savedSchedule.getId())
+				.title(schedule.getTitle())
+				.lastModifiedAt(schedule.getLastModifiedAt())
+				.build();
 
-    }
+	}
 
-    // 일정 삭제
-    @Transactional
-    public ScheduleDeleteResponse delete(Long petId, Long scheduleId, String userName) {
+	// 일정 삭제
+	@Transactional
+	public ScheduleDeleteResponse delete(Long petId, Long scheduleId, String userName) {
 
-        // 유저가 없는 경우 예외발생
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+		// 유저가 없는 경우 예외발생
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
-        // 펫이 없는 경우 예외발생
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
+		// 펫이 없는 경우 예외발생
+		Pet pet = petRepository.findById(petId)
+				.orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
-        // 일정이 없는 경우 예외발생
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+		// 일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-        // 로그인유저 != 일정작성유저일 경우 예외발생
-        Long loginUserId = user.getId();
-        Long scheduleWriteUserId = schedule.getUser().getId();
+		// 로그인유저 != 일정작성유저일 경우 예외발생
+		Long loginUserId = user.getId();
+		Long scheduleWriteUserId = schedule.getUser().getId();
 
-        if (!Objects.equals(scheduleWriteUserId, loginUserId)){
-            throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
-        }
+		if (!Objects.equals(scheduleWriteUserId, loginUserId)) {
+			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+		}
 
-        // 일정 삭제
-        scheduleRepository.delete(schedule);
+		// 일정 삭제
+		scheduleRepository.delete(schedule);
 
-        return ScheduleDeleteResponse.builder()
-                .msg("일정이 삭제되었습니다.")
-                .build();
+		return ScheduleDeleteResponse.builder()
+				.msg("일정이 삭제되었습니다.")
+				.build();
 
-    }
+	}
 
-    // 일정 상세 조회(단건)
-    public ScheduleResponse get(Long petId, Long scheduleId, String userName) {
+	// 일정 상세 조회(단건)
+	public ScheduleResponse get(Long petId, Long scheduleId, String userName) {
 
-        // 유저가 없는 경우 예외발생
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+		// 유저가 없는 경우 예외발생
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
 
-        // 펫이 없는 경우 예외발생
-        Pet pet = petRepository.findById(petId)
-                .orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
+		// 펫이 없는 경우 예외발생
+		Pet pet = petRepository.findById(petId)
+				.orElseThrow(() -> new ScheduleException(PET_NOT_FOUND));
 
-        // 일정이 없는 경우 예외발생
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+		// 일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-        return ScheduleResponse.builder()
-                .id(schedule.getId())
-                .userId(user.getId())
-                .petId(pet.getId())
-                .petName(pet.getName())
-                .category(schedule.getCategory())
-                .title(schedule.getTitle())
-                .body(schedule.getBody())
-                .assigneeId(schedule.getAssigneeId())
-                .place(schedule.getPlace())
-                .dueDate(schedule.getDueDate())
-                .createdAt(schedule.getCreatedAt())
-                .lastModifiedAt(schedule.getLastModifiedAt())
-                .build();
+		return ScheduleResponse.builder()
+				.id(schedule.getId())
+				.userId(user.getId())
+				.petId(pet.getId())
+				.petName(pet.getName())
+				.category(schedule.getCategory())
+				.title(schedule.getTitle())
+				.body(schedule.getBody())
+				.assigneeId(schedule.getAssigneeId())
+				.place(schedule.getPlace())
+				.dueDate(schedule.getDueDate())
+				.createdAt(schedule.getCreatedAt())
+				.lastModifiedAt(schedule.getLastModifiedAt())
+				.build();
 
-    }
+	}
+
+	// 개체별 일정 전체 보기
+	public Page<ScheduleListResponse> list(Long petId, String userName, Pageable pageable) {
+
+		// 유저가 없는 경우 예외발생
+		User user = userRepository.findByUserName(userName)
+				.orElseThrow(() -> new ScheduleException(USERNAME_NOT_FOUND));
+
+		Page<Schedule> schedules = scheduleRepository.findAllByPetId(petId, pageable);
+
+		Page<ScheduleListResponse> scheduleListResponses = ScheduleListResponse.toResponse(
+				schedules);
+		return scheduleListResponses;
+	}
 }

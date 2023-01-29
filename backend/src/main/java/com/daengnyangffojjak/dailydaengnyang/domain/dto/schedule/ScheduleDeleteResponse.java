@@ -8,6 +8,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class ScheduleDeleteResponse {
-    private String msg;
+
+	private String msg;
 
 }

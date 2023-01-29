@@ -8,7 +8,8 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class ScheduleCreateResponse {
-    private String message;
-    private Long id;
+
+	private String message;
+	private Long id;
 
 }
