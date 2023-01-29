@@ -8,5 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class PetDeleteResponse {
-    private String message;
+
+	private String message;
 }

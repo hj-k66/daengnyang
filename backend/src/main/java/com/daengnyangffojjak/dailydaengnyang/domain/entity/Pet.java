@@ -19,43 +19,48 @@ import java.time.temporal.ChronoUnit;
 @NoArgsConstructor
 @Entity
 @Getter
-public class Pet extends BaseEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
-    private Group group;
-    @Enumerated(EnumType.STRING)
-    private Species species;
-    private String breed;       //추후 enum으로 수정 예정
-    private String name;
-    @Enumerated(EnumType.STRING)
-    private Sex sex;
-    private LocalDate birthday;
-    private double weight;
+public class Pet extends BaseEntity {
 
-    // pet 수정
-    public void update (PetAddRequest petAddRequest){
-        this.name = petAddRequest.getName();
-        this.species = petAddRequest.getSpecies();
-        this.breed = petAddRequest.getBreed();
-        this.sex = petAddRequest.getSex();
-        this.birthday = petAddRequest.getBirthday();
-        this.weight = petAddRequest.getWeight();
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "group_id")
+	private Group group;
+	// User 추가 해도 되는지?
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
+	@Enumerated(EnumType.STRING)
+	private Species species;
+	private String breed;       //추후 enum으로 수정 예정
+	private String name;
+	@Enumerated(EnumType.STRING)
+	private Sex sex;
+	private LocalDate birthday;
+	private double weight;
 
-    public String getAge(){     //1년령 이상은 나이, 1년령 이하는 개월수로 반환
-        LocalDate now = LocalDate.now();
-        LocalDate birthday = this.birthday;
+	// pet 수정
+	public void update(PetAddRequest petAddRequest) {
+		this.name = petAddRequest.getName();
+		this.species = petAddRequest.getSpecies();
+		this.breed = petAddRequest.getBreed();
+		this.sex = petAddRequest.getSex();
+		this.birthday = petAddRequest.getBirthday();
+		this.weight = petAddRequest.getWeight();
+	}
 
-        long months = ChronoUnit.MONTHS.between(birthday, now); //
+	public String getAge() {     //1년령 이상은 나이, 1년령 이하는 개월수로 반환
+		LocalDate now = LocalDate.now();
+		LocalDate birthday = this.birthday;
 
-        if(months < 12){
-            return months + "개월";
-        } else {
-            Period prd = Period.between(birthday, now);
-            return prd.getYears() +"살";
-        }
-    }
+		long months = ChronoUnit.MONTHS.between(birthday, now); //
+
+		if (months < 12) {
+			return months + "개월";
+		} else {
+			Period prd = Period.between(birthday, now);
+			return prd.getYears() + "살";
+		}
+	}
 }

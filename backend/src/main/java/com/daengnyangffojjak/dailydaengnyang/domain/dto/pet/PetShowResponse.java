@@ -7,36 +7,36 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 public class PetShowResponse {
-    private Long id;
-    private String name;
-    private Species species;
-    private String breed;
-    private Sex sex;
-    private LocalDate birthday;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastModifiedAt;
 
-    public static PetShowResponse from(Pet pet) {
-        return PetShowResponse.builder()
-                .id(pet.getId())
-                .name(pet.getName())
-                .species(pet.getSpecies())
-                .breed(pet.getBreed())
-                .sex(pet.getSex())
-                .birthday(pet.getBirthday())
-                .createdAt(pet.getCreatedAt())
-                .lastModifiedAt(pet.getLastModifiedAt())
-                .build();
-    }
+	private Long id;
+	private String name;
+	private Species species;
+	private String breed;
+	private Sex sex;
+	private LocalDate birthday;
+	private LocalDateTime createdAt;
+	private LocalDateTime lastModifiedAt;
+
+	public static PetShowResponse from(Pet pet) {
+		return PetShowResponse.builder()
+				.id(pet.getId())
+				.name(pet.getName())
+				.species(pet.getSpecies())
+				.breed(pet.getBreed())
+				.sex(pet.getSex())
+				.birthday(pet.getBirthday())
+				.createdAt(pet.getCreatedAt())
+				.lastModifiedAt(pet.getLastModifiedAt())
+				.build();
+	}
 
 }

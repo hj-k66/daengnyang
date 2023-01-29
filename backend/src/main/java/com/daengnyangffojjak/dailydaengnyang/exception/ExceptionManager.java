@@ -22,6 +22,11 @@ public class ExceptionManager {
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
     }
+    @ExceptionHandler(PetException.class)
+    public ResponseEntity<?> petExceptionHandler(PetException e) {
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+    }
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<?> sqlExceptionHandler(SQLException e){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

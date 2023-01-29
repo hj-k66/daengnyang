@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -14,27 +13,28 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 public class PetResultResponse {
-    private Long id;
-    private String name;
-    private LocalDate age; // 이거 생일로 하면 안돼요?
-    private LocalDateTime createdAt;
-    private LocalDateTime lastModifiedAt;
 
-    public static PetResultResponse addFrom(Pet pet) {
-        return PetResultResponse.builder()
-                .id(pet.getId())
-                .name(pet.getName())
-                .age(pet.getBirthday()) // 현재 연도 - 생일연도 해야함
-                .createdAt(pet.getCreatedAt())
-                .build();
-    }
+	private Long id;
+	private String name;
+	private String age;
+	private LocalDateTime createdAt;
+	private LocalDateTime lastModifiedAt;
 
-    public static PetResultResponse updateFrom(Pet pet) {
-        return PetResultResponse.builder()
-                .id(pet.getId())
-                .name(pet.getName())
-                .age(pet.getBirthday()) // 현재 연도 - 생일연도 해야함
-                .lastModifiedAt(pet.getLastModifiedAt())
-                .build();
-    }
+	public static PetResultResponse addFrom(Pet pet) {
+		return PetResultResponse.builder()
+				.id(pet.getId())
+				.name(pet.getName())
+				.age(pet.getAge()) // LocalDate -> String으로 뽑음
+				.createdAt(pet.getCreatedAt())
+				.build();
+	}
+
+	public static PetResultResponse updateFrom(Pet pet) {
+		return PetResultResponse.builder()
+				.id(pet.getId())
+				.name(pet.getName())
+				.age(pet.getAge()) // LocalDate -> String으로 뽑음
+				.lastModifiedAt(pet.getLastModifiedAt())
+				.build();
+	}
 }
