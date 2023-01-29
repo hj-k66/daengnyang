@@ -33,6 +33,12 @@ public class ExceptionManager {
                 .body(Response.error(new ErrorResponse(ErrorCode.DATABASE_ERROR, e.getMessage())));
     }
 
+    @ExceptionHandler(ScheduleException.class)
+    public ResponseEntity<?> scheduleExceptionHandler(ScheduleException e){
+        return ResponseEntity.status(e.getErrorCode().getStatus())
+                .body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+    }
+
 //    @ExceptionHandler(RuntimeException.class)
 //    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e){
 //        log.error(e.getMessage());

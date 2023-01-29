@@ -59,21 +59,22 @@ class UserRestControllerTest {
 
     @BeforeEach
     void setUp(final WebApplicationContext context,
-               final RestDocumentationContextProvider provider) {
+        final RestDocumentationContextProvider provider) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(MockMvcRestDocumentation.documentationConfiguration(provider))  // rest docs 설정 주입
-                .alwaysDo(MockMvcResultHandlers.print()) // andDo(print()) 코드 포함
-                .alwaysDo(restDocs) // pretty 패턴과 문서 디렉토리 명 정해준것 적용
-                .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
-                .build();
+            .apply(MockMvcRestDocumentation.documentationConfiguration(
+                provider))  // rest docs 설정 주입
+            .alwaysDo(MockMvcResultHandlers.print()) // andDo(print()) 코드 포함
+            .alwaysDo(restDocs) // pretty 패턴과 문서 디렉토리 명 정해준것 적용
+            .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
+            .build();
     }
 
     @Test
     @DisplayName("테스트")
     void test() throws Exception {
         mockMvc.perform(
-                get("/api/v1/users/test")
-                        .with(csrf()))
+                        get("/api/v1/users/test")
+                                .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(
                         restDocs.document(
@@ -85,11 +86,13 @@ class UserRestControllerTest {
 
     @Nested
     @DisplayName("회원가입")
-    class Join{
+    class Join {
+
         @Test
         @DisplayName("회원가입 성공")
         void join_success() throws Exception {
-            given(userService.join(userJoinRequest)).willReturn(new UserJoinResponse(0L, "hoon", "gg@gmail.com"));
+            given(userService.join(userJoinRequest)).willReturn(
+                    new UserJoinResponse(0L, "hoon", "gg@gmail.com"));
 
             mockMvc.perform(
                             post("/api/v1/users/join")
@@ -101,9 +104,11 @@ class UserRestControllerTest {
                     .andDo(
                             restDocs.document(
                                     requestFields(
-                                            fieldWithPath("userName").description("유저아이디").attributes(field("constraints", "중복 불가능")),
+                                            fieldWithPath("userName").description("유저아이디")
+                                                    .attributes(field("constraints", "중복 불가능")),
                                             fieldWithPath("password").description("비밀번호"),
-                                            fieldWithPath("email").description("이메일").attributes(field("constraints", "중복 불가능"))
+                                            fieldWithPath("email").description("이메일")
+                                                    .attributes(field("constraints", "중복 불가능"))
                                     ),
                                     responseFields(
                                             fieldWithPath("resultCode").description("결과코드"),
@@ -114,6 +119,7 @@ class UserRestControllerTest {
                     );
             verify(userService).join(userJoinRequest);
         }
+
         @Test
         @DisplayName("회원가입 실패 - 이메일 형식 오류")
         void join_fail_invalid_email() throws Exception {
@@ -130,6 +136,7 @@ class UserRestControllerTest {
                     .andDo(print());
             verify(userService).join(userJoinRequest);
         }
+
         @Test
         @DisplayName("회원가입 실패 - 아이디 중복")
         void join_fail_duplicated_id() throws Exception {
@@ -162,8 +169,5 @@ class UserRestControllerTest {
                     .andDo(print());
             verify(userService).join(userJoinRequest);
         }
-
-
     }
-
 }
