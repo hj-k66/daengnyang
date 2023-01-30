@@ -3,6 +3,8 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -30,6 +32,12 @@ public class UserRestController {
 		return ResponseEntity.created(
 						URI.create("/api/v1/users/" + userJoinResponse.getId()))     //성공 시 상태코드 : 201
 				.body(Response.success(userJoinResponse));
+	}
+
+	@PostMapping("/login")
+	public Response<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
+		UserLoginResponse userloginResponse = userService.login(userLoginRequest);
+		return Response.success(userloginResponse);
 	}
 
 	@GetMapping(value = "/test")
