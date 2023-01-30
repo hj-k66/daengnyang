@@ -48,7 +48,6 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.24' // 테스트 의존성 추가
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24' // 테스트 의존성 추가
     testImplementation 'com.h2database:h2'
-
 }
 
 tasks.named('test') {

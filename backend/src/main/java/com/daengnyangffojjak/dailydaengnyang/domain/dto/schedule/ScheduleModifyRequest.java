@@ -11,13 +11,15 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Builder
 public class ScheduleModifyRequest {
-    private Category category;
-    private String title;
-    private String body;
-    private Long assigneeId;
-    private String place;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime dueDate;
+	private Category category;
+	private String title;
+	private String body;
+	private Long assigneeId;
+	private String place;
+	private Boolean isCompleted;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
+	private LocalDateTime dueDate;
 
 }
