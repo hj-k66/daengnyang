@@ -37,13 +37,15 @@ public class UserRestController {
 	}
 
 	@PostMapping("/login")
-	public Response<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
+	public Response<UserLoginResponse> login(
+			@RequestBody @Valid UserLoginRequest userLoginRequest) {
 		UserLoginResponse userloginResponse = userService.login(userLoginRequest);
 		return Response.success(userloginResponse);
 	}
 
 	@PostMapping("/new-token")
-	public Response<TokenInfo> generateNewToken(@RequestBody RefreshTokenDto refreshTokenDto){
+	public Response<TokenInfo> generateNewToken(
+			@RequestBody @Valid RefreshTokenDto refreshTokenDto) {
 		TokenInfo tokenInfo = userService.generateNewToken(refreshTokenDto);
 		return Response.success(tokenInfo);
 	}
