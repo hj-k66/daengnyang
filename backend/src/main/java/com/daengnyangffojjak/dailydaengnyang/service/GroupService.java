@@ -39,8 +39,7 @@ public class GroupService {
 
 		Group savedGroup = groupRepository.save(groupMakeRequest.toEntity(user));        //그룹 저장
 		UserGroup savedUserGroup = userGroupRepository.save(
-				UserGroup.from(user, savedGroup, groupMakeRequest.getRoleInGroup(),
-						true));   //그룹 멤버로 저장
+				UserGroup.from(user, savedGroup, groupMakeRequest.getRoleInGroup()));   //그룹 멤버로 저장
 
 		return GroupMakeResponse.from(savedGroup);
 	}
@@ -80,8 +79,7 @@ public class GroupService {
 			throw new GroupException(ErrorCode.INVALID_REQUEST, "이미 존재하는 회원 또는 역할입니다.");
 		}
 		UserGroup savedUserGroup = userGroupRepository.save(    //그룹에 추가
-				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup(),
-						false));   //그룹 멤버로 저장
+				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup()));   //그룹 멤버로 저장
 		return new MessageResponse(invited.getUsername() + "이(가) 그룹에 등록되었습니다.");
 	}
 
