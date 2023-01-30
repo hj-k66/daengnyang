@@ -9,8 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Monitoring {
 
 	@Id
@@ -38,5 +40,7 @@ public class Monitoring {
 	private int respiratoryRate;  //호흡수
 	private int customInt;        //custom 모니터링
 	private String customIntName;
+
+	private String notes;    //기타 특이사항
 
 }
