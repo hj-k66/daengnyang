@@ -6,11 +6,17 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import java.time.LocalDateTime;
@@ -42,7 +48,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	// 일정수정
 	ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(Category.HOSPITAL,
-			"수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", dateTime);
+			"수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", false, dateTime);
 	ScheduleModifyResponse scheduleModifyResponse = new ScheduleModifyResponse(1L, "수정 병원",
 			dateTime);
 
@@ -51,13 +57,12 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	// 일정상세조회(단건)
 	ScheduleResponse scheduleResponse = new ScheduleResponse(1L, 1L, 1L, "pet", Category.HOSPITAL,
-			"병원", "초음파 재검", 1L, "멋사동물병원", dateTime, dateTime, dateTime);
+			"병원", "초음파 재검", 1L, "멋사동물병원", false, dateTime, dateTime, dateTime);
 
 	// 개체별일정전체조회
-	ScheduleListResponse scheduleListResponse = new ScheduleListResponse(Category.HOSPITAL, "병원",
-			"초음파 재검", 1L, "멋사동물병원", dateTime);
+	Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "dueDate");
 
-	// ----------------------------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정등록")
@@ -140,7 +145,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 		}
 	}
 
-	// ----------------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정수정")
@@ -176,6 +181,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("assigneeId").description(
 													"책임자 userId 수정"),
 											fieldWithPath("place").description("장소수정"),
+											fieldWithPath("isCompleted").description("일정 완료 여부"),
 											fieldWithPath("dueDate").description("예정날짜수정")
 									),
 									responseFields(
@@ -269,7 +275,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	}
 
-	// ----------------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정삭제")
@@ -367,10 +373,10 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	}
 
-	// ----------------------------------------------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------
 
 	@Nested
-	@DisplayName("일정상세조회(단건)")
+	@DisplayName("일정조회 - 상세조회(단건)")
 	class ScheduleGet {
 
 		@Test
@@ -392,6 +398,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.body").value("초음파 재검"))
 					.andExpect(jsonPath("$.result.assigneeId").value(1L))
 					.andExpect(jsonPath("$.result.place").value("멋사동물병원"))
+					.andExpect(jsonPath("$.result.isCompleted").value(false))
 					.andExpect(jsonPath("$.result.dueDate").value("2023/01/25 10:26:00"))
 					.andExpect(jsonPath("$.result.createdAt").value("2023/01/25 10:26:00"))
 					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023/01/25 10:26:00"))
@@ -412,6 +419,8 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("result.body").description("내용"),
 											fieldWithPath("result.assigneeId").description("책임자"),
 											fieldWithPath("result.place").description("장소"),
+											fieldWithPath("result.isCompleted").description(
+													"일정 완료 여부"),
 											fieldWithPath("result.dueDate").description("예정날짜"),
 											fieldWithPath("result.createdAt").description("일정등록시간"),
 											fieldWithPath("result.lastModifiedAt").description(
@@ -454,7 +463,86 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			verify(scheduleService).get(1L, 1L, "user");
 		}
-
 	}
 
+	@Nested
+	@DisplayName("일정조회 - 개체별조회(전체)")
+	class ScheduleList {
+
+		@Test
+		void list_success() throws Exception {
+			Page<ScheduleListResponse> scheduleListResponsePage = new PageImpl<>(
+					Arrays.asList(new ScheduleListResponse(Category.HOSPITAL, "title", "body", 1L,
+							"멋사 동물병원", false, dateTime)));
+
+			given(scheduleService.list(1L, "user", pageable)).willReturn(scheduleListResponsePage);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/pets/{petId}/schedules", 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.result.content").exists())
+					.andExpect(jsonPath("$['result']['content'][0]['category']").value("HOSPITAL"))
+					.andExpect(jsonPath("$['result']['content'][0]['title']").value("title"))
+					.andExpect(jsonPath("$['result']['content'][0]['body']").value("body"))
+					.andExpect(jsonPath("$['result']['content'][0]['assigneeId']").value(1L))
+					.andExpect(jsonPath("$['result']['content'][0]['place']").value("멋사 동물병원"))
+					.andExpect(jsonPath("$['result']['content'][0]['isCompleted']").value(false))
+					.andExpect(jsonPath("$['result']['content'][0]['dueDate']").value(
+							"2023/01/25 10:26:00"))
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("petId").description("반려동물 번호")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath(
+													"['result']['content'][0].['category']").description(
+													"카테고리"),
+											fieldWithPath(
+													"['result']['content'][0].['title']").description(
+													"제목"),
+											fieldWithPath(
+													"['result']['content'][0].['body']").description(
+													"내용"),
+											fieldWithPath(
+													"['result']['content'][0].['assigneeId']").description(
+													"책임자"),
+											fieldWithPath(
+													"['result']['content'][0].['place']").description(
+													"장소"),
+											fieldWithPath(
+													"['result']['content'][0].['isCompleted']").description(
+													"일정 완료 여부"),
+											fieldWithPath(
+													"['result']['content'][0].['dueDate']").description(
+													"예정날짜"),
+											fieldWithPath("result.last").description(
+													"마지막 페이지인지 확인"),
+											fieldWithPath("result.totalPages").description(
+													"페이지로 제공되는 총 페이지 수"),
+											fieldWithPath("result.totalElements").description(
+													"모든 페이지에 존재하는 총 게시글 수"),
+											fieldWithPath("result.size").description(
+													"한 페이지에 조회할 게시글 수"),
+											fieldWithPath("result.number").description("현재 페이지 번호"),
+											fieldWithPath("result.pageable").description(
+													"pageable"),
+											fieldWithPath("result.sort.empty").description(
+													"리스트가 비어있는지 여부 확인"),
+											fieldWithPath("result.sort.unsorted").description(
+													"정렬상태"),
+											fieldWithPath("result.sort.sorted").description("정렬상태"),
+											fieldWithPath("result.first").description(
+													"첫번째 페이지인지 확인"),
+											fieldWithPath("result.numberOfElements").description(
+													"실제 데이터 개수"),
+											fieldWithPath("result.empty").description(
+													"리스트가 비어있는지 여부 확인")
+									)
+							)
+					);
+		}
+	}
 }
+

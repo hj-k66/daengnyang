@@ -22,7 +22,7 @@ public class ScheduleListResponse {
 	private String body;
 	private Long assigneeId;
 	private String place;
-//    private String isCompleted;
+	private Boolean isCompleted;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime dueDate;
@@ -35,6 +35,7 @@ public class ScheduleListResponse {
 						.body(schedule.getBody())
 						.assigneeId(schedule.getAssigneeId())
 						.place(schedule.getPlace())
+						.isCompleted(schedule.getIsCompleted())
 						.dueDate(schedule.getDueDate())
 						.build());
 

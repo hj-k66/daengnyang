@@ -76,7 +76,7 @@ public class ScheduleRestController {
 	@GetMapping(value = "/pets/{petId}/schedules")
 	public ResponseEntity<Response<Page<ScheduleListResponse>>> listSchedule(
 			@PathVariable Long petId, @AuthenticationPrincipal UserDetails user,
-			@PageableDefault(size = 20) @SortDefault(sort = "category", direction = Sort.Direction.DESC) Pageable pageable) {
+			@PageableDefault(size = 20) @SortDefault(sort = "dueDate", direction = Sort.Direction.DESC) Pageable pageable) {
 		Page<ScheduleListResponse> scheduleListResponses = scheduleService.list(petId,
 				user.getUsername(), pageable);
 		return ResponseEntity.ok().body(Response.success(scheduleListResponses));

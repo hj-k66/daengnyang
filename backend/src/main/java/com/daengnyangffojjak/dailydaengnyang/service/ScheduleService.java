@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Objects;
 import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.*;
 
 @Service
@@ -69,7 +68,7 @@ public class ScheduleService {
 		Long loginUserId = user.getId();
 		Long scheduleWriteUserId = schedule.getUser().getId();
 
-		if (!Objects.equals(scheduleWriteUserId, loginUserId)) {
+		if (!loginUserId.equals(scheduleWriteUserId)) {
 			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
 		}
 
@@ -105,12 +104,12 @@ public class ScheduleService {
 		Long loginUserId = user.getId();
 		Long scheduleWriteUserId = schedule.getUser().getId();
 
-		if (!Objects.equals(scheduleWriteUserId, loginUserId)) {
+		if (!loginUserId.equals(scheduleWriteUserId)) {
 			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
 		}
 
 		// 일정 삭제
-		scheduleRepository.delete(schedule);
+		schedule.deleteSoftly();
 
 		return ScheduleDeleteResponse.builder()
 				.msg("일정이 삭제되었습니다.")
@@ -133,20 +132,7 @@ public class ScheduleService {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-		return ScheduleResponse.builder()
-				.id(schedule.getId())
-				.userId(user.getId())
-				.petId(pet.getId())
-				.petName(pet.getName())
-				.category(schedule.getCategory())
-				.title(schedule.getTitle())
-				.body(schedule.getBody())
-				.assigneeId(schedule.getAssigneeId())
-				.place(schedule.getPlace())
-				.dueDate(schedule.getDueDate())
-				.createdAt(schedule.getCreatedAt())
-				.lastModifiedAt(schedule.getLastModifiedAt())
-				.build();
+		return ScheduleResponse.toResponse(user, pet, schedule);
 
 	}
 
@@ -159,8 +145,6 @@ public class ScheduleService {
 
 		Page<Schedule> schedules = scheduleRepository.findAllByPetId(petId, pageable);
 
-		Page<ScheduleListResponse> scheduleListResponses = ScheduleListResponse.toResponse(
-				schedules);
-		return scheduleListResponses;
+		return ScheduleListResponse.toResponse(schedules);
 	}
 }
