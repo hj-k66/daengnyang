@@ -8,14 +8,20 @@ import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
+import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,15 +34,19 @@ class ValidatorTest {
 	private final UserRepository userRepository = mock(UserRepository.class);
 	private final UserGroupRepository userGroupRepository = mock(UserGroupRepository.class);
 	private final GroupRepository groupRepository = mock(GroupRepository.class);
+	private final PetRepository petRepository = mock(PetRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
+	Pet pet = Pet.builder().id(1L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
+			.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
 
 	private Validator validator;
 
 	@BeforeEach
 	void setUp() {
-		validator = new Validator(userRepository, userGroupRepository, groupRepository);
+		validator = new Validator(userRepository, userGroupRepository, groupRepository,
+				petRepository);
 	}
 
 	@Nested
@@ -115,6 +125,32 @@ class ValidatorTest {
 			GroupException e = assertThrows(GroupException.class,
 					() -> validator.getGroupById(1L));
 			assertEquals(ErrorCode.GROUP_NOT_FOUND, e.getErrorCode());
+		}
+	}
+
+	@Nested
+	@DisplayName("펫 등록번호로 펫 반환하기")
+	class getPetById {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(petRepository.findById(1L)).willReturn(Optional.of(pet));
+
+			Pet pet = assertDoesNotThrow(
+					() -> validator.getPetById(1L));
+			assertEquals("hoon", pet.getName());
+		}
+
+		@Test
+		@DisplayName("실패")
+		void fail() {
+			given(petRepository.findById(1L)).willThrow(
+					new PetException(ErrorCode.PET_NOT_FOUND));
+
+			PetException e = assertThrows(PetException.class,
+					() -> validator.getPetById(1L));
+			assertEquals(ErrorCode.PET_NOT_FOUND, e.getErrorCode());
 		}
 	}
 

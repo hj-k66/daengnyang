@@ -83,8 +83,8 @@ class GroupRestControllerTest extends ControllerTest {
 			given(groupService.getGroupUsers(1L, "user")).willReturn(groupUserResponse);
 
 			mockMvc.perform(
-							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/users", 1L)
-									.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/users", 1L))
+					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
 					.andExpect(jsonPath("$.result.users").exists()).andDo(restDocs.document(
 							pathParameters(parameterWithName("groupId").description("그룹 번호")),
@@ -112,8 +112,8 @@ class GroupRestControllerTest extends ControllerTest {
 			given(groupService.getGroupPets(1L, "user")).willReturn(petListResponse);
 
 			mockMvc.perform(
-							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets", 1L)
-									.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets", 1L))
+					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
 					.andExpect(jsonPath("$.result.pets").exists()).andDo(restDocs.document(
 							pathParameters(parameterWithName("groupId").description("그룹 번호")),

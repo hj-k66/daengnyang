@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 public class MntMakeResponse {
 
 	private Long id;
-	private String perName;
+	private String petName;
 	private LocalDate date;
 
 	public static MntMakeResponse from(Monitoring monitoring) {
 		return MntMakeResponse.builder()
 				.id(monitoring.getId())
-				.perName(monitoring.getPet().getName())
+				.petName(monitoring.getPet().getName())
 				.date(monitoring.getDate())
 				.build();
 	}
