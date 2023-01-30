@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.domain.dto;
+package com.daengnyangffojjak.dailydaengnyang.domain.dto.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

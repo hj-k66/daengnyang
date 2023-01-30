@@ -1,6 +1,8 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.RefreshTokenDto;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
@@ -38,6 +40,12 @@ public class UserRestController {
 	public Response<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest){
 		UserLoginResponse userloginResponse = userService.login(userLoginRequest);
 		return Response.success(userloginResponse);
+	}
+
+	@PostMapping("/new-token")
+	public Response<TokenInfo> generateNewToken(@RequestBody RefreshTokenDto refreshTokenDto){
+		TokenInfo tokenInfo = userService.generateNewToken(refreshTokenDto);
+		return Response.success(tokenInfo);
 	}
 
 	@GetMapping(value = "/test")

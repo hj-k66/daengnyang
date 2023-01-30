@@ -1,15 +1,18 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.TokenInfo;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.RefreshTokenDto;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,4 +85,30 @@ public class UserService {
 
 	}
 
+	public TokenInfo generateNewToken(RefreshTokenDto refreshTokenDto) {
+		String refreshToken = refreshTokenDto.getRefreshToken();
+		//1. refresh Token 검증
+		if (!jwtTokenUtil.validateToken(refreshToken)) {
+			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN,
+					"Refresh token 정보가 유효하지 않습니다.");
+		}
+
+		//2. refreshToken에서 userName 가져오기
+		Authentication authentication = jwtTokenUtil.getAuthentication(refreshToken);
+
+		//3. Redis에서 userName이 key인 refreshToken(value)를 가져오기
+		//입력받은 refreshToken과 일치하는지 체크
+		String selectedToken = (String) redisTemplate.opsForValue().get(authentication.getName());
+		if (!Objects.equals(selectedToken, refreshToken)) {
+			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN, "해당 refresh token이 아닙니다.");
+		}
+		//4. 새로운 accessToken, refreshToken 생성
+		TokenInfo tokenInfo = jwtTokenUtil.createToken(authentication);
+
+		//5. redis에 새로운 refreshToken 저장
+		redisTemplate.opsForValue()
+				.set(authentication.getName(), tokenInfo.getRefreshToken(),
+						tokenInfo.getRefreshTokenExpireTime(), TimeUnit.MILLISECONDS);
+		return tokenInfo;
+	}
 }

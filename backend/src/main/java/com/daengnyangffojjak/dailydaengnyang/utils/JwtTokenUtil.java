@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.utils;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.TokenInfo;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import io.jsonwebtoken.Claims;
@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -91,10 +92,15 @@ public class JwtTokenUtil {
 		return extractClaims(token).get("userName", String.class);
 	}
 
-	public boolean isExpired(String token) {
-		Date expirationDate = extractClaims(token).getExpiration();
-		return expirationDate.before(new Date());
+	public boolean validateToken(String token) {
+		try {
+			extractClaims(token);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
 	}
+
 
 	private Claims extractClaims(String token) {
 		try {
@@ -119,4 +125,11 @@ public class JwtTokenUtil {
 		log.info("userName : {}", userName);
 		return userDetailsService.loadUserByUsername(userName);
 	}
+
+	public Authentication getAuthentication(String token) {
+		UserDetails userDetails = getUserDetails(token);
+		return new UsernamePasswordAuthenticationToken(userDetails, "",
+				userDetails.getAuthorities());
+	}
+
 }
