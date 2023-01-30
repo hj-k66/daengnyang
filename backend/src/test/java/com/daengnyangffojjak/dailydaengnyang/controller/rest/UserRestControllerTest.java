@@ -1,11 +1,13 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.RefreshTokenDto;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginResponse;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +35,9 @@ class UserRestControllerTest extends ControllerTest {
 
 	UserJoinRequest userJoinRequest = new UserJoinRequest("hoon", "hi", "gg@gmail.com");
 	UserLoginRequest userLoginRequest = new UserLoginRequest("hoon", "hi");
+
+	RefreshTokenDto refreshTokenDto = new RefreshTokenDto("refreshtokenejfpoen");
+	long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 10;
 
 
 	@Test
@@ -145,7 +150,6 @@ class UserRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("로그인 성공")
 		void login_success() throws Exception {
-			long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 10;
 
 			given(userService.login(userLoginRequest)).willReturn(new UserLoginResponse(
 					new TokenInfo("accesstoken", "refreshtoken", REFRESH_TOKEN_EXPIRE_TIME)));
@@ -223,5 +227,90 @@ class UserRestControllerTest extends ControllerTest {
 							ErrorCode.INVALID_PASSWORD.getMessage()));
 		}
 
+	}
+
+	@Nested
+	@DisplayName("토큰 재발급")
+	class NewToken {
+
+		@Test
+		@DisplayName("토큰 재발급 성공")
+		void newtoken_success() throws Exception {
+			given(userService.generateNewToken(refreshTokenDto)).willReturn(
+					new TokenInfo("new-accesstoken", "new-refreshtoken",
+							REFRESH_TOKEN_EXPIRE_TIME));
+			mockMvc.perform(
+							post("/api/v1/users/new-token")
+									.content(objectMapper.writeValueAsBytes(refreshTokenDto))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.result.accessToken").value("new-accesstoken"))
+					.andExpect(
+							jsonPath("$.result.refreshToken").value("new-refreshtoken"))
+					.andExpect(jsonPath("$.result.refreshTokenExpireTime").value(
+							REFRESH_TOKEN_EXPIRE_TIME))
+					.andDo(
+							restDocs.document(
+									requestFields(
+											fieldWithPath("refreshToken").description("리프레시토큰")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath(
+													"result.accessToken").description(
+													"엑세스토큰"),
+											fieldWithPath(
+													"result.refreshToken").description(
+													"리프레시토큰"),
+											fieldWithPath(
+													"result.refreshTokenExpireTime").description(
+													"리프레시토큰만료시간"))
+							)
+					);
+			verify(userService).generateNewToken(refreshTokenDto);
+
+		}
+
+		@Test
+		@DisplayName("토큰 재발급 실패 - 유효하지 않은 refreshtoken")
+		void newtoken_failed_notValid() throws Exception {
+
+			given(userService.generateNewToken(refreshTokenDto)).willThrow(
+					new SecurityCustomException(ErrorCode.INVALID_TOKEN,
+							"Refresh token 정보가 유효하지 않습니다."));
+
+			mockMvc.perform(post("/api/v1/users/new-token")
+							.with(csrf())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsBytes(refreshTokenDto)))
+					.andDo(print())
+					.andExpect(status().isUnauthorized())
+					.andExpect(jsonPath("$.resultCode").value("ERROR"))
+					.andExpect(jsonPath("$.result.errorCode").value(
+							ErrorCode.INVALID_TOKEN.name()))
+					.andExpect(jsonPath("$.result.message").value(
+							ErrorCode.INVALID_TOKEN.getMessage() + "Refresh token 정보가 유효하지 않습니다."));
+		}
+
+		@Test
+		@DisplayName("토큰 재발급 실패 - refreshToken 불일치")
+		void newtoken_failed_notequal() throws Exception {
+
+			given(userService.generateNewToken(refreshTokenDto)).willThrow(
+					new SecurityCustomException(ErrorCode.INVALID_TOKEN,
+							"해당 refresh token이 아닙니다."));
+
+			mockMvc.perform(post("/api/v1/users/new-token")
+							.with(csrf())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsBytes(refreshTokenDto)))
+					.andDo(print())
+					.andExpect(status().isUnauthorized())
+					.andExpect(jsonPath("$.resultCode").value("ERROR"))
+					.andExpect(jsonPath("$.result.errorCode").value(
+							ErrorCode.INVALID_TOKEN.name()))
+					.andExpect(jsonPath("$.result.message").value(
+							ErrorCode.INVALID_TOKEN.getMessage() + "해당 refresh token이 아닙니다."));
+		}
 	}
 }
