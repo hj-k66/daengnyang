@@ -7,3 +7,12 @@ operation::schedule-create/create_success[snippets='http-request,path-parameters
 [[Schedule-수정하기]]
 === Schedule 일정 수정하기
 operation::schedule-modify/modify_success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+[[Schedule-삭제하기]]
+=== Schedule 일정 삭제하기
+operation::schedule-delete/delete_success[snippets='http-request,path-parameters,http-response,response-fields']
+[[Schedule-상세조회하기]]
+=== Schedule 일정 상세 조회하기
+operation::schedule-get/get_success[snippets='http-request,path-parameters,http-response,response-fields']
+[[Schedule-개체별전체조회하기]]
+=== Schedule 일정 개체별 전체 조회하기
+operation::schedule-list/list_success[snippets='http-request,path-parameters,http-response,response-fields']

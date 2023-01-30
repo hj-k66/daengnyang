@@ -7,9 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class ScheduleCreateResponse {
+public class ScheduleDeleteResponse {
 
-	private String message;
-	private Long id;
+	private String msg;
 
 }
