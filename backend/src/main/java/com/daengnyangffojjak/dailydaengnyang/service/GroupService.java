@@ -93,7 +93,7 @@ public class GroupService {
 				.filter(userGroup -> username.equals(userGroup.getUser().getUsername()))
 				.findFirst().orElseThrow(() -> new UserException(ErrorCode.INVALID_PERMISSION));
 
-		if (!username.equals(getGroupOwner(userGroupList).getUsername())) {        //그룹장이 아닌 경우 탈퇴
+		if (!username.equals(group.getUser().getUsername())) {        //그룹장이 아닌 경우 탈퇴
 			loginUserGroup.deleteSoftly();
 			return new MessageResponse("그룹에서 나왔습니다.");
 		}
@@ -119,8 +119,7 @@ public class GroupService {
 						() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));     //로그인한 유저 확인
 		List<UserGroup> userGroupList = userGroupRepository.findAllByGroup(
 				group);        //그룹 멤버 리스트
-		if (!username.equals(
-				getGroupOwner(userGroupList).getUsername())) {                //그룹장이 아니면 예외발생
+		if (!user.getId().equals(group.getUser().getId())) {                //그룹장이 아니면 예외발생
 			throw new UserException(ErrorCode.INVALID_PERMISSION);
 		}
 		if (user.getId().equals(userId)) {        //그룹장을 내보내는 경우 예외발생
@@ -159,10 +158,4 @@ public class GroupService {
 		}
 		return userGroupList;
 	}
-
-	private User getGroupOwner(List<UserGroup> userGroupList) {        //그룹장을 반환하는 메서드
-		return userGroupList.stream().filter(UserGroup::isOwner).findFirst().map(UserGroup::getUser)
-				.orElseThrow(() -> new UserException(ErrorCode.GROUP_OWNER_NOT_FOUND));
-	}
-
 }
