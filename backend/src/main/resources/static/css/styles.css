@@ -1,0 +1,256 @@
+.td-box {
+  width: 150px;
+  height: 160px;
+}
+
+.pet-profile {
+  width: 100%;
+  height: 100%;
+  border-radius: 70%;
+}
+
+.tg {
+  border-collapse: collapse;
+  border-color: #ccc;
+  border-spacing: 0;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.tg td {
+  background-color: #fff;
+  border-color: #ccc;
+  border-style: solid;
+  border-width: 0px;
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+  padding: 10px 5px;
+  word-break: normal;
+}
+
+.tg th {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+  border-style: solid;
+  border-width: 0px;
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  overflow: hidden;
+  padding: 10px 5px;
+  word-break: normal;
+}
+
+.tg .tg-9wq8 {
+  border-color: inherit;
+  text-align: center;
+  vertical-align: middle
+}
+
+.tg .tg-la1s {
+  background-color: #ffffff;
+  border-color: inherit;
+  font-size: 15px;
+  text-align: center;
+  vertical-align: bottom
+}
+
+.tg .tg-y67q {
+  background-color: #ffffff;
+  border-color: inherit;
+  font-size: 15px;
+  text-align: center;
+  vertical-align: middle
+}
+
+.tg .tg-m684 {
+  background-color: #ffffff;
+  border-color: inherit;
+  font-size: 15px;
+  text-align: left;
+  vertical-align: middle
+}
+
+.tg .tg-4dm3 {
+  border-color: inherit;
+  font-size: 15px;
+  text-align: left;
+  vertical-align: middle
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn {
+  font-weight: bold;
+}
+
+.blank {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.nav-btn {
+  background-color: #E1FFEE;
+  height: 40px;
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.col-md-6 {
+  margin-bottom: 10px;
+}
+
+.nav-btn:hover {
+  background-color: #E1FFEE;
+  height: 40px;
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+  animation: jelly 0.5s;
+}
+
+.nav-btn:active:focus {
+  background-color: #E1FFEE;
+  height: 40px;
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+  animation: jelly 0.5s;
+}
+
+.body-btn {
+  background-color: yellowgreen;
+  height: 60px;
+  width: 130px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 15px
+}
+
+.body-btn:hover {
+  background-color: darkgray;
+  height: 60px;
+  width: 130px;
+  margin-left: 10px;
+  margin-right: 10px;
+  animation: jelly 0.5s;
+  margin-top: 15px
+}
+
+.body-btn:active:focus {
+  background-color: yellowgreen;
+  height: 50px;
+  width: 130px;
+  margin-left: 10px;
+  margin-right: 10px;
+  animation: jelly 0.5s;
+}
+
+.body-btn-del {
+  background-color: palevioletred;
+
+  height: 40px;
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.body-btn-del:hover {
+  background-color: palevioletred;
+  height: 40px;
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+  animation: jelly 0.5s;
+}
+
+.body-btn-del:active:focus {
+  background-color: palevioletred;
+  height: 40px;
+  width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+  animation: jelly 0.5s;
+}
+
+.list-table {
+  width: 100%;
+}
+
+.page-btn {
+  margin-right: 3px;
+  margin-left: 3px;
+  display: inline;
+  background-color: #A5F1E9;
+}
+
+.course-page-btn {
+  margin-right: 3px;
+  margin-left: 3px;
+  margin-bottom: 3px;
+  display: inline;
+  background-color: #A5C1F1FF;
+}
+
+.page-btn:hover {
+  margin-right: 3px;
+  margin-left: 3px;
+  display: inline;
+  background-color: #A5F1E9;
+  animation: jelly 0.5s;
+}
+
+.page-btn:active:focus {
+  margin-right: 3px;
+  margin-left: 3px;
+  display: inline;
+  background-color: #A5F1E9;
+}
+
+.page-btn-now {
+  margin-right: 3px;
+  margin-left: 3px;
+  display: inline;
+  background-color: #7FBCD2;
+}
+
+.page-btn-now:hover {
+  margin-right: 3px;
+  margin-left: 3px;
+  display: inline;
+  background-color: #7FBCD2;
+  animation: jelly 0.5s;
+}
+
+.page-btn-now:active:focus {
+  margin-right: 3px;
+  margin-left: 3px;
+  display: inline;
+  background-color: #7FBCD2;
+}
+
+@keyframes jelly {
+  25% {
+    transform: scale(0.9, 1.1);
+  }
+
+  50% {
+    transform: scale(1.1, 0.9);
+  }
+
+  75% {
+    transform: scale(0.95, 1.05);
+  }
+}
+
+.error-class {
+  color: red;
+  border-color: red;
+}
