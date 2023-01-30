@@ -1,6 +1,8 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupInviteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,5 +54,19 @@ public class GroupRestController {
 		return Response.success(groupPetResponse);
 	}
 
+	@PostMapping(value = "/{groupId}/invite")
+	public Response<MessageResponse> inviteUser(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long groupId, @RequestBody GroupInviteRequest groupInviteRequest) {
+		MessageResponse messageResponse = groupService.inviteMember(groupId,
+				user.getUsername(), groupInviteRequest);
+		return Response.success(messageResponse);
+	}
+
+	@DeleteMapping(value = "/{groupId}/users")
+	public Response<MessageResponse> leaveGroup(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long groupId) {
+		MessageResponse messageResponse = groupService.leaveGroup(groupId, user.getUsername());
+		return Response.success(messageResponse);
+	}
 }
 
