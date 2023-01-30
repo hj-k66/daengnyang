@@ -1,15 +1,13 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
-import java.util.List;
 import lombok.*;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Where;
-import org.springframework.data.domain.Page;
 
 @Entity
 @Getter
@@ -17,6 +15,7 @@ import org.springframework.data.domain.Page;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicInsert
 @Where(clause = "deleted_at is NULL")
 public class Schedule extends BaseEntity {
 
@@ -39,7 +38,7 @@ public class Schedule extends BaseEntity {
 	private String body;
 	private Long assigneeId;        //책임자 user-id
 	private String place;           //추후 지도 연동 시 좌표로 변경 가능
-	@ColumnDefault("false")
+	@ColumnDefault("'false'")
 	private Boolean isCompleted;    //일정 수행 여부
 	private LocalDateTime dueDate;      //예정일
 
@@ -50,6 +49,7 @@ public class Schedule extends BaseEntity {
 		this.assigneeId = scheduleModifyRequest.getAssigneeId();
 		this.place = scheduleModifyRequest.getPlace();
 		this.dueDate = scheduleModifyRequest.getDueDate();
+		this.isCompleted = scheduleModifyRequest.getIsCompleted();
 
 	}
 
