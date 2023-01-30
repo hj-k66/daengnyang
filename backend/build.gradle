@@ -25,7 +25,8 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.14.1' // LocalDateTime 직렬화 or 역직렬화를 위해 종속성 추가
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.14.1'
+    // LocalDateTime 직렬화 or 역직렬화를 위해 종속성 추가
     compileOnly 'org.projectlombok:lombok:1.18.24'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -72,8 +73,8 @@ asciidoctor { // asciidoctor 작업 구성
 
     // source가 없으면 .adoc파일을 전부 html로 만들어버림
     // source 지정시 특정 adoc만 HTML로 만든다.
-    sources{
-        include("**/index.adoc","**/common/*.adoc")
+    sources {
+        include("**/index.adoc", "**/common/*.adoc")
     }
 
     // 특정 .adoc에 다른 adoc 파일을 가져와서(include) 사용하고 싶을 경우 경로를 baseDir로 맞춰주는 설정입니다.

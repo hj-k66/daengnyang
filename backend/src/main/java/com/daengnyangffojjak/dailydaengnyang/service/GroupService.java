@@ -93,7 +93,7 @@ public class GroupService {
 				.filter(userGroup -> username.equals(userGroup.getUser().getUsername()))
 				.findFirst().orElseThrow(() -> new UserException(ErrorCode.INVALID_PERMISSION));
 
-		if (!username.equals(getGroupOwner(userGroupList).getUsername())) {        //그룹장이 아닌 경우 탈퇴
+		if (!username.equals(group.getUser().getUsername())) {        //그룹장이 아닌 경우 탈퇴
 			loginUserGroup.deleteSoftly();
 			return new MessageResponse("그룹에서 나왔습니다.");
 		}
@@ -109,6 +109,32 @@ public class GroupService {
 		loginUserGroup.deleteSoftly();
 		group.deleteSoftly();
 		return new MessageResponse("그룹이 삭제되었습니다.");
+	}
+
+	@Transactional
+	public MessageResponse deleteMember(Long groupId, String username, Long userId) {
+		Group group = getGroupById(groupId);
+		User user = userRepository.findByUserName(username)
+				.orElseThrow(
+						() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));     //로그인한 유저 확인
+		List<UserGroup> userGroupList = userGroupRepository.findAllByGroup(
+				group);        //그룹 멤버 리스트
+		if (!user.getId().equals(group.getUser().getId())) {                //그룹장이 아니면 예외발생
+			throw new UserException(ErrorCode.INVALID_PERMISSION);
+		}
+		if (user.getId().equals(userId)) {        //그룹장을 내보내는 경우 예외발생
+			throw new GroupException(ErrorCode.INVALID_REQUEST, "그룹장을 내보낼 수 없습니다.");
+		}
+		User userToDelete = userRepository.findById(userId)
+				.orElseThrow(() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));  //퇴출할 유저 확인
+		UserGroup memberToDelete = userGroupList.stream()
+				.filter(userGroup -> userToDelete.getId().equals(userGroup.getUser().getId()))
+				.findFirst()
+				.orElseThrow(() -> new GroupException(
+						ErrorCode.GROUP_USER_NOT_FOUND)); //퇴출할 유저가 그룹 멤버가 아니면 예외발생
+
+		memberToDelete.deleteSoftly();
+		return new MessageResponse("그룹에서 내보내기를 성공하였습니다.");
 	}
 
 	private Group getGroupById(Long groupId) {    //그룹 아이디로 그룹 조회, 없으면 예외 발생
@@ -132,10 +158,4 @@ public class GroupService {
 		}
 		return userGroupList;
 	}
-
-	private User getGroupOwner(List<UserGroup> userGroupList) {        //그룹장을 반환하는 메서드
-		return userGroupList.stream().filter(UserGroup::isOwner).findFirst().map(UserGroup::getUser)
-				.orElseThrow(() -> new UserException(ErrorCode.GROUP_OWNER_NOT_FOUND));
-	}
-
 }

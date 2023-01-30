@@ -46,8 +46,7 @@ class GroupServiceTest {
 			.isOwner(true).build();
 	List<UserGroup> userGroupList = List.of(
 			new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true),
-			new UserGroup(2L, User.builder().userName("user1").build(), group, "dad", false)
-	);
+			new UserGroup(2L, User.builder().userName("user1").build(), group, "dad", false));
 	private GroupService groupService;
 
 	@BeforeEach
@@ -68,8 +67,8 @@ class GroupServiceTest {
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.save(request.toEntity(user))).willReturn(group);
 			given(userGroupRepository.save(
-					UserGroup.from(user, group, request.getRoleInGroup(), true)))
-					.willReturn(userGroup);
+					UserGroup.from(user, group, request.getRoleInGroup(), true))).willReturn(
+					userGroup);
 
 			GroupMakeResponse response = assertDoesNotThrow(
 					() -> groupService.create(request, "user"));
@@ -104,8 +103,8 @@ class GroupServiceTest {
 		void fail_그룹내유저아님() {
 			List<UserGroup> userNOTGroupList = List.of(
 					new UserGroup(1L, User.builder().userName("user2").build(), group, "mom", true),
-					new UserGroup(1L, User.builder().userName("user1").build(), group, "mom", false)
-			);
+					new UserGroup(1L, User.builder().userName("user1").build(), group, "mom",
+							false));
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userNOTGroupList);
@@ -124,14 +123,12 @@ class GroupServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			List<Pet> pets = List.of(
-					Pet.builder().id(1L).name("hoon").species(Species.CAT)
+			List<Pet> pets = List.of(Pet.builder().id(1L).name("hoon").species(Species.CAT)
 							.birthday(LocalDate.of(2018, 3, 1)).build(),
 					Pet.builder().id(2L).name("hoon2").species(Species.CAT)
 							.birthday(LocalDate.of(2022, 3, 1)).build(),
 					Pet.builder().id(3L).name("hoon3").species(Species.CAT)
-							.birthday(LocalDate.of(2023, 1, 1)).build()
-			);
+							.birthday(LocalDate.of(2023, 1, 1)).build());
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(petRepository.findAllByGroupId(group.getId())).willReturn(pets);
@@ -154,19 +151,17 @@ class GroupServiceTest {
 		void success() {
 			GroupInviteRequest request = new GroupInviteRequest("gmail@gmail.com", "teacher");
 			User invited = User.builder().id(3L).userName("초대받음").password("password")
-					.email(request.getEmail())
-					.role(UserRole.ROLE_USER).build();
+					.email(request.getEmail()).role(UserRole.ROLE_USER).build();
 			UserGroup invitedMem = UserGroup.builder().id(3L).user(invited).group(group)
-					.roleInGroup("dad")
-					.isOwner(false).build();
+					.roleInGroup("dad").isOwner(false).build();
 
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
 			given(userRepository.findByEmail("gmail@gmail.com")).willReturn(Optional.of(invited));
 			given(userGroupRepository.save(
-					UserGroup.from(invited, group, request.getRoleInGroup(), false)))
-					.willReturn(invitedMem);
+					UserGroup.from(invited, group, request.getRoleInGroup(), false))).willReturn(
+					invitedMem);
 
 			MessageResponse response = assertDoesNotThrow(
 					() -> groupService.inviteMember(1L, "user", request));
@@ -179,12 +174,11 @@ class GroupServiceTest {
 		void fail_이미그룹멤버() {
 			GroupInviteRequest request = new GroupInviteRequest("gmail@gmail.com", "아빠");
 			User invited = User.builder().id(3L).userName("초대받음").password("password")
-					.email(request.getEmail())
-					.role(UserRole.ROLE_USER).build();
+					.email(request.getEmail()).role(UserRole.ROLE_USER).build();
 			List<UserGroup> userGroupList = List.of(
 					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true),
-					new UserGroup(2L, User.builder().userName("초대받음").build(), group, "dad", false)
-			);
+					new UserGroup(2L, User.builder().userName("초대받음").build(), group, "dad",
+							false));
 
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
@@ -202,12 +196,11 @@ class GroupServiceTest {
 		void fail_이미역할존재() {
 			GroupInviteRequest request = new GroupInviteRequest("gmail@gmail.com", "dad");
 			User invited = User.builder().id(3L).userName("초대받음").password("password")
-					.email(request.getEmail())
-					.role(UserRole.ROLE_USER).build();
+					.email(request.getEmail()).role(UserRole.ROLE_USER).build();
 			List<UserGroup> userGroupList = List.of(
 					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true),
-					new UserGroup(2L, User.builder().userName("user2").build(), group, "dad", false)
-			);
+					new UserGroup(2L, User.builder().userName("user2").build(), group, "dad",
+							false));
 
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
@@ -230,8 +223,8 @@ class GroupServiceTest {
 		void success_not_owner() {
 			List<UserGroup> userGroupList = List.of(
 					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", false),
-					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad", true)
-			);
+					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad",
+							true));
 
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
@@ -247,8 +240,7 @@ class GroupServiceTest {
 		@DisplayName("성공 - 그룹장인 경우")
 		void success_owner() {
 			List<UserGroup> userGroupList = List.of(
-					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true)
-			);
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
@@ -264,8 +256,8 @@ class GroupServiceTest {
 		void fail_그룹원이있는경우() {
 			List<UserGroup> userGroupList = List.of(
 					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true),
-					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad", false)
-			);
+					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad",
+							false));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
@@ -281,8 +273,7 @@ class GroupServiceTest {
 		@DisplayName("그룹장인데 반려동물이 있는 경우")
 		void fail_그룹반려동물이이있는경우() {
 			List<UserGroup> userGroupList = List.of(
-					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true)
-			);
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true));
 			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
@@ -295,5 +286,86 @@ class GroupServiceTest {
 			assertEquals("그룹에 반려동물이 존재하여 나갈 수 없습니다.", e.getMessage());
 		}
 
+	}
+
+	@Nested
+	@DisplayName("그룹에서 내보내기")
+	class DeleteGroupMember {
+
+		User userToDelete = User.builder().id(2L).userName("user1").build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, user, group, "mom", true),
+					new UserGroup(2L, userToDelete, group, "dad", false));
+
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(userRepository.findById(2L)).willReturn(Optional.of(userToDelete));
+
+			MessageResponse response = assertDoesNotThrow(
+					() -> groupService.deleteMember(1L, "user", 2L));
+
+			assertEquals("그룹에서 내보내기를 성공하였습니다.", response.getMsg());
+		}
+
+		@Test
+		@DisplayName("로그인한 유저가 그룹장이 아닌경우")
+		void fail_그룹장아님() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, user, group, "mom", false),
+					new UserGroup(2L, userToDelete, group, "dad", true));
+
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(userRepository.findById(2L)).willReturn(Optional.of(userToDelete));
+
+			UserException e = assertThrows(UserException.class,
+					() -> groupService.deleteMember(1L, "user", 2L));
+
+			assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
+		}
+
+		@Test
+		@DisplayName("그룹장을 내보내는 경우 예외발생")
+		void fail_그룹장을_내보내는_경우() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, user, group, "mom", true),
+					new UserGroup(2L, userToDelete, group, "dad", false));
+
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(userRepository.findById(2L)).willReturn(Optional.of(userToDelete));
+
+			GroupException e = assertThrows(GroupException.class,
+					() -> groupService.deleteMember(1L, "user", 1L));
+
+			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
+		}
+
+		@Test
+		@DisplayName("그룹장에 유저가 없는 경우")
+		void fail_내보내는유저가_그룹에없음() {
+			User notUserToDelete = User.builder().id(3L).userName("user2").build();
+
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, user, group, "mom", true),
+					new UserGroup(2L, notUserToDelete, group, "dad", false));
+
+			given(groupRepository.findById(1L)).willReturn(Optional.of(group));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(userRepository.findById(2L)).willReturn(Optional.of(userToDelete));
+
+			GroupException e = assertThrows(GroupException.class,
+					() -> groupService.deleteMember(1L, "user", 2L));
+
+			assertEquals(ErrorCode.GROUP_USER_NOT_FOUND, e.getErrorCode());
+		}
 	}
 }
