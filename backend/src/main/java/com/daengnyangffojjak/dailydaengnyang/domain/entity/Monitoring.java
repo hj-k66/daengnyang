@@ -9,11 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-public class Monitoring {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Monitoring extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +39,8 @@ public class Monitoring {
 	private String customSymptomName;        //custom symptom 이름
 
 	private int feedToGram;        //식이량 (g)
-	private int walkCnt;         //산책 - 강아지
-	private int playCnt;         //놀이 - 고양이
+	private int walkCnt;         //산책횟수 - 강아지
+	private int playCnt;         //놀이횟수 - 고양이
 	private int urination;        //배뇨 횟수
 	private int defecation;       //배변 횟수
 	private int respiratoryRate;  //호흡수

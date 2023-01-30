@@ -1,12 +1,15 @@
 package com.daengnyangffojjak.dailydaengnyang.utils;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
+import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import java.util.List;
@@ -20,6 +23,7 @@ public class Validator {
 	private final UserRepository userRepository;
 	private final UserGroupRepository userGroupRepository;
 	private final GroupRepository groupRepository;
+	private final PetRepository petRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -34,6 +38,11 @@ public class Validator {
 	public Group getGroupById(Long groupId) {    //그룹 아이디로 그룹 조회, 없으면 예외 발생
 		return groupRepository.findById(groupId)
 				.orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
+	}
+
+	public Pet getPetById(Long petId) {
+		return petRepository.findById(petId)
+				.orElseThrow(() -> new PetException(ErrorCode.PET_NOT_FOUND));
 	}
 
 	/**
