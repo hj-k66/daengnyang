@@ -20,32 +20,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    private final JwtTokenUtil jwtTokenUtil;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .httpBasic().disable()
-                .csrf().disable()
-                //springboot 3.0부터 security HTTP 요청 권한 승인 로직 변경
-                //Instead of using authorizeRequests, use authorizeHttpRequests
-                .cors().and().authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
-                        .requestMatchers("/docs/index.html").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE,"/api/v1/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT,"/api/v1/**").authenticated()
-                )
-                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHadler())
-                .and()
-                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
-                .and()
-                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
-                .addFilterBefore(new JwtExceptionFilter(), JwtTokenFilter.class)
-                .build();
-    }
+	private final JwtTokenUtil jwtTokenUtil;
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		return httpSecurity
+				.httpBasic().disable()
+				.csrf().disable()
+				//springboot 3.0부터 security HTTP 요청 권한 승인 로직 변경
+				//Instead of using authorizeRequests, use authorizeHttpRequests
+				.cors().and().authorizeHttpRequests(authorize -> authorize
+						.requestMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
+						.requestMatchers("/docs/index.html").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
+						.requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
+						.requestMatchers(HttpMethod.PUT, "/api/v1/**").authenticated()
+				)
+				.exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHadler())
+				.and()
+				.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+				.and()
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
+				.and()
+				.addFilterBefore(new JwtTokenFilter(jwtTokenUtil),
+						UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
+				.addFilterBefore(new JwtExceptionFilter(), JwtTokenFilter.class)
+				.build();
+	}
 }
 

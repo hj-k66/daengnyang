@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/v1/groups")
+@RequestMapping("/groups")
 @RequiredArgsConstructor
 public class GroupUiController {
 
-    @PostMapping
-    public String groupCreate() {
-        return "users/join_group";
-    }
+	@PostMapping
+	public String groupCreate() {
+		return "users/join_group";
+	}
 
 }

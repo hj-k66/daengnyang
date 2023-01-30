@@ -4,7 +4,7 @@
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 
-
+✔ 배포주소 : http://ec2-52-79-250-80.ap-northeast-2.compute.amazonaws.com:8080
 
 ## 설치 방법
 
