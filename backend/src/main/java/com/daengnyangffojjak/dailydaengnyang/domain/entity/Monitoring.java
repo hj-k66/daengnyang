@@ -28,7 +28,7 @@ public class Monitoring extends BaseEntity {
 	@JoinColumn(name = "pet_id")
 	private Pet pet;
 	@Column(nullable = false)
-	private LocalDate date;          //오늘 이후 날짜
+	private LocalDate date;          //오늘 이전 날짜
 
 	private double weight;        //몸무게
 

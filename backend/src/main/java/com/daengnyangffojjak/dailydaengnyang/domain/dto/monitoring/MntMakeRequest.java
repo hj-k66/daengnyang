@@ -22,7 +22,7 @@ public class MntMakeRequest {
 	@NotNull(message = "날짜를 입력하세요.")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	@PastOrPresent
-	private LocalDate date;          //오늘 이후 날짜
+	private LocalDate date;          //오늘 이전 날짜
 
 	private double weight;        //몸무게
 
