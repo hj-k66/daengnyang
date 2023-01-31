@@ -17,6 +17,7 @@ import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -31,31 +32,30 @@ public class GroupService {
 	private final UserGroupRepository userGroupRepository;
 	private final UserRepository userRepository;
 	private final PetRepository petRepository;
+	private final Validator validator;
 
 	@Transactional      //그룹 생성
 	public GroupMakeResponse create(GroupMakeRequest groupMakeRequest, String username) {
-		User user = userRepository.findByUserName(username)
-				.orElseThrow(() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));     //유저 확인
+		User user = validator.getUserByUserName(username);     //유저 확인
 
 		Group savedGroup = groupRepository.save(groupMakeRequest.toEntity(user));        //그룹 저장
 		UserGroup savedUserGroup = userGroupRepository.save(
-				UserGroup.from(user, savedGroup, groupMakeRequest.getRoleInGroup(),
-						true));   //그룹 멤버로 저장
+				UserGroup.from(user, savedGroup, groupMakeRequest.getRoleInGroup()));   //그룹 멤버로 저장
 
 		return GroupMakeResponse.from(savedGroup);
 	}
 
 	@Transactional      //그룹 내 유저 조회
 	public GroupUserListResponse getGroupUsers(Long groupId, String username) {
-		Group group = getGroupById(groupId);
-		List<UserGroup> userGroupList = getUserGroupListWithUsername(group, username);
+		Group group = validator.getGroupById(groupId);
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group, username);
 		return GroupUserListResponse.from(userGroupList);
 	}
 
 	@Transactional      //그룹 내 반려동물 조회
 	public GroupPetListResponse getGroupPets(Long groupId, String username) {
-		Group group = getGroupById(groupId);
-		List<UserGroup> userGroupList = getUserGroupListWithUsername(group,
+		Group group = validator.getGroupById(groupId);
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group,
 				username); //user가 그룹 내 유저인지 체크
 		List<Pet> pets = petRepository.findAllByGroupId(groupId);
 		return GroupPetListResponse.from(pets);
@@ -64,8 +64,8 @@ public class GroupService {
 	@Transactional        //그룹에 유저 초대
 	public MessageResponse inviteMember(Long groupId, String username,
 			GroupInviteRequest groupInviteRequest) {
-		Group group = getGroupById(groupId);
-		List<UserGroup> userGroupList = getUserGroupListWithUsername(group, username);
+		Group group = validator.getGroupById(groupId);
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group, username);
 
 		User invited = userRepository.findByEmail(
 						groupInviteRequest.getEmail())        //email로 유저 조회
@@ -80,15 +80,14 @@ public class GroupService {
 			throw new GroupException(ErrorCode.INVALID_REQUEST, "이미 존재하는 회원 또는 역할입니다.");
 		}
 		UserGroup savedUserGroup = userGroupRepository.save(    //그룹에 추가
-				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup(),
-						false));   //그룹 멤버로 저장
+				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup()));   //그룹 멤버로 저장
 		return new MessageResponse(invited.getUsername() + "이(가) 그룹에 등록되었습니다.");
 	}
 
 	@Transactional
 	public MessageResponse leaveGroup(Long groupId, String username) {
-		Group group = getGroupById(groupId);
-		List<UserGroup> userGroupList = getUserGroupListWithUsername(group, username);
+		Group group = validator.getGroupById(groupId);
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group, username);
 		UserGroup loginUserGroup = userGroupList.stream()
 				.filter(userGroup -> username.equals(userGroup.getUser().getUsername()))
 				.findFirst().orElseThrow(() -> new UserException(ErrorCode.INVALID_PERMISSION));
@@ -113,20 +112,16 @@ public class GroupService {
 
 	@Transactional
 	public MessageResponse deleteMember(Long groupId, String username, Long userId) {
-		Group group = getGroupById(groupId);
-		User user = userRepository.findByUserName(username)
-				.orElseThrow(
-						() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));     //로그인한 유저 확인
-		List<UserGroup> userGroupList = userGroupRepository.findAllByGroup(
-				group);        //그룹 멤버 리스트
-		if (!user.getId().equals(group.getUser().getId())) {                //그룹장이 아니면 예외발생
+		Group group = validator.getGroupById(groupId);
+		User user = validator.getUserByUserName(username);    //로그인한 유저 확인
+		List<UserGroup> userGroupList = userGroupRepository.findAllByGroup(group);
+		if (!user.getId().equals(group.getUser().getId())) {    //그룹장이 아니면 예외발생
 			throw new UserException(ErrorCode.INVALID_PERMISSION);
 		}
 		if (user.getId().equals(userId)) {        //그룹장을 내보내는 경우 예외발생
 			throw new GroupException(ErrorCode.INVALID_REQUEST, "그룹장을 내보낼 수 없습니다.");
 		}
-		User userToDelete = userRepository.findById(userId)
-				.orElseThrow(() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));  //퇴출할 유저 확인
+		User userToDelete = validator.getUserById(userId);  //퇴출할 유저 확인
 		UserGroup memberToDelete = userGroupList.stream()
 				.filter(userGroup -> userToDelete.getId().equals(userGroup.getUser().getId()))
 				.findFirst()
@@ -135,27 +130,5 @@ public class GroupService {
 
 		memberToDelete.deleteSoftly();
 		return new MessageResponse("그룹에서 내보내기를 성공하였습니다.");
-	}
-
-	private Group getGroupById(Long groupId) {    //그룹 아이디로 그룹 조회, 없으면 예외 발생
-		return groupRepository.findById(groupId)
-				.orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
-	}
-
-	/**
-	 * 추후 admin 계정도 가능하게 수정 예정
-	 **/
-	private List<UserGroup> getUserGroupListWithUsername(Group group,
-			String username) { //유저가 그룹 내 멤버이면 그룹유저리스트 반환
-		User user = userRepository.findByUserName(username)
-				.orElseThrow(() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));     //유저 확인
-		//그룹으로 그룹 내 멤버 불러오기
-		List<UserGroup> userGroupList = userGroupRepository.findAllByGroup(group);
-		//로그인한 유저가 그룹 내 유저인지 확인 -> 그룹 내 유저가 아니면 예외 발생
-		if (userGroupList.stream()
-				.noneMatch(userGroup -> username.equals(userGroup.getUser().getUsername()))) {
-			throw new UserException(ErrorCode.INVALID_PERMISSION);
-		}
-		return userGroupList;
 	}
 }

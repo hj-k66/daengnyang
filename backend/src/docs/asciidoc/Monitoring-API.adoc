@@ -1,0 +1,7 @@
+[[Monitoring-API]]
+== Monitoring API
+
+[[Monitoring-작성]]
+=== 모니터링 작성
+
+operation::monitoring-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
