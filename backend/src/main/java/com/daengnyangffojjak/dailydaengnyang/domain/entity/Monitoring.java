@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -49,4 +50,27 @@ public class Monitoring extends BaseEntity {
 
 	private String notes;    //기타 특이사항
 
+
+	public void modify(MntWriteRequest mntWriteRequest) {
+		this.date = mntWriteRequest.getDate();
+
+		this.weight = mntWriteRequest.getWeight();
+
+		this.vomit = mntWriteRequest.isVomit();
+		this.amPill = mntWriteRequest.isAmPill();
+		this.pmPill = mntWriteRequest.isPmPill();
+		this.customSymptom = mntWriteRequest.isCustomSymptom();
+		this.customSymptomName = mntWriteRequest.getCustomSymptomName();
+
+		this.feedToGram = mntWriteRequest.getFeedToGram();
+		this.walkCnt = mntWriteRequest.getWalkCnt();
+		this.playCnt = mntWriteRequest.getPlayCnt();
+		this.urination = mntWriteRequest.getUrination();
+		this.defecation = mntWriteRequest.getDefecation();
+		this.respiratoryRate = mntWriteRequest.getRespiratoryRate();
+		this.customInt = mntWriteRequest.getCustomInt();
+		this.customIntName = mntWriteRequest.getCustomIntName();
+
+		this.notes = mntWriteRequest.getNotes();
+	}
 }

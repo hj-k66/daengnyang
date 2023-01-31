@@ -12,8 +12,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMakeRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMakeResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.MonitoringService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
@@ -34,7 +34,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 	@DisplayName("모니터링 등록")
 	class MonitoringCreate {
 
-		MntMakeRequest request = MntMakeRequest.builder()
+		MntWriteRequest request = MntWriteRequest.builder()
 				.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
 
@@ -42,7 +42,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 		@DisplayName("성공")
 		void success() throws Exception {
 			given(monitoringService.create(1L, request, "user"))
-					.willReturn(new MntMakeResponse(1L, "hoon", LocalDate.of(2023, 1, 30)));
+					.willReturn(new MntWriteResponse(1L, "hoon", LocalDate.of(2023, 1, 30)));
 
 			mockMvc.perform(
 							post("/api/v1/pets/{petId}/monitorings", 1L)

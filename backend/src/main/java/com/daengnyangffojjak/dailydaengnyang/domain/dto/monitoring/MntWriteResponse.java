@@ -11,14 +11,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MntMakeResponse {
+public class MntWriteResponse {
 
 	private Long id;
 	private String petName;
 	private LocalDate date;
 
-	public static MntMakeResponse from(Monitoring monitoring) {
-		return MntMakeResponse.builder()
+	public static MntWriteResponse from(Monitoring monitoring) {
+		return MntWriteResponse.builder()
 				.id(monitoring.getId())
 				.petName(monitoring.getPet().getName())
 				.date(monitoring.getDate())

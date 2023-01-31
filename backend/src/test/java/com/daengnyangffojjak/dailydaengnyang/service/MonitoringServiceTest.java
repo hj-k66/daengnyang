@@ -6,8 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMakeRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMakeResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -38,7 +38,7 @@ class MonitoringServiceTest {
 	@DisplayName("모니터링 등록")
 	class CreateMonitoring {
 
-		MntMakeRequest request = MntMakeRequest.builder()
+		MntWriteRequest request = MntWriteRequest.builder()
 				.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
 		Monitoring saved = Monitoring.builder()
@@ -52,7 +52,7 @@ class MonitoringServiceTest {
 			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
 			given(monitoringRepository.save(request.toEntity(pet))).willReturn(saved);
 
-			MntMakeResponse response = assertDoesNotThrow(
+			MntWriteResponse response = assertDoesNotThrow(
 					() -> monitoringService.create(1L, request, "user"));
 			assertEquals(1L, response.getId());
 			assertEquals("hoon", response.getPetName());
