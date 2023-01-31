@@ -33,14 +33,13 @@ public class UserGroup extends BaseEntity {
 	private Group group;
 	@Column(nullable = false)
 	private String roleInGroup;
-	private boolean isOwner;
+//	private boolean isOwner;
 
-	public static UserGroup from(User user, Group group, String roleInGroup, boolean isOwner) {
+	public static UserGroup from(User user, Group group, String roleInGroup) {
 		return UserGroup.builder()
 				.user(user)
 				.group(group)
 				.roleInGroup(roleInGroup)
-				.isOwner(isOwner)
 				.build();
 	}
 }
