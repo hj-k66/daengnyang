@@ -276,8 +276,7 @@ class UserRestControllerTest extends ControllerTest {
 		void newtoken_failed_notValid() throws Exception {
 
 			given(userService.generateNewToken(refreshTokenDto)).willThrow(
-					new SecurityCustomException(ErrorCode.INVALID_TOKEN,
-							"Refresh token 정보가 유효하지 않습니다."));
+					new SecurityCustomException(ErrorCode.INVALID_TOKEN));
 
 			mockMvc.perform(post("/api/v1/users/new-token")
 							.with(csrf())
@@ -289,7 +288,7 @@ class UserRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.errorCode").value(
 							ErrorCode.INVALID_TOKEN.name()))
 					.andExpect(jsonPath("$.result.message").value(
-							ErrorCode.INVALID_TOKEN.getMessage() + "Refresh token 정보가 유효하지 않습니다."));
+							ErrorCode.INVALID_TOKEN.getMessage()));
 		}
 
 		@Test

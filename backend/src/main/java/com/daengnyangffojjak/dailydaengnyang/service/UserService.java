@@ -87,11 +87,8 @@ public class UserService {
 
 	public TokenInfo generateNewToken(RefreshTokenDto refreshTokenDto) {
 		String refreshToken = refreshTokenDto.getRefreshToken();
-		//1. refresh Token 검증
-		if (!jwtTokenUtil.validateToken(refreshToken)) {
-			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN,
-					"Refresh token 정보가 유효하지 않습니다.");
-		}
+		//1. refresh Token 검증 >> 예외처리
+		jwtTokenUtil.validateToken(refreshToken);
 
 		//2. refreshToken에서 userName 가져오기
 		Authentication authentication = jwtTokenUtil.getAuthentication(refreshToken);
