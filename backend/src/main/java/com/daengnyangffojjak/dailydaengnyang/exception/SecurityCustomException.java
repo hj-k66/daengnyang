@@ -17,7 +17,9 @@ public class SecurityCustomException extends RuntimeException{
 
     @Override
     public String toString() {
-        return errorCode.getMessage()
-                + this.message;
+        if (message == null) {
+            return errorCode.getMessage();
+        }
+        return String.format("%s %s", errorCode.getMessage(), message);
     }
 }
