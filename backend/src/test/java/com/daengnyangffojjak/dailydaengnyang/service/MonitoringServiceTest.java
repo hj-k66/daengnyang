@@ -60,5 +60,52 @@ class MonitoringServiceTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("모니터링 수정")
+	class ModifyMonitoring {
+
+		MntWriteRequest request = MntWriteRequest.builder()
+				.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("바꾼거").build();
+		Monitoring saved = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+		Monitoring modified = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("바꾼거").build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+			given(monitoringRepository.save(saved)).willReturn(modified);
+
+			MntWriteResponse response = assertDoesNotThrow(
+					() -> monitoringService.modify(1L, 1L, request, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("hoon", response.getPetName());
+			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+		}
+		@Test
+		@DisplayName("실패 - 펫등록번호와 모니터링의 펫 정보가 다를 때")
+		void fail() {
+			Monitoring saved = Monitoring.builder()
+					.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+					.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+			given(monitoringRepository.save(saved)).willReturn(modified);
+
+			MntWriteResponse response = assertDoesNotThrow(
+					() -> monitoringService.modify(1L, 1L, request, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("hoon", response.getPetName());
+			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+		}
+	}
+
 
 }
