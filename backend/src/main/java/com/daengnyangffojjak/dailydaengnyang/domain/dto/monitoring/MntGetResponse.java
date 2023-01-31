@@ -1,14 +1,9 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,12 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class MntWriteRequest {
-
-	@NotNull(message = "날짜를 입력하세요.")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-	@PastOrPresent
+public class MntGetResponse {
 	private LocalDate date;          //오늘 이전 날짜
 
 	private double weight;        //몸무게
@@ -43,25 +33,24 @@ public class MntWriteRequest {
 
 	private String notes;    //기타 특이사항
 
-	public Monitoring toEntity(Pet pet) {
-		return Monitoring.builder()
-				.pet(pet)
-				.date(this.date)
-				.weight(this.weight)
-				.vomit(this.vomit)
-				.amPill(this.amPill)
-				.pmPill(this.pmPill)
-				.customSymptom(this.customSymptom)
-				.customSymptomName(this.customSymptomName)
-				.feedToGram(this.feedToGram)
-				.walkCnt(this.walkCnt)
-				.playCnt(this.playCnt)
-				.urination(this.urination)
-				.defecation(this.defecation)
-				.respiratoryRate(this.respiratoryRate)
-				.customInt(this.customInt)
-				.customIntName(this.customIntName)
-				.notes(this.notes)
+	public static MntGetResponse from(Monitoring monitoring) {
+		return MntGetResponse.builder()
+				.date(monitoring.getDate())
+				.weight(monitoring.getWeight())
+				.vomit(monitoring.isVomit())
+				.amPill(monitoring.isAmPill())
+				.pmPill(monitoring.isPmPill())
+				.customSymptom(monitoring.isCustomSymptom())
+				.customSymptomName(monitoring.getCustomSymptomName())
+				.feedToGram(monitoring.getFeedToGram())
+				.walkCnt(monitoring.getWalkCnt())
+				.playCnt(monitoring.getPlayCnt())
+				.urination(monitoring.getUrination())
+				.defecation(monitoring.getDefecation())
+				.respiratoryRate(monitoring.getRespiratoryRate())
+				.customInt(monitoring.getCustomInt())
+				.customIntName(monitoring.getCustomIntName())
+				.notes(monitoring.getNotes())
 				.build();
 	}
 }

@@ -4,6 +4,7 @@ import static com.daengnyangffojjak.dailydaengnyang.utils.RestDocsConfiguration.
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -15,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.MonitoringService;
@@ -166,6 +168,56 @@ class MonitoringRestControllerTest extends ControllerTest {
 									fieldWithPath("result.id").description("모니터링 등록 번호"),
 									fieldWithPath("result.message").description("결과 메세지"))));
 			verify(monitoringService).delete(1L, 1L, "user");
+		}
+	}
+
+	@Nested
+	@DisplayName("모니터링 단건조회")
+	class MonitoringShow {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			MntGetResponse response = MntGetResponse.builder()
+					.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+					.amPill(true).pmPill(true).customSymptom(false).customSymptomName(null)
+					.feedToGram(40).urination(3).defecation(2).respiratoryRate(24)
+					.customInt(2).customIntName("이뻐해주기").notes("양치").build();
+			given(monitoringService.getMonitoring(1L, 1L, "user"))
+					.willReturn(response);
+
+			mockMvc.perform(
+							get("/api/v1/pets/{petId}/monitorings/{monitoringId}", 1L, 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andDo(restDocs.document(
+							pathParameters(
+									parameterWithName("petId").description("반려동물 번호"),
+									parameterWithName("monitoringId").description("모니터링 번호")
+							),
+							responseFields(
+									fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.date").description("모니터링 날짜"),
+									fieldWithPath("result.weight").description("몸무게"),
+									fieldWithPath("result.vomit").description("구토"),
+									fieldWithPath("result.amPill").description("오전 투약"),
+									fieldWithPath("result.pmPill").description("오후 투약"),
+									fieldWithPath("result.customSymptom")
+											.description("커스텀 모니터링"),
+									fieldWithPath("result.customSymptomName")
+											.description("커스텀 모니터링 지표"),
+									fieldWithPath("result.feedToGram").description("식이량(g)"),
+									fieldWithPath("result.walkCnt").description("산책 횟수"),
+									fieldWithPath("result.playCnt").description("놀이 횟수"),
+									fieldWithPath("result.urination").description("배뇨 횟수"),
+									fieldWithPath("result.defecation").description("배변 횟수"),
+									fieldWithPath("result.respiratoryRate").description("호흡수"),
+									fieldWithPath("result.customInt").description("커스텀 모니터링"),
+									fieldWithPath("result.customIntName")
+											.description("커스텀 모니터링 지표"),
+									fieldWithPath("result.notes").description("특이사항")
+							)));
+			verify(monitoringService).getMonitoring(1L, 1L, "user");
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -29,14 +30,12 @@ public class MonitoringService {
 		return MntWriteResponse.from(saved);
 	}
 
-	@Transactional	//일단 pet은 바꿀 수 없음
-	public MntWriteResponse modify(Long petId, Long monitoringId, MntWriteRequest mntWriteRequest, String username) {
+	@Transactional    //일단 pet은 바꿀 수 없음
+	public MntWriteResponse modify(Long petId, Long monitoringId, MntWriteRequest mntWriteRequest,
+			String username) {
 		Pet pet = validatePetWithUsername(petId, username);
+		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 
-		Monitoring monitoring = validator.getMonitoringById(monitoringId);
-		if (!monitoring.getPet().getId().equals(petId)) {		//모니터링의 펫 정보가 PathVariable의 펫 정보와 다르면 에러
-			throw new MonitoringException(ErrorCode.INVALID_REQUEST);
-		}
 		monitoring.modify(mntWriteRequest);
 		Monitoring modified = monitoringRepository.save(monitoring);
 		return MntWriteResponse.from(modified);
@@ -45,21 +44,36 @@ public class MonitoringService {
 	@Transactional
 	public MntDeleteResponse delete(Long petId, Long monitoringId, String username) {
 		Pet pet = validatePetWithUsername(petId, username);
-
-		Monitoring monitoring = validator.getMonitoringById(monitoringId);
-		if (!monitoring.getPet().getId().equals(petId)) {		//모니터링의 펫 정보가 PathVariable의 펫 정보와 다르면 에러
-			throw new MonitoringException(ErrorCode.INVALID_REQUEST);
-		}
+		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 		monitoring.deleteSoftly();
 		return MntDeleteResponse.builder()
 				.message("모니터링 삭제 완료")
 				.id(monitoring.getId()).build();
 	}
 
+	@Transactional
+	public MntGetResponse getMonitoring(Long petId, Long monitoringId, String username) {
+		Pet pet = validatePetWithUsername(petId, username);
+		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
+		return MntGetResponse.from(monitoring);
+	}
+
+	//Pet과 username인 User가 같은 그룹이면 Pet을 반환
 	private Pet validatePetWithUsername(Long petId, String username) {
 		Pet pet = validator.getPetById(petId);
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(pet.getGroup(),
 				username);
 		return pet;
 	}
+
+	//모니터링의 해당 반려동물의 것이 맞으면 Monitoring 반환
+	private Monitoring validateMonitoringWithPetId(Long monitoringId, Long petId) {
+		Monitoring monitoring = validator.getMonitoringById(monitoringId);
+		if (!monitoring.getPet().getId()
+				.equals(petId)) {        //모니터링의 펫 정보가 PathVariable의 펫 정보와 다르면 에러
+			throw new MonitoringException(ErrorCode.INVALID_REQUEST);
+		}
+		return monitoring;
+	}
+
 }

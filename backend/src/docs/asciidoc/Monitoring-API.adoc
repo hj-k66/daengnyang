@@ -15,3 +15,8 @@ operation::monitoring-modify/success[snippets='http-request,path-parameters,requ
 === 모니터링 삭제
 
 operation::monitoring-delete/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Monitoring-단건조회]]
+=== 모니터링 단건조회
+
+operation::monitoring-show/success[snippets='http-request,path-parameters,http-response,response-fields']
