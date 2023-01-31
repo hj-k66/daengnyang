@@ -2,20 +2,25 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetDeleteResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetResultResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetShowResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetUpdateResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
+import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,22 +33,21 @@ public class PetService {
 	private final PetRepository petRepository;
 	private final UserRepository userRepository;
 	private final GroupRepository groupRepository;
+	private final UserGroupRepository userGroupRepository;
 
 	// pet 등록
 	@Transactional
-	public PetResultResponse add(Long groupId, PetAddRequest petAddRequest,
-			Authentication authentication) {
+	public PetAddResponse add(Long groupId, PetAddRequest petAddRequest, String userName) {
 
 		Group group = groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		User user = userRepository.findByUserName(authentication.getName())
-				.orElseThrow(() -> new PetException(ErrorCode.USERNAME_NOT_FOUND));
+		List<UserGroup> userGroupList = getUserGroupListWithUsername(groupId,
+				userName);
 
-		// pet 등록할때 같이 user 정보를 저장해야 함
-		Pet savedPet = petRepository.save(petAddRequest.toEntity(group, user));
+		Pet savedPet = petRepository.save(petAddRequest.toEntity(group));
 
-		return PetResultResponse.addFrom(savedPet);
+		return PetAddResponse.addFrom(savedPet);
 	}
 
 	// pet 조회
@@ -53,12 +57,13 @@ public class PetService {
 		groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		return petRepository.findAllByGroup(groupId, pageable).map(PetShowResponse::from);
+		return petRepository.findAllByGroupId(groupId, pageable).map(PetShowResponse::from);
 	}
 
 	// pet 수정
-	public PetResultResponse modify(Long groupId, Long id, PetAddRequest petAddRequest,
-			Authentication authentication) {
+	@Transactional
+	public PetUpdateResponse modify(Long groupId, Long id, PetAddRequest petAddRequest,
+			String userName) {
 
 		Pet pet = petRepository.findById(id)
 				.orElseThrow(() -> new PetException(ErrorCode.PET_NOT_FOUND));
@@ -66,27 +71,22 @@ public class PetService {
 		Group group = groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		User user = userRepository.findByUserName(authentication.getName())
-				.orElseThrow(() -> new PetException(ErrorCode.USERNAME_NOT_FOUND));
-
-		// 반려동물을 수정할 권한이 있는 user 인지 확인 필요
-		if (!Objects.equals(pet.getUser().getId(), user.getId())) {
-			throw new PetException(ErrorCode.INVALID_PERMISSION);
-		}
-
 		if (!Objects.equals(pet.getGroup().getId(), group.getId())) {
 			throw new PetException(ErrorCode.INVALID_PERMISSION);
 		}
+
+		List<UserGroup> userGroupList = getUserGroupListWithUsername(groupId,
+				userName);
 
 		pet.update(petAddRequest);
 		Pet savedPet = petRepository.save(pet);
 
-		return PetResultResponse.updateFrom(savedPet);
+		return PetUpdateResponse.updateFrom(savedPet);
 	}
 
 	// pet 삭제
 	@Transactional
-	public PetDeleteResponse delete(Long groupId, Long id, Authentication authentication) {
+	public PetDeleteResponse delete(Long groupId, Long id, String userName) {
 
 		Pet pet = petRepository.findById(id)
 				.orElseThrow(() -> new PetException(ErrorCode.PET_NOT_FOUND));
@@ -94,21 +94,41 @@ public class PetService {
 		Group group = groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		User user = userRepository.findByUserName(authentication.getName())
-				.orElseThrow(() -> new PetException(ErrorCode.USERNAME_NOT_FOUND));
-
-		if (!Objects.equals(pet.getUser().getId(), user.getId())) {
-			throw new PetException(ErrorCode.INVALID_PERMISSION);
-		}
-
 		if (!Objects.equals(pet.getGroup().getId(), group.getId())) {
 			throw new PetException(ErrorCode.INVALID_PERMISSION);
 		}
+
+		List<UserGroup> userGroupList = getUserGroupListWithUsername(groupId,
+				userName);
 
 		petRepository.delete(pet);
 
 		return PetDeleteResponse.builder()
 				.message("등록이 취소되었습니다.")
 				.build();
+	}
+
+	// groupService 에 있던 메서드인데
+	// 서비스끼리 의존하면 안된다고 했던거 같아서 임시로 가져왔습니다.
+	private List<UserGroup> getUserGroupListWithUsername(Long groupId,
+			String username) { //유저가 그룹 내 멤버이면 그룹유저리스트 반환
+		User user = userRepository.findByUserName(username)
+				.orElseThrow(() -> new UserException(ErrorCode.USERNAME_NOT_FOUND));     //유저 확인
+		//그룹이 존재하는지 확인
+		Group group = getGroupById(groupId);
+		//그룹으로 그룹 내 멤버 불러오기
+		List<UserGroup> userGroupList = userGroupRepository.findAllByGroup(group);
+		//로그인한 유저가 그룹 내 유저인지 확인 -> 그룹 내 유저가 아니면 예외 발생
+		if (userGroupList.stream()
+				.noneMatch(userGroup -> username.equals(userGroup.getUser().getUsername()))) {
+			throw new UserException(ErrorCode.INVALID_PERMISSION);
+		}
+		return userGroupList;
+	}
+
+	// 이거도 같이 가져왔습니다.
+	private Group getGroupById(Long groupId) {    //그룹 아이디로 그룹 조회, 없으면 예외 발생
+		return groupRepository.findById(groupId)
+				.orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
 	}
 }

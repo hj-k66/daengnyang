@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import lombok.NoArgsConstructor;
 
 @Builder
@@ -18,43 +17,40 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Getter
-public class Pet extends BaseEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
-    private Group group;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-    @Enumerated(EnumType.STRING)
-    private Species species;
-    private String breed;       //추후 enum으로 수정 예정
-    private String name;
-    @Enumerated(EnumType.STRING)
-    private Sex sex;
-    private LocalDate birthday;
-    private double weight;
+public class Pet extends BaseEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "group_id")
+	private Group group;
+	@Enumerated(EnumType.STRING)
+	private Species species;
+	private String breed;       //추후 enum으로 수정 예정
+	private String name;
+	@Enumerated(EnumType.STRING)
+	private Sex sex;
+	private LocalDate birthday;
+	private double weight;
 
-    public String getAge() {     //1년령 이상은 나이, 1년령 이하는 개월수로 반환
-        LocalDate today = LocalDate.now();
-        LocalDate birthday = this.birthday;
+	public String getAge() {     //1년령 이상은 나이, 1년령 이하는 개월수로 반환
+		LocalDate today = LocalDate.now();
+		LocalDate birthday = this.birthday;
 
-        long months = ChronoUnit.MONTHS.between(birthday, today); //태어난지 12개월 넘었는 지
+		long months = ChronoUnit.MONTHS.between(birthday, today); //태어난지 12개월 넘었는 지
 
-        if (months < 12) {
-            return months + "개월";
-        }
-        return ChronoUnit.YEARS.between(birthday, today) + "살";
-    }
+		if (months < 12) {
+			return months + "개월";
+		}
+		return ChronoUnit.YEARS.between(birthday, today) + "살";
+	}
 
-    public void update(PetAddRequest petAddRequest) {
-        this.name = petAddRequest.getName();
-        this.species = petAddRequest.getSpecies();
-        this.breed = petAddRequest.getBreed();
-        this.sex = petAddRequest.getSex();
-        this.birthday = petAddRequest.getBirthday();
-        this.weight = petAddRequest.getWeight();
-    }
+	public void update(PetAddRequest petAddRequest) {
+		this.name = petAddRequest.getName();
+		this.species = petAddRequest.getSpecies();
+		this.breed = petAddRequest.getBreed();
+		this.sex = petAddRequest.getSex();
+		this.birthday = petAddRequest.getBirthday();
+		this.weight = petAddRequest.getWeight();
+	}
 }

@@ -3,8 +3,9 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetDeleteResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetResultResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetShowResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetUpdateResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -27,43 +30,43 @@ public class PetRestController {
 
 	// pet 등록
 	@PostMapping("/{groupId}/pets")
-	public ResponseEntity<Response<PetResultResponse>> addPet(@PathVariable Long groupId,
-			@RequestBody PetAddRequest groupAddRequest,
-			Authentication authentication) {
-		PetResultResponse petResultResponse = petService.add(groupId, groupAddRequest,
-				authentication);
+	public ResponseEntity<Response<PetAddResponse>> addPet(@PathVariable Long groupId,
+			@Validated @RequestBody PetAddRequest groupAddRequest,
+			@AuthenticationPrincipal UserDetails user) {
+		PetAddResponse petAddResponse = petService.add(groupId, groupAddRequest,
+				user.getUsername());
 
-		return ResponseEntity.created(URI.create("/api/v1/groups/" + groupId + "pets"))
-				.body(Response.success(petResultResponse));
+		return ResponseEntity.created(URI.create("/api/v1/groups/" + groupId + "/pets"))
+				.body(Response.success(petAddResponse));
 	}
 
 	// pet 조회
-	@GetMapping("/{groupId}/pets")
+	@GetMapping("/{groupsId}/petList")
 	public ResponseEntity<Response<Page<PetShowResponse>>> showAllPets(
-			@PathVariable Long groupId,
+			@PathVariable Long groupsId,
 			@PageableDefault(size = 20)
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-		return ResponseEntity.ok().body(Response.success(petService.showAll(groupId, pageable)));
+		return ResponseEntity.ok().body(Response.success(petService.showAll(groupsId, pageable)));
 	}
 
 	// pet 수정
 	@PutMapping("/{groupId}/pets/{id}")
-	public ResponseEntity<Response<PetResultResponse>> modifyPet(@PathVariable Long groupId,
+	public ResponseEntity<Response<PetUpdateResponse>> modifyPet(@PathVariable Long groupId,
 			@PathVariable Long id,
-			@RequestBody PetAddRequest petAddRequest,
-			Authentication authentication) {
+			@Validated @RequestBody PetAddRequest petAddRequest,
+			@AuthenticationPrincipal UserDetails user) {
 		return ResponseEntity.created(URI.create("/api/v1/groups/" + groupId + "/pets/" + id))
 				.body(Response.success(
-						petService.modify(groupId, id, petAddRequest, authentication)));
+						petService.modify(groupId, id, petAddRequest, user.getUsername())));
 	}
 
 	// pet 삭제
 	@DeleteMapping("/{groupId}/pets/{id}")
 	public ResponseEntity<Response<PetDeleteResponse>> deletePet(@PathVariable Long groupId,
 			@PathVariable Long id,
-			Authentication authentication) {
+			@AuthenticationPrincipal UserDetails user) {
 		return ResponseEntity.ok()
-				.body(Response.success(petService.delete(groupId, id, authentication)));
+				.body(Response.success(petService.delete(groupId, id, user.getUsername())));
 	}
 }
 
