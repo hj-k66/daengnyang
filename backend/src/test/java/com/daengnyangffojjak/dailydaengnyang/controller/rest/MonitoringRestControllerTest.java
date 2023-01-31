@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import static com.daengnyangffojjak.dailydaengnyang.utils.RestDocsConfiguration.field;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -13,6 +14,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.MonitoringService;
@@ -110,7 +112,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 							pathParameters(
 									parameterWithName("petId").description("반려동물 번호"),
 									parameterWithName("monitoringId").description("모니터링 번호")
-									),
+							),
 							requestFields(fieldWithPath("date").description("모니터링 날짜")
 											.attributes(field("constraints", "오늘 이전만 가능")),
 									fieldWithPath("weight").optional().description("몸무게"),
@@ -140,4 +142,30 @@ class MonitoringRestControllerTest extends ControllerTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("모니터링 삭제")
+	class MonitoringDelete {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			given(monitoringService.delete(1L, 1L, "user"))
+					.willReturn(new MntDeleteResponse("모니터링 삭제 완료", 1L));
+
+			mockMvc.perform(
+							delete("/api/v1/pets/{petId}/monitorings/{monitoringId}", 1L, 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result.id").value(1L))
+					.andDo(restDocs.document(
+							pathParameters(
+									parameterWithName("petId").description("반려동물 번호"),
+									parameterWithName("monitoringId").description("모니터링 번호")
+							),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.id").description("모니터링 등록 번호"),
+									fieldWithPath("result.message").description("결과 메세지"))));
+			verify(monitoringService).delete(1L, 1L, "user");
+		}
+	}
 }

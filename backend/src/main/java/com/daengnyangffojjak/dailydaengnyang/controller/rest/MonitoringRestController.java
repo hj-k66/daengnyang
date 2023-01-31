@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.MonitoringService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,5 +45,11 @@ public class MonitoringRestController {
 		return ResponseEntity.created(
 						URI.create("/api/v1/pets/" + petId + "/monitorings/" + monitoringId))
 				.body(Response.success(mntWriteResponse));
+	}
+	@DeleteMapping(value = "/pets/{petId}/monitorings/{monitoringId}")
+	public Response<MntDeleteResponse> delete(
+			@AuthenticationPrincipal UserDetails user, @PathVariable Long petId, @PathVariable Long monitoringId) {
+		MntDeleteResponse mntDeleteResponse = monitoringService.delete(petId, monitoringId, user.getUsername());
+		return Response.success(mntDeleteResponse);
 	}
 }

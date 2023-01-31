@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
@@ -104,6 +105,26 @@ class MonitoringServiceTest {
 			assertEquals(1L, response.getId());
 			assertEquals("hoon", response.getPetName());
 			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+		}
+	}
+	@Nested
+	@DisplayName("모니터링 삭제")
+	class DeleteMonitoring {
+		Monitoring saved = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+
+			MntDeleteResponse response = assertDoesNotThrow(
+					() -> monitoringService.delete(1L, 1L, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("모니터링 삭제 완료", response.getMessage());
 		}
 	}
 

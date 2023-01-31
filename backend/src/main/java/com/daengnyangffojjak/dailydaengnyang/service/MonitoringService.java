@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -23,18 +24,14 @@ public class MonitoringService {
 
 	@Transactional
 	public MntWriteResponse create(Long petId, MntWriteRequest mntWriteRequest, String username) {
-		Pet pet = validator.getPetById(petId);        //pet과 로그인한 유저가 같은 그룹인지 확인
-		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(pet.getGroup(),
-				username);
+		Pet pet = validatePetWithUsername(petId, username);
 		Monitoring saved = monitoringRepository.save(mntWriteRequest.toEntity(pet));
 		return MntWriteResponse.from(saved);
 	}
 
 	@Transactional	//일단 pet은 바꿀 수 없음
 	public MntWriteResponse modify(Long petId, Long monitoringId, MntWriteRequest mntWriteRequest, String username) {
-		Pet pet = validator.getPetById(petId);
-		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(pet.getGroup(),
-				username);
+		Pet pet = validatePetWithUsername(petId, username);
 
 		Monitoring monitoring = validator.getMonitoringById(monitoringId);
 		if (!monitoring.getPet().getId().equals(petId)) {		//모니터링의 펫 정보가 PathVariable의 펫 정보와 다르면 에러
@@ -45,4 +42,24 @@ public class MonitoringService {
 		return MntWriteResponse.from(modified);
 	}
 
+	@Transactional
+	public MntDeleteResponse delete(Long petId, Long monitoringId, String username) {
+		Pet pet = validatePetWithUsername(petId, username);
+
+		Monitoring monitoring = validator.getMonitoringById(monitoringId);
+		if (!monitoring.getPet().getId().equals(petId)) {		//모니터링의 펫 정보가 PathVariable의 펫 정보와 다르면 에러
+			throw new MonitoringException(ErrorCode.INVALID_REQUEST);
+		}
+		monitoring.deleteSoftly();
+		return MntDeleteResponse.builder()
+				.message("모니터링 삭제 완료")
+				.id(monitoring.getId()).build();
+	}
+
+	private Pet validatePetWithUsername(Long petId, String username) {
+		Pet pet = validator.getPetById(petId);
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(pet.getGroup(),
+				username);
+		return pet;
+	}
 }
