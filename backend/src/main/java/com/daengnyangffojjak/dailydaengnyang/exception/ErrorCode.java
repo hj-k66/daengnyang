@@ -22,7 +22,7 @@ public enum ErrorCode {
 	INVALID_VALUE(HttpStatus.BAD_REQUEST, "입력값이 잘못되었습니다."),
 	INVALID_EMAIL(HttpStatus.BAD_REQUEST, "이메일 형식이 잘못되었습니다."),
 	INVALID_REQUEST(HttpStatus.CONFLICT, "잘못된 요청입니다."),
-	INVALID_BIRTHDAY(HttpStatus.UNAUTHORIZED, "잘못된 생일날짜입니다."),
+	INVALID_BIRTHDAY(HttpStatus.BAD_REQUEST, "잘못된 생일날짜입니다."),
 	GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹이 없습니다.");
 	private final HttpStatus status;
 	private final String message;

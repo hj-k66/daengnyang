@@ -57,7 +57,6 @@ class PetServiceTest {
 	@Nested
 	@DisplayName("pet 등록하기")
 	class addPet {
-
 		PetAddRequest petAddRequest = new PetAddRequest("멍뭉이", Species.DOG, "종", Sex.MALE,
 				LocalDate.of(2022, 1, 1), 5.5); // LocalDate 생일
 
@@ -69,13 +68,13 @@ class PetServiceTest {
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
 			given(petRepository.save(petAddRequest.toEntity(group))).willReturn(pet);
 
-			PetAddResponse response = assertDoesNotThrow(
+			PetAddResponse petAddResponse = assertDoesNotThrow(
 					() -> petService.add(1l, petAddRequest, "user"));
 
-			assertEquals(1L, response.getId());
-			assertEquals(petAddRequest.getName(), response.getName());
-			assertEquals("1살", response.getAge());
-			assertEquals(null, response.getCreatedAt());
+			assertEquals(1L, petAddResponse.getId());
+			assertEquals(petAddRequest.getName(), petAddResponse.getName());
+			assertEquals("1살", petAddResponse.getAge());
+			assertEquals(null, petAddResponse.getCreatedAt());
 		}
 	}
 
@@ -93,15 +92,15 @@ class PetServiceTest {
 			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
 			given(groupRepository.findById(1l)).willReturn(Optional.of(group));
 			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
-			given(petRepository.save(pet)).willReturn(pet);
+			given(petRepository.saveAndFlush(pet)).willReturn(pet);
 
-			PetUpdateResponse response = assertDoesNotThrow(
+			PetUpdateResponse petUpdateResponse = assertDoesNotThrow(
 					() -> petService.modify(1l, 1l, update, "user"));
 
-			assertEquals(1L, response.getId());
-			assertEquals(update.getName(), response.getName());
-			assertEquals("3살", response.getAge());
-			assertEquals(null, response.getLastModifiedAt());
+			assertEquals(1L, petUpdateResponse.getId());
+			assertEquals(update.getName(), petUpdateResponse.getName());
+			assertEquals("3살", petUpdateResponse.getAge());
+			assertEquals(null, petUpdateResponse.getLastModifiedAt());
 
 		}
 

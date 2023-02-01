@@ -24,8 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 public class PetService {
@@ -39,9 +37,11 @@ public class PetService {
 	@Transactional
 	public PetAddResponse add(Long groupId, PetAddRequest petAddRequest, String userName) {
 
+		// 해당 id의 그룹이 존재하는가
 		Group group = groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
+		// 사용자가 그룹에 속해있는 멤버인가
 		List<UserGroup> userGroupList = getUserGroupListWithUsername(groupId,
 				userName);
 
@@ -54,10 +54,25 @@ public class PetService {
 	@Transactional(readOnly = true)
 	public Page<PetShowResponse> showAll(Long groupId, Pageable pageable) {
 
+		// 해당 id의 그룹이 존재하는가
 		groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		return petRepository.findAllByGroupId(groupId, pageable).map(PetShowResponse::from);
+		return petRepository.findAllByGroupId(groupId, pageable).map(PetShowResponse::showFrom);
+	}
+
+	// pet 단건 조회
+	public PetShowResponse show(Long groupId, Long id) {
+
+		// 해당 id의 그룹이 존재하는가
+		groupRepository.findById(groupId)
+				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
+
+		// 해당 id의 펫이 존재하는가
+		Pet pet = petRepository.findById(id)
+				.orElseThrow(() -> new PetException(ErrorCode.PET_NOT_FOUND));
+
+		return PetShowResponse.showFrom(pet);
 	}
 
 	// pet 수정
@@ -65,21 +80,25 @@ public class PetService {
 	public PetUpdateResponse modify(Long groupId, Long id, PetAddRequest petAddRequest,
 			String userName) {
 
+		// 해당 id의 펫이 존재하는가
 		Pet pet = petRepository.findById(id)
 				.orElseThrow(() -> new PetException(ErrorCode.PET_NOT_FOUND));
 
+		// 해당 id의 그룹이 존재하는가
 		Group group = groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		if (!Objects.equals(pet.getGroup().getId(), group.getId())) {
+		// pet repository 에 저장된 group id 와 group repository 에 저장된 group id 가 같은가
+		if (!pet.getGroup().getId().equals(group.getId())) {
 			throw new PetException(ErrorCode.INVALID_PERMISSION);
 		}
 
+		// 사용자가 그룹에 속해있는 멤버인가
 		List<UserGroup> userGroupList = getUserGroupListWithUsername(groupId,
 				userName);
 
 		pet.update(petAddRequest);
-		Pet savedPet = petRepository.save(pet);
+		Pet savedPet = petRepository.saveAndFlush(pet);
 
 		return PetUpdateResponse.updateFrom(savedPet);
 	}
@@ -88,20 +107,24 @@ public class PetService {
 	@Transactional
 	public PetDeleteResponse delete(Long groupId, Long id, String userName) {
 
+		// 해당 id의 펫이 존재하는가
 		Pet pet = petRepository.findById(id)
 				.orElseThrow(() -> new PetException(ErrorCode.PET_NOT_FOUND));
 
+		// 해당 id의 그룹이 존재하는가
 		Group group = groupRepository.findById(groupId)
 				.orElseThrow(() -> new PetException(ErrorCode.GROUP_NOT_FOUND));
 
-		if (!Objects.equals(pet.getGroup().getId(), group.getId())) {
+		// pet repository 에 저장된 group id 와 group repository 에 저장된 group id 가 같은가
+		if (!pet.getGroup().getId().equals(group.getId())) {
 			throw new PetException(ErrorCode.INVALID_PERMISSION);
 		}
 
+		// 사용자가 그룹에 속해있는 멤버인가
 		List<UserGroup> userGroupList = getUserGroupListWithUsername(groupId,
 				userName);
 
-		petRepository.delete(pet);
+		pet.deleteSoftly();
 
 		return PetDeleteResponse.builder()
 				.message("등록이 취소되었습니다.")

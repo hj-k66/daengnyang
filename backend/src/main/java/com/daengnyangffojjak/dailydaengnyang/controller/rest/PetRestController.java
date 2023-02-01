@@ -31,9 +31,9 @@ public class PetRestController {
 	// pet 등록
 	@PostMapping("/{groupId}/pets")
 	public ResponseEntity<Response<PetAddResponse>> addPet(@PathVariable Long groupId,
-			@Validated @RequestBody PetAddRequest groupAddRequest,
+			@Validated @RequestBody PetAddRequest petAddRequest,
 			@AuthenticationPrincipal UserDetails user) {
-		PetAddResponse petAddResponse = petService.add(groupId, groupAddRequest,
+		PetAddResponse petAddResponse = petService.add(groupId, petAddRequest,
 				user.getUsername());
 
 		return ResponseEntity.created(URI.create("/api/v1/groups/" + groupId + "/pets"))
@@ -48,6 +48,14 @@ public class PetRestController {
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 		return ResponseEntity.ok().body(Response.success(petService.showAll(groupsId, pageable)));
 	}
+
+	// pet 상세 조회(단건)
+	@GetMapping(value = "/{groupsId}/pets/{id}")
+	public ResponseEntity<Response<PetShowResponse>> showPet(@PathVariable Long groupsId,
+			@PathVariable Long id) {
+		return ResponseEntity.ok().body(Response.success(petService.show(groupsId, id)));
+	}
+
 
 	// pet 수정
 	@PutMapping("/{groupId}/pets/{id}")

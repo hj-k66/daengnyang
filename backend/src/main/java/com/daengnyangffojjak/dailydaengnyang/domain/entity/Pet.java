@@ -11,12 +11,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Getter
+@Where(clause = "deleted_at is NULL")
 public class Pet extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

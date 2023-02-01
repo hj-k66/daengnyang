@@ -111,13 +111,14 @@ class PetRestControllerTest extends ControllerTest {
 		}
 
 		@Test
-		@DisplayName("pet 등록 실패 - 생일을 현재보다 이후로 지정")
+		@DisplayName("pet 등록 실패 - 생일을 현재보다 미래로 지정")
 		void add_Pet_fail2() throws Exception {
 			PetAddRequest birthday = new PetAddRequest("멍뭉이", Species.DOG, "진돗개", Sex.MALE,
 					LocalDate.of(9999, 1, 1), 5.5); // LocalDate 생일
 
 			given(petService.add(1L, birthday, "user"))
 					.willThrow(new PetException(ErrorCode.INVALID_BIRTHDAY));
+			//.willThrow(BadRequest.class); 에러처리 어떻게 해야할지 모르겠어요
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.post("/api/v1/groups/{groupId}/pets", 1l)
@@ -165,14 +166,14 @@ class PetRestControllerTest extends ControllerTest {
 		Page<PetShowResponse> pages = new PageImpl<>(Arrays.asList(petShowResponse));
 
 		@Test
-		@DisplayName("pet 리스트 조회 성공")
+		@DisplayName("pet 리스트 전체 조회 성공")
 		void show_Pet_List_success() throws Exception {
 
-			given(petService.showAll(any(), any())).willReturn(pages);
+			Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "createdAt");
+			given(petService.showAll(1l, pageable)).willReturn(pages);
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/petList", 1l)
-									.contentType(MediaType.APPLICATION_JSON)
 									.with(csrf()))
 					.andDo(print())
 					.andExpect(status().isOk())
@@ -233,20 +234,95 @@ class PetRestControllerTest extends ControllerTest {
 		}
 
 		@Test
-		@DisplayName("pet 리스트 조회 실패 - 해당 그룹이 없음")
+		@DisplayName("pet 리스트 전체 조회 실패 - 해당 그룹이 없음")
 		void show_Pet_List_fail() throws Exception {
 
 			given(petService.showAll(any(), any()))
 					.willThrow(new PetException(ErrorCode.GROUP_NOT_FOUND));
 
 			mockMvc.perform(
-							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/petList", 1l)
-									.contentType(MediaType.APPLICATION_JSON)
-									.with(csrf()))
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/petList", 1l))
 					.andDo(print())
 					.andExpect(status().is(ErrorCode.GROUP_NOT_FOUND.getStatus().value()));
 
 			verify(petService).showAll(any(), any());
+
+		}
+
+		@Test
+		@DisplayName("pet 리스트 단건 조회 성공")
+		void show_Pet_success() throws Exception {
+
+			given(petService.show(1l, 1l)).willReturn(petShowResponse);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets/{id}", 1l,
+									1l))
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("groupId").description("그룹 번호"),
+											parameterWithName("id").description("펫 번호")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath("result").description(
+													"그룹 내 반려동물 리스트"),
+											fieldWithPath("result.id").description(
+													"펫 번호"),
+											fieldWithPath("result.name").description(
+													"펫 이름"),
+											fieldWithPath("result.species").description(
+													"품종"),
+											fieldWithPath("result.breed").description(
+													"종"),
+											fieldWithPath("result.sex").description("성별"),
+											fieldWithPath("result.birthday").description(
+													"생일"),
+											fieldWithPath("result.createdAt").description(
+													"생성시간"),
+											fieldWithPath(
+													"result.lastModifiedAt").description(
+													"수정시간"))
+							));
+
+			verify(petService).show(1l, 1l);
+
+		}
+
+		@Test
+		@DisplayName("pet 리스트 단건 조회 실패 - 해당 그룹이 없음")
+		void show_Pet_fail1() throws Exception {
+
+			given(petService.show(1l, 1l))
+					.willThrow(new PetException(ErrorCode.GROUP_NOT_FOUND));
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets/{id}", 1l,
+									1l))
+					.andDo(print())
+					.andExpect(status().is(ErrorCode.GROUP_NOT_FOUND.getStatus().value()));
+
+			verify(petService).show(1l, 1l);
+
+		}
+
+		@Test
+		@DisplayName("pet 리스트 단건 조회 실패 - 해당 펫이 없음")
+		void show_Pet_fail2() throws Exception {
+
+			given(petService.show(1l, 1l))
+					.willThrow(new PetException(ErrorCode.PET_NOT_FOUND));
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets/{id}", 1l,
+									1l))
+					.andDo(print())
+					.andExpect(status().is(ErrorCode.PET_NOT_FOUND.getStatus().value()));
+
+			verify(petService).show(1l, 1l);
 
 		}
 	}

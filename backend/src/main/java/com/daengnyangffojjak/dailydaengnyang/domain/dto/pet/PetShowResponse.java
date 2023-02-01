@@ -26,7 +26,7 @@ public class PetShowResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime lastModifiedAt;
 
-	public static PetShowResponse from(Pet pet) {
+	public static PetShowResponse showFrom(Pet pet) {
 		return PetShowResponse.builder()
 				.id(pet.getId())
 				.name(pet.getName())
