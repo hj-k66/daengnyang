@@ -3,6 +3,8 @@ package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import jakarta.validation.Valid;
+import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -49,13 +51,12 @@ public class UserUiController {
 	/* 아이디, 이메일 중복 여부 확인 */
 	@ResponseBody
 	@GetMapping("/check-userName")
-	public Boolean checkUserName(@RequestParam String userName) {
+	public boolean checkUserName(@RequestParam String userName) {
 		return userService.checkUserName(userName);
 	}
 	@ResponseBody
 	@GetMapping ("/check-email")
-	public Boolean checkEmail(@RequestParam String email) {
-		log.info("email: ", email);
+	public boolean checkEmail(@RequestParam String email) {
 		return userService.checkEmail(email);
 	}
 }

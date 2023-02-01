@@ -23,7 +23,7 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form th:method="post" action="/view/users/join" th:object="${userJoinRequest}">
+      <form th:method="post" action="/view/users/join" th:object="${userJoinRequest}" id=""userJoinRequest>
         <div class="form-group">
           <label th:for="email">
             이메일
@@ -39,9 +39,10 @@
           <label th:for="userName">
             이름
           </label>
-          <input type="text" th:field="*{userName}" class="form-control" id="userName"
+          <input type="text" th:field="*{userName}" class="form-control" oninput="userName_ck()"
           placeholder="아이디를 입력하세요"th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
           <p th:if = "${#fields.hasErrors('userName')}" th:errors="*{userName}">Incorrect data</p>
+          <span id="userName_span"></span>
 
         </div>
         <div class="form-group">
@@ -49,17 +50,19 @@
           <label th:for="password">
             비밀번호
           </label>
-          <input type="password" th:field="*{password}" class="form-control" id="password"
-          placeholder="비밀번호를 입력하세요" th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
+          <input type="password" th:field="*{password}" class="form-control"
+          placeholder="비밀번호를 입력하세요" th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
           <p th:if = "${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
+          <span id="pw_span"></span>
           비밀번호 확인
-          <input type="password" class="form-control" id="password_ck"
-          placeholder="비밀번호 확인" th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
+          <input type="password" class="form-control" oninput="password_ck()" id="password-check"
+          placeholder="비밀번호 확인" th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
           <p th:if = "${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
+          <span id="pw1_span"></span>
         </div>
 
         <br>
-        <button type="submit" class="btn btn-primary" id="ck">
+        <button type="submit" class="btn btn-primary" id="join_btn" onclick="join()" disabled>
           회원 가입
         </button>
       </form>
@@ -78,9 +81,12 @@
 
 <script th:inline="javascript">
 
+  let emailPass = false;
+  let userNamePass = false;
+  let passwordPass = false;
+
   function email_ck() {
     let email = $("#email").val();
-    let emailPass = false;
     let regexp = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
 
     if (email == "") {
@@ -93,24 +99,90 @@
       return;
     }
 
-    console.log("이메일?: " + email)
-
     $.ajax({
-      typ: "GET",
-      url: "/view/users/check-email?email=${email}",
-      contentType: "application/json",
-      dataType: 'HTML',
+      type: "GET",
+      url: "/view/users/check-email",
+      data: {
+        email: email
+      },
       success: function (data) {
-        console.log('성공 ' + data + ' ' + email);
-        emailPass = true;
-        $("#email_span").html("사용 가능한 이메일입니다");
+        console.log('결과 ' + data + ' ' + email);
+        if (data == true){
+          $("#email_span").html("중복된 이메일입니다");
+        } else {
+          $("#email_span").html("사용 가능한 이메일입니다");
+          emailPass = true;
+          check_join();
+        }
       },
       error: function () {
-        $("#email_span").html("중복된 이메일입니다");
-        console.log('실패');
+        console.log('실패')
       }
     });
   }
+
+  function userName_ck() {
+    let userName = $("#userName").val();
+
+    if (userName == "") {
+      $("#userName_span").html("아이디를 입력하지 않으셨습니다");
+      return;
+    }
+
+    $.ajax({
+      type: "GET",
+      url: "/view/users/check-userName",
+      data: {
+        userName: userName
+      },
+      success: function (data) {
+        console.log('결과 ' + data + ' ' + userName);
+        if (data == true){
+          $("#userName_span").html("중복된 아이디입니다");
+        } else {
+          $("#userName_span").html("사용 가능한 아이디입니다");
+          userNamePass = true;
+          check_join();
+        }
+      },
+      error: function () {
+        console.log('실패')
+      }
+    });
+  }
+
+  function password_ck() {
+    let pw = $("#password").val();
+    let pw1 = $("#password-check").val();
+
+    if (pw == "") {
+      $("#pw_span").html("패스워드를 입력하지 않으셨습니다");
+      return;
+    }
+
+    if (pw1 == ""){
+      $("#pw1_span").html("패스워드를 입력하지 않으셨습니다");
+      return;
+    }
+
+    if (pw == pw1) {
+      $("#pw1_span").html("패스워드 확인 완료");
+      passwordPass = true;
+      check_join();
+    } else {
+      $("#pw1_span").html("패스워드가 일치하지 않습니다");
+    }
+  }
+
+  function check_join() {
+    if (emailPass == true && userNamePass == true && passwordPass == true) {
+      document.getElementById("join_btn").removeAttribute("disabled")
+    }
+  }
+
+
+
+
 
 
 
