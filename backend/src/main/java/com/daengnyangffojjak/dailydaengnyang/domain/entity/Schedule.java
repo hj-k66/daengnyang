@@ -23,7 +23,7 @@ public class Schedule extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")   //작성자
+	@JoinColumn(name = "user_id")
 	private User user;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pet_id")
@@ -42,6 +42,7 @@ public class Schedule extends BaseEntity {
 	private Boolean isCompleted;    //일정 수행 여부
 	private LocalDateTime dueDate;      //예정일
 
+	// 수정 된 Schedule 저장
 	public void changeToSchedule(ScheduleModifyRequest scheduleModifyRequest) {
 		this.category = scheduleModifyRequest.getCategory();
 		this.title = scheduleModifyRequest.getTitle();

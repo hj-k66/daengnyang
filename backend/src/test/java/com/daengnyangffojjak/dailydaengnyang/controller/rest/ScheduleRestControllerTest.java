@@ -27,7 +27,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,7 +75,6 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.post("/api/v1/pets/{petId}/schedules", 1L)
-									.with(csrf())
 									// java 8 부터 LocalDateTime을 가진 객체를 ObjectMapper 함수를 사용하여 가져올 경우 직렬화 또는 역직렬화를 못하는 에러 발생으로 아래의 코드 작성
 									.content(objectMapper.registerModule(new JavaTimeModule())
 											.writeValueAsBytes(scheduleCreateRequest))
@@ -166,7 +164,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(status().isCreated())
 					.andExpect(jsonPath("$.result.id").value(1L))
 					.andExpect(jsonPath("$.result.title").value("수정 병원"))
-					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023/01/25 10:26:00"))
+					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023-01-25 10:26:00"))
 
 					.andDo(
 							restDocs.document(
@@ -242,7 +240,6 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							put("/api/v1/pets/1/schedules/1")
-									.with(csrf())
 									.content(objectMapper.registerModule(new JavaTimeModule())
 											.writeValueAsBytes(scheduleModifyRequest))
 									.contentType(MediaType.APPLICATION_JSON))
@@ -399,9 +396,9 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.assigneeId").value(1L))
 					.andExpect(jsonPath("$.result.place").value("멋사동물병원"))
 					.andExpect(jsonPath("$.result.isCompleted").value(false))
-					.andExpect(jsonPath("$.result.dueDate").value("2023/01/25 10:26:00"))
-					.andExpect(jsonPath("$.result.createdAt").value("2023/01/25 10:26:00"))
-					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023/01/25 10:26:00"))
+					.andExpect(jsonPath("$.result.dueDate").value("2023-01-25 10:26:00"))
+					.andExpect(jsonPath("$.result.createdAt").value("2023-01-25 10:26:00"))
+					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023-01-25 10:26:00"))
 					.andDo(
 							restDocs.document(
 									pathParameters(
@@ -475,7 +472,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					Arrays.asList(new ScheduleListResponse(Category.HOSPITAL, "title", "body", 1L,
 							"멋사 동물병원", false, dateTime)));
 
-			given(scheduleService.list(1L, "user", pageable)).willReturn(scheduleListResponsePage);
+			given(scheduleService.list(1L, pageable)).willReturn(scheduleListResponsePage);
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.get("/api/v1/pets/{petId}/schedules", 1L))
@@ -488,7 +485,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$['result']['content'][0]['place']").value("멋사 동물병원"))
 					.andExpect(jsonPath("$['result']['content'][0]['isCompleted']").value(false))
 					.andExpect(jsonPath("$['result']['content'][0]['dueDate']").value(
-							"2023/01/25 10:26:00"))
+							"2023-01-25 10:26:00"))
 					.andDo(
 							restDocs.document(
 									pathParameters(
