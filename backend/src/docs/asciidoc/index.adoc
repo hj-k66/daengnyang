@@ -16,3 +16,5 @@ include::Schedule-API.adoc[]
 include::Group-API.adoc[]
 
 include::Monitoring-API.adoc[]
+
+include::RECORD-API.adoc[]
