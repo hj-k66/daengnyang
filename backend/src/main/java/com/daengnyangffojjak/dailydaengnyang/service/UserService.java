@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.RefreshTokenDto;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
@@ -85,13 +86,15 @@ public class UserService {
 
 	}
 
-	public TokenInfo generateNewToken(RefreshTokenDto refreshTokenDto) {
-		String refreshToken = refreshTokenDto.getRefreshToken();
+	public TokenInfo generateNewToken(TokenRequest tokenRequest) {
+		String refreshToken = tokenRequest.getRefreshToken();
+		String accessToken = tokenRequest.getAccessToken();
+
 		//1. refresh Token 검증 >> 예외처리
 		jwtTokenUtil.validateToken(refreshToken);
 
-		//2. refreshToken에서 userName 가져오기
-		Authentication authentication = jwtTokenUtil.getAuthentication(refreshToken);
+		//2. accessToken에서 userName 가져오기 >> accessToken 유효성도 검사
+		Authentication authentication = jwtTokenUtil.getAuthentication(accessToken);
 
 		//3. Redis에서 userName이 key인 refreshToken(value)를 가져오기
 		//입력받은 refreshToken과 일치하는지 체크

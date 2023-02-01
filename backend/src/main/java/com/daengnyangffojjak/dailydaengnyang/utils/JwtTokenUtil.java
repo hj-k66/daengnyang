@@ -125,10 +125,27 @@ public class JwtTokenUtil {
 		return userDetailsService.loadUserByUsername(userName);
 	}
 
+	//만료된 accesstoken에서도 보유한 사용자 정보를 이용하여 Authentication을 생성하기 위해 parse 따로 함
 	public Authentication getAuthentication(String token) {
-		UserDetails userDetails = getUserDetails(token);
+		Claims claims = parseClaims(token);
+		String userName = claims.get("userName", String.class);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
 		return new UsernamePasswordAuthenticationToken(userDetails, "",
 				userDetails.getAuthorities());
+	}
+
+	private Claims parseClaims(String accessToken) {
+		try {
+			return Jwts.parserBuilder().setSigningKey(makeKey()).build().parseClaimsJws(accessToken)
+					.getBody();
+		} catch (ExpiredJwtException e) {
+			return e.getClaims();
+		} catch (SignatureException e) {
+			log.info("서명이 일치하지 않습니다.");
+			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN, "서명 불일치");
+		} catch (IllegalArgumentException e) {
+			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN);
+		}
 	}
 
 }
