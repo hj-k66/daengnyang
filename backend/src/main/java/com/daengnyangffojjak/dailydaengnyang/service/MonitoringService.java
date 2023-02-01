@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMonthlyResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -11,6 +12,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,17 @@ public class MonitoringService {
 		Pet pet = validatePetWithUsername(petId, username);
 		Monitoring saved = monitoringRepository.save(mntWriteRequest.toEntity(pet));
 		return MntWriteResponse.from(saved);
+	}
+	@Transactional
+	public MntMonthlyResponse getMonthly(Long petId, String month, String username) {
+		Pet pet = validatePetWithUsername(petId, username);
+		int yearInt = Integer.parseInt(month.substring(0, 4));
+		int monthInt = Integer.parseInt(month.substring(4, 6));
+		LocalDate start = LocalDate.of(yearInt, monthInt, 1);
+		LocalDate end = LocalDate.of(yearInt, monthInt, start.lengthOfMonth());
+
+		List<Monitoring> monitorings = monitoringRepository.findAllByDateBetween(start, end);
+		return MntMonthlyResponse.from(monitorings);
 	}
 
 	@Transactional    //일단 pet은 바꿀 수 없음
@@ -73,5 +86,4 @@ public class MonitoringService {
 		}
 		return monitoring;
 	}
-
 }

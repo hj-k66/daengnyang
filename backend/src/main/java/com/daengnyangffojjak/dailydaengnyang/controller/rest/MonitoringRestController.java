@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMonthlyResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.MonitoringService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -67,5 +69,12 @@ public class MonitoringRestController {
 		MntGetResponse mntGetResponse = monitoringService.getMonitoring(petId, monitoringId,
 				user.getUsername());
 		return Response.success(mntGetResponse);
+	}
+
+	@GetMapping(value = "/pets/{petId}/monitorings/monthly")
+	public Response<MntMonthlyResponse> getMonthly(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long petId, @RequestParam String month) {
+		MntMonthlyResponse mntMonthlyResponse = monitoringService.getMonthly(petId, month, user.getUsername());
+		return Response.success(mntMonthlyResponse);
 	}
 }

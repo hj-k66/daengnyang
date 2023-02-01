@@ -3,11 +3,13 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMonthlyResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
@@ -20,6 +22,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -90,6 +94,7 @@ class MonitoringServiceTest {
 			assertEquals("hoon", response.getPetName());
 			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
 		}
+
 		@Test
 		@DisplayName("실패 - 펫등록번호와 모니터링의 펫 정보가 다를 때")
 		void fail() {
@@ -108,9 +113,11 @@ class MonitoringServiceTest {
 			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
 		}
 	}
+
 	@Nested
 	@DisplayName("모니터링 삭제")
 	class DeleteMonitoring {
+
 		Monitoring saved = Monitoring.builder()
 				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
@@ -128,9 +135,11 @@ class MonitoringServiceTest {
 			assertEquals("모니터링 삭제 완료", response.getMessage());
 		}
 	}
+
 	@Nested
 	@DisplayName("모니터링 단건조회")
 	class ShowMonitoring {
+
 		Monitoring saved = Monitoring.builder()
 				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
@@ -150,5 +159,31 @@ class MonitoringServiceTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("모니터링 달조회")
+	class ShowMonitoringMonthly {
 
+		List<Monitoring> saved = List.of(
+				Monitoring.builder()
+						.id(1L).pet(pet).date(LocalDate.of(2023, 1, 25)).weight(7.7).vomit(false)
+						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build(),
+				Monitoring.builder()
+						.id(2L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build()
+		);
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			LocalDate start = LocalDate.of(2023, 1, 1);
+			LocalDate end = LocalDate.of(2023, 1, 31);
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(new ArrayList<>());
+			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
+
+			MntMonthlyResponse response = assertDoesNotThrow(
+					() -> monitoringService.getMonthly(1L, "202301", "user"));
+			assertEquals(2, response.getMonthlyMonitorings().size());
+		}
+	}
 }
