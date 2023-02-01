@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/groups")
+@RequestMapping("/view/groups")
 @RequiredArgsConstructor
 public class GroupUiController {
 
