@@ -5,3 +5,18 @@
 === 모니터링 작성
 
 operation::monitoring-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Monitoring-수정]]
+=== 모니터링 수정
+
+operation::monitoring-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Monitoring-삭제]]
+=== 모니터링 삭제
+
+operation::monitoring-delete/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Monitoring-단건조회]]
+=== 모니터링 단건조회
+
+operation::monitoring-show/success[snippets='http-request,path-parameters,http-response,response-fields']

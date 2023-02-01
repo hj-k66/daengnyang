@@ -78,8 +78,8 @@ class GroupRestControllerTest extends ControllerTest {
 		@DisplayName("사용자 조회 성공")
 		void success() throws Exception {
 			GroupUserListResponse groupUserResponse = new GroupUserListResponse(
-					List.of(new GroupUserResponse(1L, "user", "mom", true),
-							new GroupUserResponse(2L, "user2", "dad", false)), 2);
+					List.of(new GroupUserResponse(1L, "user", "mom"),
+							new GroupUserResponse(2L, "user2", "dad")), 2);
 			given(groupService.getGroupUsers(1L, "user")).willReturn(groupUserResponse);
 
 			mockMvc.perform(
@@ -93,7 +93,6 @@ class GroupRestControllerTest extends ControllerTest {
 									fieldWithPath("result.users[].id").description("유저 번호"),
 									fieldWithPath("result.users[].userName").description("유저 아이디"),
 									fieldWithPath("result.users[].roleInGroup").description("그룹 내 역할"),
-									fieldWithPath("result.users[].owner").description("그룹장 여부"),
 									fieldWithPath("result.count").description("그룹 내 유저 수"))));
 			verify(groupService).getGroupUsers(1L, "user");
 		}

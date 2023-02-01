@@ -23,23 +23,27 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @Import(RestDocsConfiguration.class)
 @ExtendWith(RestDocumentationExtension.class)
 public class ControllerTest {
-    @Autowired
-    protected MockMvc mockMvc;
-    @Autowired
-    protected RestDocumentationResultHandler restDocs;
 
-    protected final ObjectMapper objectMapper;
-    public ControllerTest(){
-        this.objectMapper = new ObjectMapper();
-    }
-    @BeforeEach
-    void setUp(final WebApplicationContext context,
-               final RestDocumentationContextProvider provider) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(MockMvcRestDocumentation.documentationConfiguration(provider))  // rest docs 설정 주입
-                .alwaysDo(MockMvcResultHandlers.print()) // andDo(print()) 코드 포함
-                .alwaysDo(restDocs) // pretty 패턴과 문서 디렉토리 명 정해준것 적용
-                .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
-                .build();
-    }
+	@Autowired
+	protected MockMvc mockMvc;
+	@Autowired
+	protected RestDocumentationResultHandler restDocs;
+
+	protected final ObjectMapper objectMapper;
+
+	public ControllerTest() {
+		this.objectMapper = new ObjectMapper();
+	}
+
+	@BeforeEach
+	void setUp(final WebApplicationContext context,
+			final RestDocumentationContextProvider provider) {
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
+				.apply(MockMvcRestDocumentation.documentationConfiguration(
+						provider))  // rest docs 설정 주입
+				.alwaysDo(MockMvcResultHandlers.print()) // andDo(print()) 코드 포함
+				.alwaysDo(restDocs) // pretty 패턴과 문서 디렉토리 명 정해준것 적용
+				.addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
+				.build();
+	}
 }

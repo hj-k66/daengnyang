@@ -2,12 +2,14 @@ package com.daengnyangffojjak.dailydaengnyang.utils;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
@@ -15,9 +17,11 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
+import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
@@ -35,6 +39,7 @@ class ValidatorTest {
 	private final UserGroupRepository userGroupRepository = mock(UserGroupRepository.class);
 	private final GroupRepository groupRepository = mock(GroupRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
+	private final MonitoringRepository monitoringRepository = mock(MonitoringRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
@@ -46,7 +51,7 @@ class ValidatorTest {
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository);
+				petRepository, monitoringRepository);
 	}
 
 	@Nested
@@ -151,6 +156,36 @@ class ValidatorTest {
 			PetException e = assertThrows(PetException.class,
 					() -> validator.getPetById(1L));
 			assertEquals(ErrorCode.PET_NOT_FOUND, e.getErrorCode());
+		}
+	}
+
+	@Nested
+	@DisplayName("모니터링 등록번호로 모니터링 반환하기")
+	class getMonitoringById {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			Monitoring monitoring = Monitoring.builder()
+					.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+					.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+			given(monitoringRepository.findById(1L)).willReturn(Optional.of(monitoring));
+
+			Monitoring response = assertDoesNotThrow(
+					() -> validator.getMonitoringById(1L));
+			assertEquals(1L, response.getId());
+			assertFalse(response.isVomit());
+		}
+
+		@Test
+		@DisplayName("실패")
+		void fail() {
+			given(monitoringRepository.findById(1L)).willThrow(
+					new MonitoringException(ErrorCode.MONITORING_NOT_FOUND));
+
+			MonitoringException e = assertThrows(MonitoringException.class,
+					() -> validator.getMonitoringById(1L));
+			assertEquals(ErrorCode.MONITORING_NOT_FOUND, e.getErrorCode());
 		}
 	}
 
