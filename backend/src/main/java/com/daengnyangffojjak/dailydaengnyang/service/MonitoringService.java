@@ -37,7 +37,7 @@ public class MonitoringService {
 		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 
 		monitoring.modify(mntWriteRequest);
-		Monitoring modified = monitoringRepository.save(monitoring);
+		Monitoring modified = monitoringRepository.saveAndFlush(monitoring);
 		return MntWriteResponse.from(modified);
 	}
 
