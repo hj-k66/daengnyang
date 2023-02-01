@@ -47,6 +47,11 @@ public class ExceptionManager {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
+	@ExceptionHandler(MonitoringException.class)
+	public ResponseEntity<?> monitoringExceptionHandler(MonitoringException e) {
+		return ResponseEntity.status(e.getErrorCode().getStatus())
+				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
 
 //    @ExceptionHandler(RuntimeException.class)
 //    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e){
