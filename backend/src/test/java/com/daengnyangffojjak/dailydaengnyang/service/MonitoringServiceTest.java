@@ -82,7 +82,7 @@ class MonitoringServiceTest {
 			given(validator.getPetById(1L)).willReturn(pet);
 			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
 			given(validator.getMonitoringById(1L)).willReturn(saved);
-			given(monitoringRepository.save(saved)).willReturn(modified);
+			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
 
 			MntWriteResponse response = assertDoesNotThrow(
 					() -> monitoringService.modify(1L, 1L, request, "user"));
@@ -99,7 +99,7 @@ class MonitoringServiceTest {
 			given(validator.getPetById(1L)).willReturn(pet);
 			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
 			given(validator.getMonitoringById(1L)).willReturn(saved);
-			given(monitoringRepository.save(saved)).willReturn(modified);
+			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
 
 			MntWriteResponse response = assertDoesNotThrow(
 					() -> monitoringService.modify(1L, 1L, request, "user"));
