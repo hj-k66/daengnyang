@@ -6,8 +6,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMakeRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMakeResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -38,7 +40,7 @@ class MonitoringServiceTest {
 	@DisplayName("모니터링 등록")
 	class CreateMonitoring {
 
-		MntMakeRequest request = MntMakeRequest.builder()
+		MntWriteRequest request = MntWriteRequest.builder()
 				.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
 		Monitoring saved = Monitoring.builder()
@@ -52,11 +54,99 @@ class MonitoringServiceTest {
 			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
 			given(monitoringRepository.save(request.toEntity(pet))).willReturn(saved);
 
-			MntMakeResponse response = assertDoesNotThrow(
+			MntWriteResponse response = assertDoesNotThrow(
 					() -> monitoringService.create(1L, request, "user"));
 			assertEquals(1L, response.getId());
 			assertEquals("hoon", response.getPetName());
 			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+		}
+	}
+
+	@Nested
+	@DisplayName("모니터링 수정")
+	class ModifyMonitoring {
+
+		MntWriteRequest request = MntWriteRequest.builder()
+				.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("바꾼거").build();
+		Monitoring saved = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+		Monitoring modified = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("바꾼거").build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
+
+			MntWriteResponse response = assertDoesNotThrow(
+					() -> monitoringService.modify(1L, 1L, request, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("hoon", response.getPetName());
+			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+		}
+		@Test
+		@DisplayName("실패 - 펫등록번호와 모니터링의 펫 정보가 다를 때")
+		void fail() {
+			Monitoring saved = Monitoring.builder()
+					.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+					.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
+
+			MntWriteResponse response = assertDoesNotThrow(
+					() -> monitoringService.modify(1L, 1L, request, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("hoon", response.getPetName());
+			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+		}
+	}
+	@Nested
+	@DisplayName("모니터링 삭제")
+	class DeleteMonitoring {
+		Monitoring saved = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+
+			MntDeleteResponse response = assertDoesNotThrow(
+					() -> monitoringService.delete(1L, 1L, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("모니터링 삭제 완료", response.getMessage());
+		}
+	}
+	@Nested
+	@DisplayName("모니터링 단건조회")
+	class ShowMonitoring {
+		Monitoring saved = Monitoring.builder()
+				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetById(1L)).willReturn(pet);
+			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getMonitoringById(1L)).willReturn(saved);
+
+			MntGetResponse response = assertDoesNotThrow(
+					() -> monitoringService.getMonitoring(1L, 1L, "user"));
+			assertEquals("양치", response.getNotes());
+			assertEquals(false, response.isVomit());
+			assertEquals(3, response.getUrination());
 		}
 	}
 

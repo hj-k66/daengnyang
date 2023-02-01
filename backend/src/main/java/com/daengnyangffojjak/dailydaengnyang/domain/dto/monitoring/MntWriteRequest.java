@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class MntMakeRequest {
+public class MntWriteRequest {
 
 	@NotNull(message = "날짜를 입력하세요.")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -49,19 +49,19 @@ public class MntMakeRequest {
 				.date(this.date)
 				.weight(this.weight)
 				.vomit(this.vomit)
-				.amPill(this.amPill)       //오전 투약
-				.pmPill(this.pmPill)       //오후 투약
-				.customSymptom(this.customSymptom)           //custom symptom
-				.customSymptomName(this.customSymptomName)        //custom symptom 이름
-				.feedToGram(this.feedToGram)        //식이량 (g)
-				.walkCnt(this.walkCnt)         //산책횟수 - 강아지
-				.playCnt(this.playCnt)         //놀이횟수 - 고양이
-				.urination(this.urination)        //배뇨 횟수
-				.defecation(this.defecation)       //배변 횟수
-				.respiratoryRate(this.respiratoryRate)  //호흡수
-				.customInt(this.customInt)        //custom 모니터링
+				.amPill(this.amPill)
+				.pmPill(this.pmPill)
+				.customSymptom(this.customSymptom)
+				.customSymptomName(this.customSymptomName)
+				.feedToGram(this.feedToGram)
+				.walkCnt(this.walkCnt)
+				.playCnt(this.playCnt)
+				.urination(this.urination)
+				.defecation(this.defecation)
+				.respiratoryRate(this.respiratoryRate)
+				.customInt(this.customInt)
 				.customIntName(this.customIntName)
-				.notes(this.notes)    //기타 특이사항
+				.notes(this.notes)
 				.build();
 	}
 }
