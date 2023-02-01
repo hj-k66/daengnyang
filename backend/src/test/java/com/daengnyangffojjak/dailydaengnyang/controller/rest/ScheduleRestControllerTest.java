@@ -37,7 +37,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 	@MockBean
 	ScheduleService scheduleService;
 
-	// 일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간이 계속 안맞음 해결
+	// 일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간 안맞음 해결
 	LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10, 26);
 
 	// 일정등록
