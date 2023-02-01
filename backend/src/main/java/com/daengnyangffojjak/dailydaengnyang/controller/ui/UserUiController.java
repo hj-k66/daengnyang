@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -27,8 +28,19 @@ public class UserUiController {
 	private final UserService userService;
 
 	@GetMapping("/login")
-	public String login() {
+	public String login(Model model) {
+		model.addAttribute("userLoginRequest", new UserLoginRequest());
 		return "users/login";
+	}
+
+	@PostMapping("/login")
+	public String login(@Valid UserLoginRequest userLoginRequest, BindingResult result) {
+
+		if (result.hasErrors()) {
+			return "users/login";
+		}
+
+		return "users/join_pet";
 	}
 
 	@GetMapping("/join")
@@ -43,7 +55,6 @@ public class UserUiController {
 		if (result.hasErrors()) {
 			return "users/join";
 		}
-
 		userService.join(userJoinRequest);
 		return "users/join_group";
 	}
