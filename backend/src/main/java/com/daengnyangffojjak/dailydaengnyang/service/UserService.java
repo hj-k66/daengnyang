@@ -1,6 +1,5 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.RefreshTokenDto;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
@@ -90,22 +89,26 @@ public class UserService {
 		String refreshToken = tokenRequest.getRefreshToken();
 		String accessToken = tokenRequest.getAccessToken();
 
-		//1. refresh Token 검증 >> 예외처리
-		jwtTokenUtil.validateToken(refreshToken);
-
-		//2. accessToken에서 userName 가져오기 >> accessToken 유효성도 검사
+		//1. accessToken에서 userName 가져오기 >> accessToken 유효성도 검사
 		Authentication authentication = jwtTokenUtil.getAuthentication(accessToken);
 
-		//3. Redis에서 userName이 key인 refreshToken(value)를 가져오기
-		//입력받은 refreshToken과 일치하는지 체크
+		//2. refresh Token 검증
+		boolean isvalidToken = jwtTokenUtil.validateToken(refreshToken);
+
+		//Redis에서 userName이 key인 refreshToken(value)를 가져오기
 		String selectedToken = (String) redisTemplate.opsForValue().get(authentication.getName());
-		if (!Objects.equals(selectedToken, refreshToken)) {
-			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN, "해당 refresh token이 아닙니다.");
+
+		//refreshToken이 유효하지 않거나 입력받은 refreshToken과 redis 저장된게 일치하지 않으면
+		// 토큰 탈취되었다고 판단
+		// redis에서 refreshToken 삭제하고 예외처리
+		if (!isvalidToken || !Objects.equals(selectedToken, refreshToken)) {
+			redisTemplate.delete(authentication.getName());
+			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN, "재로그인 하세요.");
 		}
-		//4. 새로운 accessToken, refreshToken 생성
+		//3. 새로운 accessToken, refreshToken 생성
 		TokenInfo tokenInfo = jwtTokenUtil.createToken(authentication);
 
-		//5. redis에 새로운 refreshToken 저장
+		//4. redis에 새로운 refreshToken 저장
 		redisTemplate.opsForValue()
 				.set(authentication.getName(), tokenInfo.getRefreshToken(),
 						tokenInfo.getRefreshTokenExpireTime(), TimeUnit.MILLISECONDS);

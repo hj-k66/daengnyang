@@ -92,11 +92,12 @@ public class JwtTokenUtil {
 		return extractClaims(token).get("userName", String.class);
 	}
 
-	public void validateToken(String token) {
+	public boolean validateToken(String token) {
 		try {
 			extractClaims(token);
+			return true;
 		} catch (Exception e) {
-			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN);
+			return false;
 		}
 	}
 

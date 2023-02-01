@@ -1,7 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.RefreshTokenDto;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
@@ -37,14 +36,14 @@ public class UserRestController {
 				.body(Response.success(userJoinResponse));
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/login")  //로그인
 	public Response<UserLoginResponse> login(
 			@RequestBody @Valid UserLoginRequest userLoginRequest) {
 		UserLoginResponse userloginResponse = userService.login(userLoginRequest);
 		return Response.success(userloginResponse);
 	}
 
-	@PostMapping("/new-token")
+	@PostMapping("/new-token")  //토큰 재발급
 	public Response<TokenInfo> generateNewToken(
 			@RequestBody @Valid TokenRequest tokenRequest) {
 		TokenInfo tokenInfo = userService.generateNewToken(tokenRequest);
