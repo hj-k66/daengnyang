@@ -46,9 +46,7 @@ public class MonitoringService {
 		Pet pet = validatePetWithUsername(petId, username);
 		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 		monitoring.deleteSoftly();
-		return MntDeleteResponse.builder()
-				.message("모니터링 삭제 완료")
-				.id(monitoring.getId()).build();
+		return MntDeleteResponse.from(monitoring);
 	}
 
 	@Transactional
