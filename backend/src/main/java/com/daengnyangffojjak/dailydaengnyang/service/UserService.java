@@ -34,4 +34,12 @@ public class UserService {
 
         return UserJoinResponse.from(saved);
     }
+
+    /* 아이디, 이메일 중복 여부 확인 */
+    public boolean checkUserName(String userName) {
+        return userRepository.existsByUserName(userName);
+    }
+    public boolean checkEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
