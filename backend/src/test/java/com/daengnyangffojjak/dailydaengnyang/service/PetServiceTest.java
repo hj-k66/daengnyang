@@ -50,9 +50,8 @@ class PetServiceTest {
 			.sex(Sex.MALE)
 			.birthday(LocalDate.of(2022, 1, 1)).weight(5.5).build();
 	List<UserGroup> userGroupList = List.of(
-			new UserGroup(1L, User.builder().userName("user").build(), group, "mom", true),
-			new UserGroup(1L, User.builder().userName("user1").build(), group, "mom", false)
-	);
+			new UserGroup(1L, User.builder().userName("user2").build(), group, "mom"),
+			new UserGroup(1L, User.builder().userName("user1").build(), group, "dad"));
 
 	@Nested
 	@DisplayName("pet 등록하기")

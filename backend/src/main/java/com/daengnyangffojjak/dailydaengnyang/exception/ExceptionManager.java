@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionManager {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> MmthodArgumentNotValidExceptionHandler(
+	public ResponseEntity<?> MethodArgumentNotValidExceptionHandler(
 			MethodArgumentNotValidException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(Response.error(new ErrorResponse(ErrorCode.INVALID_REQUEST,

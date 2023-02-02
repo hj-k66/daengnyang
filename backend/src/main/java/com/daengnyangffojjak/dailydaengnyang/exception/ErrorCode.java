@@ -41,6 +41,7 @@ public enum ErrorCode {
 	 * Pet
 	 **/
 	PET_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 반려동물이 아닙니다."),
+	INVALID_BIRTHDAY(HttpStatus.BAD_REQUEST, "잘못된 생일날짜입니다."),
 
 	/**
 	 * Comment
