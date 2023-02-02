@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -16,6 +17,13 @@ public class ExceptionManager {
 	public ResponseEntity<?> SecurityCustomExceptionHandler(SecurityCustomException e) {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<?> argumentExceptionHandler(MethodArgumentNotValidException e) {
+		String errorMsg = e.getBindingResult().getFieldError().getDefaultMessage();
+		return ResponseEntity.status(e.getStatusCode())
+				.body(Response.error(new ErrorResponse(ErrorCode.INVALID_REQUEST, errorMsg)));
 	}
 
 	@ExceptionHandler(UserException.class)
