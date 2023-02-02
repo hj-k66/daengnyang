@@ -73,8 +73,8 @@ public class MonitoringRestController {
 
 	@GetMapping(value = "/pets/{petId}/monitorings/monthly")
 	public Response<MntMonthlyResponse> getMonthly(@AuthenticationPrincipal UserDetails user,
-			@PathVariable Long petId, @RequestParam String month) {
-		MntMonthlyResponse mntMonthlyResponse = monitoringService.getMonthly(petId, month, user.getUsername());
+			@PathVariable Long petId, @RequestParam Integer year, @RequestParam Integer month) {
+		MntMonthlyResponse mntMonthlyResponse = monitoringService.getMonthly(petId, year, month, user.getUsername());
 		return Response.success(mntMonthlyResponse);
 	}
 }

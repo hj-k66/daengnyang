@@ -54,9 +54,8 @@ class MonitoringServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(validator.getPetById(1L)).willReturn(pet);
-			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
-			given(monitoringRepository.save(request.toEntity(pet))).willReturn(saved);
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(monitoringRepository.save(any())).willReturn(saved);		//request.toEntity(pet)이 안됨
 
 			MntWriteResponse response = assertDoesNotThrow(
 					() -> monitoringService.create(1L, request, "user"));
@@ -83,8 +82,7 @@ class MonitoringServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(validator.getPetById(1L)).willReturn(pet);
-			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
 			given(validator.getMonitoringById(1L)).willReturn(saved);
 			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
 
@@ -101,8 +99,7 @@ class MonitoringServiceTest {
 			Monitoring saved = Monitoring.builder()
 					.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 					.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
-			given(validator.getPetById(1L)).willReturn(pet);
-			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
 			given(validator.getMonitoringById(1L)).willReturn(saved);
 			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
 
@@ -125,8 +122,7 @@ class MonitoringServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(validator.getPetById(1L)).willReturn(pet);
-			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
 			given(validator.getMonitoringById(1L)).willReturn(saved);
 
 			MntDeleteResponse response = assertDoesNotThrow(
@@ -147,8 +143,7 @@ class MonitoringServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(validator.getPetById(1L)).willReturn(pet);
-			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(any());
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
 			given(validator.getMonitoringById(1L)).willReturn(saved);
 
 			MntGetResponse response = assertDoesNotThrow(
@@ -177,12 +172,11 @@ class MonitoringServiceTest {
 		void success() {
 			LocalDate start = LocalDate.of(2023, 1, 1);
 			LocalDate end = LocalDate.of(2023, 1, 31);
-			given(validator.getPetById(1L)).willReturn(pet);
-			given(validator.getUserGroupListByUsername(pet.getGroup(), "user")).willReturn(new ArrayList<>());
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
 			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
 
 			MntMonthlyResponse response = assertDoesNotThrow(
-					() -> monitoringService.getMonthly(1L, "202301", "user"));
+					() -> monitoringService.getMonthly(1L, 2023, 1, "user"));
 			assertEquals(2, response.getMonthlyMonitorings().size());
 		}
 	}

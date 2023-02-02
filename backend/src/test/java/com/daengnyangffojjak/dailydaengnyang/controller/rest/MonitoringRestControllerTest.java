@@ -239,12 +239,12 @@ class MonitoringRestControllerTest extends ControllerTest {
 					.amPill(true).pmPill(true).customSymptom(false).customSymptomName(null)
 					.feedToGram(40).urination(3).defecation(2).respiratoryRate(24)
 					.customInt(2).customIntName("이뻐해주기").notes("양치").build();
-			given(monitoringService.getMonthly(1L, "202301", "user"))
+			given(monitoringService.getMonthly(1L, 2023, 1, "user"))
 					.willReturn(MntMonthlyResponse.builder()
 							.monthlyMonitorings(List.of(response1, response2)).build());
 
 			mockMvc.perform(
-							get("/api/v1/pets/{petId}/monitorings/monthly?month=202301", 1L))
+							get("/api/v1/pets/{petId}/monitorings/monthly?year=2023&month=1", 1L))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
 					.andDo(restDocs.document(
@@ -275,7 +275,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 											.description("커스텀 모니터링 지표"),
 									fieldWithPath("result.monthlyMonitorings[].notes").description("특이사항")
 							)));
-			verify(monitoringService).getMonthly(1L, "202301", "user");
+			verify(monitoringService).getMonthly(1L, 2023, 1, "user");
 		}
 	}
 }

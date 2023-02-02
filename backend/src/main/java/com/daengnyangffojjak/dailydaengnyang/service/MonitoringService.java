@@ -27,17 +27,15 @@ public class MonitoringService {
 
 	@Transactional
 	public MntWriteResponse create(Long petId, MntWriteRequest mntWriteRequest, String username) {
-		Pet pet = validatePetWithUsername(petId, username);
+		Pet pet = validator.getPetWithUsername(petId, username);
 		Monitoring saved = monitoringRepository.save(mntWriteRequest.toEntity(pet));
 		return MntWriteResponse.from(saved);
 	}
 	@Transactional
-	public MntMonthlyResponse getMonthly(Long petId, String month, String username) {
-		Pet pet = validatePetWithUsername(petId, username);
-		int yearInt = Integer.parseInt(month.substring(0, 4));
-		int monthInt = Integer.parseInt(month.substring(4, 6));
-		LocalDate start = LocalDate.of(yearInt, monthInt, 1);
-		LocalDate end = LocalDate.of(yearInt, monthInt, start.lengthOfMonth());
+	public MntMonthlyResponse getMonthly(Long petId, Integer year, Integer month, String username) {
+		Pet pet = validator.getPetWithUsername(petId, username);
+		LocalDate start = LocalDate.of(year, month, 1);
+		LocalDate end = LocalDate.of(year, month, start.lengthOfMonth());
 
 		List<Monitoring> monitorings = monitoringRepository.findAllByDateBetween(start, end);
 		return MntMonthlyResponse.from(monitorings);
@@ -46,7 +44,7 @@ public class MonitoringService {
 	@Transactional    //일단 pet은 바꿀 수 없음
 	public MntWriteResponse modify(Long petId, Long monitoringId, MntWriteRequest mntWriteRequest,
 			String username) {
-		Pet pet = validatePetWithUsername(petId, username);
+		Pet pet = validator.getPetWithUsername(petId, username);
 		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 
 		monitoring.modify(mntWriteRequest);
@@ -56,7 +54,7 @@ public class MonitoringService {
 
 	@Transactional
 	public MntDeleteResponse delete(Long petId, Long monitoringId, String username) {
-		Pet pet = validatePetWithUsername(petId, username);
+		Pet pet = validator.getPetWithUsername(petId, username);
 		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 		monitoring.deleteSoftly();
 		return MntDeleteResponse.from(monitoring);
@@ -64,17 +62,9 @@ public class MonitoringService {
 
 	@Transactional
 	public MntGetResponse getMonitoring(Long petId, Long monitoringId, String username) {
-		Pet pet = validatePetWithUsername(petId, username);
+		Pet pet = validator.getPetWithUsername(petId, username);
 		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
 		return MntGetResponse.from(monitoring);
-	}
-
-	//Pet과 username인 User가 같은 그룹이면 Pet을 반환
-	private Pet validatePetWithUsername(Long petId, String username) {
-		Pet pet = validator.getPetById(petId);
-		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(pet.getGroup(),
-				username);
-		return pet;
 	}
 
 	//모니터링의 해당 반려동물의 것이 맞으면 Monitoring 반환
