@@ -19,7 +19,7 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     public void modify(TagWorkRequest tagWorkRequest) {

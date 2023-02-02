@@ -81,7 +81,7 @@ public class Validator {
 		//로그인한 유저가 그룹 내 유저인지 확인 -> 그룹 내 유저가 아니면 예외 발생
 		if (userGroupList.stream()
 				.noneMatch(userGroup -> username.equals(userGroup.getUser().getUsername()))) {
-			throw new GroupException(ErrorCode.INVALID_PERMISSION);
+			throw new GroupException(ErrorCode.INVALID_PERMISSION, "해당 그룹에 속한 유저가 아닙니다.");
 		}
 		return userGroupList;
 	}

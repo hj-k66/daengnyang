@@ -6,6 +6,11 @@
 
 operation::tag-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
 
+[[Tag-리스트조회]]
+=== 태그 리스트조회
+
+operation::tag-list-get/success[snippets='http-request,path-parameters,http-response,response-fields']
+
 [[Tag-수정]]
 === 태그 수정
 
