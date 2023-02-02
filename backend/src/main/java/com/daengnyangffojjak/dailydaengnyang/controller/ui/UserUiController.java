@@ -1,20 +1,15 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import jakarta.validation.Valid;
-import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,21 +22,7 @@ public class UserUiController {
 
 	private final UserService userService;
 
-	@GetMapping("/login")
-	public String login(Model model) {
-		model.addAttribute("userLoginRequest", new UserLoginRequest());
-		return "users/login";
-	}
 
-	@PostMapping("/login")
-	public String login(@Valid UserLoginRequest userLoginRequest, BindingResult result) {
-
-		if (result.hasErrors()) {
-			return "users/login";
-		}
-
-		return "users/join_pet";
-	}
 
 	@GetMapping("/join")
 	public String join(Model model) {
