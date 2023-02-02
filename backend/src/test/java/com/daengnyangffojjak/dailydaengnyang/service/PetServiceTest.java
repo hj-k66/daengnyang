@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetDeleteResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetShowResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetUpdateResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
@@ -19,9 +20,9 @@ import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,12 +36,13 @@ class PetServiceTest {
 	private final UserRepository userRepository = mock(UserRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
 	private final UserGroupRepository userGroupRepository = mock(UserGroupRepository.class);
+	private final Validator validator = mock(Validator.class);
 
 
 	@BeforeEach
 	public void setUp() {
 		petService = new PetService(petRepository, userRepository, groupRepository,
-				userGroupRepository);
+				userGroupRepository, validator);
 	}
 
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
@@ -56,15 +58,16 @@ class PetServiceTest {
 	@Nested
 	@DisplayName("pet 등록하기")
 	class addPet {
+
 		PetAddRequest petAddRequest = new PetAddRequest("멍뭉이", Species.DOG, "종", Sex.MALE,
 				LocalDate.of(2022, 1, 1), 5.5); // LocalDate 생일
 
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
-			given(groupRepository.findById(1l)).willReturn(Optional.of(group));
-			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+
+			given(validator.getGroupById(1l)).willReturn(group);
+			given(validator.getUserGroupListByUsername(group, "user")).willReturn(userGroupList);
 			given(petRepository.save(petAddRequest.toEntity(group))).willReturn(pet);
 
 			PetAddResponse petAddResponse = assertDoesNotThrow(
@@ -78,6 +81,31 @@ class PetServiceTest {
 	}
 
 	@Nested
+	@DisplayName("pet 단건 조회하기")
+	class showPet {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(validator.getPetById(1l)).willReturn(pet);
+			given(validator.getGroupById(1l)).willReturn(group);
+
+			PetShowResponse petShowResponse = assertDoesNotThrow(
+					() -> petService.show(1l, 1l, "user"));
+
+			assertEquals(1L, petShowResponse.getId());
+			assertEquals("멍뭉이", petShowResponse.getName());
+			assertEquals(Species.DOG, petShowResponse.getSpecies());
+			assertEquals("종", petShowResponse.getBreed());
+			assertEquals(Sex.MALE, petShowResponse.getSex());
+			assertEquals(LocalDate.of(2022, 1, 1), petShowResponse.getBirthday());
+			assertEquals(null, petShowResponse.getCreatedAt());
+			assertEquals(null, petShowResponse.getLastModifiedAt());
+		}
+	}
+
+	@Nested
 	@DisplayName("pet 수정하기")
 	class modifyPet {
 
@@ -87,10 +115,9 @@ class PetServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(petRepository.findById(1l)).willReturn(Optional.of(pet));
-			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
-			given(groupRepository.findById(1l)).willReturn(Optional.of(group));
-			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(validator.getPetById(1l)).willReturn(pet);
+			given(validator.getGroupById(1l)).willReturn(group);
+			given(validator.getUserGroupListByUsername(group, "user")).willReturn(userGroupList);
 			given(petRepository.saveAndFlush(pet)).willReturn(pet);
 
 			PetUpdateResponse petUpdateResponse = assertDoesNotThrow(
@@ -100,9 +127,7 @@ class PetServiceTest {
 			assertEquals(update.getName(), petUpdateResponse.getName());
 			assertEquals("3살", petUpdateResponse.getAge());
 			assertEquals(null, petUpdateResponse.getLastModifiedAt());
-
 		}
-
 	}
 
 	@Nested
@@ -112,16 +137,14 @@ class PetServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(petRepository.findById(1l)).willReturn(Optional.of(pet));
-			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
-			given(groupRepository.findById(1l)).willReturn(Optional.of(group));
-			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+			given(validator.getPetById(1l)).willReturn(pet);
+			given(validator.getGroupById(1l)).willReturn(group);
+			given(validator.getUserGroupListByUsername(group, "user")).willReturn(userGroupList);
 
 			PetDeleteResponse petDeleteResponse = assertDoesNotThrow(
 					() -> petService.delete(1l, 1l, "user"));
 
 			assertEquals("등록이 취소되었습니다.", petDeleteResponse.getMessage());
 		}
-
 	}
 }

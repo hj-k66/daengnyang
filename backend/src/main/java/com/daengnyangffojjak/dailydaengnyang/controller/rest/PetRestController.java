@@ -8,11 +8,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetShowResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetUpdateResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.PetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,20 +35,14 @@ public class PetRestController {
 				.body(Response.success(petAddResponse));
 	}
 
-	// pet 조회
-	@GetMapping("/{groupsId}/petList")
-	public ResponseEntity<Response<Page<PetShowResponse>>> showAllPets(
-			@PathVariable Long groupsId,
-			@PageableDefault(size = 20)
-			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-		return ResponseEntity.ok().body(Response.success(petService.showAll(groupsId, pageable)));
-	}
 
 	// pet 상세 조회(단건)
 	@GetMapping(value = "/{groupsId}/pets/{id}")
 	public ResponseEntity<Response<PetShowResponse>> showPet(@PathVariable Long groupsId,
-			@PathVariable Long id) {
-		return ResponseEntity.ok().body(Response.success(petService.show(groupsId, id)));
+			@PathVariable Long id,
+			@AuthenticationPrincipal UserDetails user) {
+		return ResponseEntity.ok()
+				.body(Response.success(petService.show(groupsId, id, user.getUsername())));
 	}
 
 

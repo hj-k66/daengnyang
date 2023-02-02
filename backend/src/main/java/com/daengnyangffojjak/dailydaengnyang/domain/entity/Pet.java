@@ -19,6 +19,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @Entity
 @Getter
+@EqualsAndHashCode(callSuper = false)
 @Where(clause = "deleted_at is NULL")
 public class Pet extends BaseEntity {
 	@Id
