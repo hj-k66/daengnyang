@@ -1,0 +1,12 @@
+[[Tag-API]]
+== Tag API
+
+[[Tag-작성]]
+=== 태그 작성
+
+operation::tag-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Tag-수정]]
+=== 태그 수정
+
+operation::tag-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
