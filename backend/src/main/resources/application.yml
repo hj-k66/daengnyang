@@ -1,4 +1,9 @@
 spring:
+  #redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
   #jpa
   jpa:
     hibernate:
@@ -42,4 +47,5 @@ server:
       force-response: true
 jwt:
   token:
-    secret: MyNickNameisDaengAndNameisYang
+    secret: temp
+
