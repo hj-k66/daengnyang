@@ -28,13 +28,6 @@ public class ExceptionManager {
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> argumentExceptionHandler(MethodArgumentNotValidException e) {
-		String errorMsg = e.getBindingResult().getFieldError().getDefaultMessage();
-		return ResponseEntity.status(e.getStatusCode())
-				.body(Response.error(new ErrorResponse(ErrorCode.INVALID_REQUEST, errorMsg)));
-	}
-
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<?> userExceptionHandler(UserException e) {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
