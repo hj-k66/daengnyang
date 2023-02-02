@@ -179,7 +179,7 @@ class ValidatorTest {
 			Monitoring response = assertDoesNotThrow(
 					() -> validator.getMonitoringById(1L));
 			assertEquals(1L, response.getId());
-			assertFalse(response.isVomit());
+			assertFalse(response.getVomit());
 		}
 
 		@Test

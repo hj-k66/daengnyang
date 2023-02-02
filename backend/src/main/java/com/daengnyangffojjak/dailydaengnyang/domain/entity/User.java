@@ -81,7 +81,7 @@ public class User extends BaseEntity implements OAuth2User, UserDetails  {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
 

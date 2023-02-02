@@ -57,6 +57,13 @@ public class Validator {
 		return monitoringRepository.findById(monitoringId)
 				.orElseThrow(() -> new MonitoringException(ErrorCode.MONITORING_NOT_FOUND));
 	}
+	//Pet과 username인 User가 같은 그룹이면 Pet을 반환
+	public Pet getPetWithUsername(Long petId, String username) {
+		Pet pet = getPetById(petId);
+		List<UserGroup> userGroupList = getUserGroupListByUsername(pet.getGroup(),
+				username);
+		return pet;
+	}
 
 	public Record getRecordById(Long recordId) {
 		return recordRepository.findById(recordId)
@@ -77,6 +84,4 @@ public class Validator {
 		}
 		return userGroupList;
 	}
-
-
 }
