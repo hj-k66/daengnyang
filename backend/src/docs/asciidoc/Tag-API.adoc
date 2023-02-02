@@ -10,3 +10,8 @@ operation::tag-create/success[snippets='http-request,path-parameters,request-fie
 === 태그 수정
 
 operation::tag-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Tag-삭제]]
+=== 태그 삭제
+
+operation::tag-delete/success[snippets='http-request,path-parameters,http-response,response-fields']

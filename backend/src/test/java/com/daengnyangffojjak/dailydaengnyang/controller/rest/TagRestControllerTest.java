@@ -4,6 +4,7 @@ import static com.daengnyangffojjak.dailydaengnyang.utils.RestDocsConfiguration.
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -14,6 +15,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.TagService;
@@ -89,6 +91,31 @@ class TagRestControllerTest extends ControllerTest {
 									fieldWithPath("result.id").description("태그 등록 번호"),
 									fieldWithPath("result.name").description("태그 이름"))));
 			verify(tagService).modify(1L, 1L, request, "user");
+
+		}
+	}
+	@Nested
+	@DisplayName("태그 삭제")
+	class TagDelete {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			given(tagService.delete(1L, 1L, "user")).willReturn(new MessageResponse("태그가 삭제되었습니다."));
+
+			mockMvc.perform(
+							delete("/api/v1/groups/{groupId}/tags/{tagId}", 1L, 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result.msg").value("태그가 삭제되었습니다."))
+					.andDo(restDocs.document(
+							pathParameters(
+									parameterWithName("groupId").description("그룹 번호"),
+									parameterWithName("tagId").description("태그 번호")
+							),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.msg").description("결과 메세지"))));
+			verify(tagService).delete(1L, 1L, "user");
 
 		}
 	}

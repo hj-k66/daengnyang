@@ -1,8 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.TagService;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,5 +44,11 @@ public class TagRestController {
 		return ResponseEntity.created(
 						URI.create("/api/v1/groups/" + groupId + "/tags/" + tagWorkResponse.getId()))
 				.body(Response.success(tagWorkResponse));
+	}
+	@DeleteMapping(value = "/groups/{groupId}/tags/{tagId}")
+	public Response<MessageResponse> delete(
+			@AuthenticationPrincipal UserDetails user, @PathVariable Long groupId, @PathVariable Long tagId) {
+		MessageResponse messageResponse = tagService.delete(groupId, tagId, user.getUsername());
+		return Response.success(messageResponse);
 	}
 }
