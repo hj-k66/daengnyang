@@ -21,7 +21,7 @@ public class MntWriteRequest {
 
 	@NotNull(message = "날짜를 입력하세요.")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-	@PastOrPresent
+	@PastOrPresent (message = "모니터링 날짜는 과거 또는 현재 날짜여야 합니다.")
 	private LocalDate date;          //오늘 이전 날짜
 
 	private double weight;        //몸무게
