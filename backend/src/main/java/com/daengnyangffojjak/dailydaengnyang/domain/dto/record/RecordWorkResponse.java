@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class RecordResultResponse {
+public class RecordWorkResponse {
 
 	private String message;
 	private Long recordId;

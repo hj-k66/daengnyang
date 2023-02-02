@@ -1,6 +1,5 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -10,21 +9,16 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResultRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResultResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
-import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
-import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.service.RecordService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -49,23 +42,8 @@ class RecordRestControllerTest extends ControllerTest {
 	LocalDateTime createdAt = LocalDateTime.of(2023, 1, 1, 11, 11);
 	LocalDateTime lastmodifiedAt = LocalDateTime.of(2023, 1, 2, 22, 22);
 
-	RecordResultRequest recordResultRequest = new RecordResultRequest("제목", "본문", false,
+	RecordWorkRequest recordWorkRequest = new RecordWorkRequest("제목", "본문", false,
 			Category.WALK);
-
-	// 일기 상세(1개) 조회
-	RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user",
-			Category.WALK, createdAt, lastmodifiedAt);
-
-	Pageable pageable = PageRequest.of(0, 20, Direction.DESC, "createdAt");
-	// 일기 작성
-	RecordResultResponse createRecordResponse = new RecordResultResponse("일기 작성 완료", 1L);
-	// 일기 수정
-	RecordResultResponse modifyRecordResponse = new RecordResultResponse("일기 수정 완료", 1L);
-	RecordResultRequest modiftyRecordRequest = new RecordResultRequest("바뀐 제목", "바뀐 본문", true,
-			Category.TRAVEL);
-	// 일기 삭제
-	RecordResultResponse deleteRecordResponse = new RecordResultResponse("일기 삭제 완료", 1L);
-
 
 	@Nested
 	@DisplayName("일기 상세(1개) 조회")
@@ -74,6 +52,10 @@ class RecordRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("일기 상세(1개) 조회 성공")
 		void success_get_one_record() throws Exception {
+
+			// 일기 상세(1개) 조회
+			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user",
+					Category.WALK, createdAt, lastmodifiedAt);
 
 			given(recordService.getOneRecord(1L, 1L, "user"))
 					.willReturn(recordResponse);
@@ -125,6 +107,8 @@ class RecordRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("전체 피드 조회 성공")
 		void success_get_all_records() throws Exception {
+
+			Pageable pageable = PageRequest.of(0, 20, Direction.DESC, "createdAt");
 
 			List<RecordResponse> allRecords = List.of(RecordResponse.builder()
 					.id(1L)
@@ -210,12 +194,15 @@ class RecordRestControllerTest extends ControllerTest {
 		@DisplayName("일기 작성 성공")
 		void success_create_record() throws Exception {
 
-			given(recordService.createRecord(1L, recordResultRequest, "user"))
+			// 일기 작성
+			RecordWorkResponse createRecordResponse = new RecordWorkResponse("일기 작성 완료", 1L);
+
+			given(recordService.createRecord(1L, recordWorkRequest, "user"))
 					.willReturn(createRecordResponse);
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.post("/api/v1/pets/{petId}/records", 1L)
-									.content(objectMapper.writeValueAsBytes(recordResultRequest))
+									.content(objectMapper.writeValueAsBytes(recordWorkRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
 					.andExpect(jsonPath("$.result.message").value("일기 작성 완료"))
@@ -237,7 +224,7 @@ class RecordRestControllerTest extends ControllerTest {
 							)
 					);
 
-			verify(recordService).createRecord(1L, recordResultRequest, "user");
+			verify(recordService).createRecord(1L, recordWorkRequest, "user");
 		}
 	}
 
@@ -249,15 +236,20 @@ class RecordRestControllerTest extends ControllerTest {
 		@DisplayName("일기 수정 성공")
 		void success_modify_record() throws Exception {
 
+			// 일기 수정
+			RecordWorkResponse modifyRecordResponse = new RecordWorkResponse("일기 수정 완료", 1L);
+			RecordWorkRequest modiftyRecordRequest = new RecordWorkRequest("바뀐 제목", "바뀐 본문", true,
+					Category.TRAVEL);
+
 			given(recordService.modifyRecord(1L, 1L, modiftyRecordRequest, "user"))
 					.willReturn(modifyRecordResponse);
 
 			mockMvc.perform(
-							RestDocumentationRequestBuilders.put("/api/v1//pets/{petId}/records/{recordId}",
+							RestDocumentationRequestBuilders.put("/api/v1/pets/{petId}/records/{recordId}",
 											1L, 1L)
 									.content(objectMapper.writeValueAsBytes(modiftyRecordRequest))
 									.contentType(MediaType.APPLICATION_JSON))
-					.andExpect(status().isOk())
+					.andExpect(status().isCreated())
 					.andExpect(jsonPath("$.result.recordId").value(1L))
 					.andExpect(jsonPath("$.result.message").value("일기 수정 완료"))
 					.andDo(
@@ -291,6 +283,10 @@ class RecordRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("일기 삭제 성공")
 		void succes_delete_record() throws Exception {
+
+			// 일기 삭제
+			RecordWorkResponse deleteRecordResponse = new RecordWorkResponse("일기 삭제 완료", 1L);
+
 
 			given(recordService.deleteRecord(1L, 1L, "user"))
 					.willReturn(deleteRecordResponse);

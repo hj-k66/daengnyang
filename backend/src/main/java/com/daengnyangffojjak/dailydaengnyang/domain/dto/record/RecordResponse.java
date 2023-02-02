@@ -51,7 +51,7 @@ public class RecordResponse {
 				.build();
 	}
 
-	public static RecordResponse of(Record record) {
+	public static RecordResponse from(Record record) {
 		return RecordResponse.builder()
 				.id(record.getId())
 				.title(record.getTitle())

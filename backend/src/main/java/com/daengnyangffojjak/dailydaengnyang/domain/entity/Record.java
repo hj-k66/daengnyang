@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,10 +35,10 @@ public class Record extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isPublic;
 
-	public void modifyRecord(Record record) {
-		this.body = record.getBody();
-		this.title = record.getTitle();
-		this.category = record.getCategory();
-		this.isPublic = record.getIsPublic();
+	public void modifyRecord(RecordWorkRequest recordWorkRequest) {
+		this.body = recordWorkRequest.getBody();
+		this.title = recordWorkRequest.getTitle();
+		this.category = recordWorkRequest.getCategory();
+		this.isPublic = recordWorkRequest.getIsPublic();
 	}
 }

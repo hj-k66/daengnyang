@@ -2,8 +2,8 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResultRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResultResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.RecordService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -46,42 +46,44 @@ public class RecordRestController {
 
 	// 일기 작성
 	@PostMapping(value = "/pets/{petId}/records")
-	public ResponseEntity<Response<RecordResultResponse>> createRecord(
+	public ResponseEntity<Response<RecordWorkResponse>> createRecord(
 			@PathVariable Long petId,
-			@RequestBody RecordResultRequest recordResultRequest,
+			@RequestBody RecordWorkRequest recordWorkRequest,
 			@AuthenticationPrincipal UserDetails user) {
 
-		RecordResultResponse recordResultResponse = recordService.createRecord(petId,
-				recordResultRequest, user.getUsername());
+		RecordWorkResponse recordWorkResponse = recordService.createRecord(petId,
+				recordWorkRequest, user.getUsername());
 		return ResponseEntity.created(
 						URI.create("api/v1/pets/" + petId + "/schedules/"
-								+ recordResultResponse.getRecordId())).
-				body(Response.success(recordResultResponse));
+								+ recordWorkResponse.getRecordId())).
+				body(Response.success(recordWorkResponse));
 	}
 
 	// 일기 수정
 	@PutMapping(value = "/pets/{petId}/records/{recordId}")
-	public ResponseEntity<Response<RecordResultResponse>> modifyRecord(
+	public ResponseEntity<Response<RecordWorkResponse>> modifyRecord(
 			@PathVariable Long petId,
 			@PathVariable Long recordId,
-			@RequestBody RecordResultRequest recordResultRequest,
+			@RequestBody RecordWorkRequest recordWorkRequest,
 			@AuthenticationPrincipal UserDetails user) {
 
-		RecordResultResponse recordResultResponse = recordService.modifyRecord(petId, recordId,
-				recordResultRequest, user.getUsername());
-		return ResponseEntity.ok().body(Response.success(recordResultResponse));
+		RecordWorkResponse recordWorkResponse = recordService.modifyRecord(petId, recordId,
+				recordWorkRequest, user.getUsername());
+		return ResponseEntity.created(
+				URI.create("api/v1/pets/" + petId + "/schedules/"
+						+ recordId)).body(Response.success(recordWorkResponse));
 	}
 
 	// 일기 삭제
 	@DeleteMapping(value = "/pets/{petId}/records/{recordId}")
-	public ResponseEntity<Response<RecordResultResponse>> deleteRecord(
+	public ResponseEntity<Response<RecordWorkResponse>> deleteRecord(
 			@PathVariable Long petId,
 			@PathVariable Long recordId,
 			@AuthenticationPrincipal UserDetails user) {
 
-		RecordResultResponse recordResultResponse = recordService.deleteRecord(petId, recordId,
+		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(petId, recordId,
 				user.getUsername());
-		return ResponseEntity.ok().body(Response.success(recordResultResponse));
+		return ResponseEntity.ok().body(Response.success(recordWorkResponse));
 	}
 
 	// 찜리스트 모아보기

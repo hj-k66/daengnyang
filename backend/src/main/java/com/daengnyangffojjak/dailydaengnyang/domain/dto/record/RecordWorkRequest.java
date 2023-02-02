@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class RecordResultRequest {
+public class RecordWorkRequest {
 
 	private String title;
 	private String body;
@@ -26,15 +26,6 @@ public class RecordResultRequest {
 		return Record.builder()
 				.user(user)
 				.pet(pet)
-				.title(title)
-				.body(body)
-				.isPublic(isPublic)
-				.category(category)
-				.build();
-	}
-
-	public Record editEntity() {
-		return Record.builder()
 				.title(title)
 				.body(body)
 				.isPublic(isPublic)
