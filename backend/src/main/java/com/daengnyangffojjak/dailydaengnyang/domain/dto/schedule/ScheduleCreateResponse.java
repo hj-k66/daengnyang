@@ -13,9 +13,9 @@ public class ScheduleCreateResponse {
 	private String message;
 	private Long id;
 
-	public static ScheduleCreateResponse toResponse(Schedule savedSchedule) {
+	public static ScheduleCreateResponse toResponse(String message, Schedule savedSchedule) {
 		return ScheduleCreateResponse.builder()
-				.message("일정 등록 완료")
+				.message(message)
 				.id(savedSchedule.getId())
 				.build();
 	}

@@ -37,7 +37,7 @@ public class ScheduleService {
 		// 일정 저장
 		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
 
-		return ScheduleCreateResponse.toResponse(savedSchedule);
+		return ScheduleCreateResponse.toResponse("일정 등록 완료", savedSchedule);
 
 	}
 
