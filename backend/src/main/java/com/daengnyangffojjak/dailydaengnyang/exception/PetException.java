@@ -14,11 +14,12 @@ public class PetException extends RuntimeException {
 		this.errorCode = errorCode;
 	}
 
+
 	@Override
 	public String toString() {
-        if (message == null) {
-            return errorCode.getMessage();
-        }
+		if (message == null) {
+			return errorCode.getMessage();
+		}
 		return String.format("%s %s", errorCode.getMessage(), message);
 	}
 }

@@ -14,27 +14,28 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @Builder
 public class ScheduleCreateRequest {
-    private Category category;
-    private String title;
-    private String body;
-    private Long assigneeId;
-    private String place;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime dueDate;
+	private Category category;
+	private String title;
+	private String body;
+	private Long assigneeId;
+	private String place;
 
-    public Schedule toEntity(Pet pet, User user) {
-        return Schedule.builder()
-                .user(user)
-                .pet(pet)
-                .category(category)
-                .title(title)
-                .body(body)
-                .assigneeId(assigneeId)
-                .place(place)
-                .dueDate(dueDate)
-                .build();
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
+	private LocalDateTime dueDate;
 
-    }
+	public Schedule toEntity(Pet pet, User user) {
+		return Schedule.builder()
+				.user(user)
+				.pet(pet)
+				.category(category)
+				.title(title)
+				.body(body)
+				.assigneeId(assigneeId)
+				.place(place)
+				.dueDate(dueDate)
+				.build();
+
+	}
 
 }

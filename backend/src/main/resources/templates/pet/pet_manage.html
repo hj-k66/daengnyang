@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+  <meta charset="UTF-8">
+  <title>개묘한 이야기</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h3> 반려동물 관리 </h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-8">
+      <!-- 데이터 받아서 테이블 생성 -->
+      <table class="tg" style="undefined; table-layout: fixed; width: 595px">
+        <colgroup>
+          <col style="width: 156.0px">
+          <col style="width: 156.0px">
+          <col style="width: 156.0px">
+          <col style="width: 156.0px">
+        </colgroup>
+        <thead>
+        <tr>
+          <td class="tg-y67q" rowspan="3">사진</td>
+          <td class="tg-la1s" rowspan="2">이름</td>
+          <td class="tg-m684">품종</td>
+          <td class="tg-m684" rowspan="2">질병</td>
+        </tr>
+        <tr>
+          <td class="tg-4dm3">생일</td>
+        </tr>
+        <tr>
+          <td class="tg-9wq8">성별</td>
+          <td class="tg-4dm3">몸무게</td>
+          <td class="tg-4dm3">
+            <button class="btn" onclick="location.href='#'">수정</button>
+          </td>
+        </tr>
+        </thead>
+      </table>
+
+    </div>
+    <div class="col-md-2">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+
+</body>
+</html>
