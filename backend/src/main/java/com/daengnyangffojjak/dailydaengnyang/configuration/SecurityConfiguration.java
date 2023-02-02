@@ -31,7 +31,7 @@ public class SecurityConfiguration {
 				//springboot 3.0부터 security HTTP 요청 권한 승인 로직 변경
 				//Instead of using authorizeRequests, use authorizeHttpRequests
 				.cors().and().authorizeHttpRequests(authorize -> authorize
-						.requestMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
+						.requestMatchers("/api/v1/users/**").permitAll()
 						.requestMatchers("/docs/index.html").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()

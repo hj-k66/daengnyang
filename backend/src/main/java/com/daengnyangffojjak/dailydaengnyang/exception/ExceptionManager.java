@@ -13,6 +13,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionManager {
 
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<?> MmthodArgumentNotValidExceptionHandler(
+			MethodArgumentNotValidException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(Response.error(new ErrorResponse(ErrorCode.INVALID_REQUEST,
+						e.getBindingResult().getAllErrors().get(0).getDefaultMessage())));
+	}
+
+
 	@ExceptionHandler(SecurityCustomException.class)
 	public ResponseEntity<?> SecurityCustomExceptionHandler(SecurityCustomException e) {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
@@ -61,10 +70,4 @@ public class ExceptionManager {
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
 
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e){
-//        log.error(e.getMessage());
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .body(Response.error(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage())));
-//    }
 }

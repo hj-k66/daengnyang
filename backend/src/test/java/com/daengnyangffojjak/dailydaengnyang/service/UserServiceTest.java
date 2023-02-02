@@ -6,10 +6,13 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
@@ -26,7 +29,8 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, mock(BCryptPasswordEncoder.class));
+        userService = new UserService(userRepository, mock(BCryptPasswordEncoder.class),mock(AuthenticationManagerBuilder.class),mock(JwtTokenUtil.class), mock(
+                RedisTemplate.class));
     }
 
     @Nested
