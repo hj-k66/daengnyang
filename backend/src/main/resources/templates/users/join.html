@@ -110,6 +110,7 @@
         console.log('결과 ' + data + ' ' + email);
         if (data == true){
           $("#email_span").html("중복된 이메일입니다");
+          emailPass = false;
           check_join()
         } else {
           $("#email_span").html("사용 가능한 이메일입니다");
@@ -163,11 +164,6 @@
 
     if (pw == "") {
       $("#pw_span").html("패스워드를 입력하지 않으셨습니다");
-      return;
-    }
-
-    if (pw1 == ""){
-      $("#pw1_span").html("패스워드를 입력하지 않으셨습니다");
       return;
     }
 
