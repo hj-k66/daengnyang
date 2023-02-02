@@ -13,7 +13,7 @@ public class GroupUiController {
 
 	@PostMapping("/groups")
 	public String groupCreate(Model model) {
-		return "users/join_group";
+		return "users/join_pet";
 	}
 
 }
