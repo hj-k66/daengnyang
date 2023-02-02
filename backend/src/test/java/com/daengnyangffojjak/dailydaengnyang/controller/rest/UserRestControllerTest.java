@@ -5,7 +5,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginResponse;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
@@ -24,6 +23,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -151,19 +151,16 @@ class UserRestControllerTest extends ControllerTest {
 		@DisplayName("로그인 성공")
 		void login_success() throws Exception {
 
-			given(userService.login(userLoginRequest)).willReturn(new UserLoginResponse(
-					new TokenInfo("accesstoken", "refreshtoken", REFRESH_TOKEN_EXPIRE_TIME)));
+			given(userService.login(userLoginRequest)).willReturn(
+					new TokenInfo("accesstoken", "refreshtoken", REFRESH_TOKEN_EXPIRE_TIME));
 
 			mockMvc.perform(
 							post("/api/v1/users/login")
 									.content(objectMapper.writeValueAsBytes(userLoginRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.result.tokenInfo").exists())
-					.andExpect(jsonPath("$.result.tokenInfo.accessToken").value("accesstoken"))
-					.andExpect(jsonPath("$.result.tokenInfo.refreshToken").value("refreshtoken"))
-					.andExpect(jsonPath("$.result.tokenInfo.refreshTokenExpireTime").value(
-							REFRESH_TOKEN_EXPIRE_TIME))
+					.andExpect(jsonPath("$.result.accessToken").value("accesstoken"))
+					.andExpect(cookie().value("refreshToken", "refreshtoken"))  //쿠키 검증
 					.andDo(
 							restDocs.document(
 									requestFields(
@@ -173,16 +170,10 @@ class UserRestControllerTest extends ControllerTest {
 									responseFields(
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath(
-													"result.tokenInfo.accessToken").description(
-													"엑세스토큰"),
-											fieldWithPath(
-													"result.tokenInfo.refreshToken").description(
-													"리프레시토큰"),
-											fieldWithPath(
-													"result.tokenInfo.refreshTokenExpireTime").description(
-													"리프레시토큰만료시간"))
-							)
-					);
+													"result.accessToken").description(
+													"엑세스토큰")
+									)
+							));
 			verify(userService).login(userLoginRequest);
 		}
 
@@ -245,10 +236,7 @@ class UserRestControllerTest extends ControllerTest {
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.result.accessToken").value("new-accesstoken"))
-					.andExpect(
-							jsonPath("$.result.refreshToken").value("new-refreshtoken"))
-					.andExpect(jsonPath("$.result.refreshTokenExpireTime").value(
-							REFRESH_TOKEN_EXPIRE_TIME))
+					.andExpect(cookie().value("refreshToken", "new-refreshtoken"))  //쿠키 검증
 					.andDo(
 							restDocs.document(
 									requestFields(
@@ -259,15 +247,8 @@ class UserRestControllerTest extends ControllerTest {
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath(
 													"result.accessToken").description(
-													"엑세스토큰"),
-											fieldWithPath(
-													"result.refreshToken").description(
-													"리프레시토큰"),
-											fieldWithPath(
-													"result.refreshTokenExpireTime").description(
-													"리프레시토큰만료시간"))
-							)
-					);
+													"엑세스토큰"))
+							));
 			verify(userService).generateNewToken(tokenRequest);
 
 		}

@@ -36,7 +36,7 @@ public class JwtTokenUtil {
 	private String secretKey;
 
 	private final static long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60; //1시간
-	private final static long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 10; //10일
+	private final static long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; //7일
 
 
 	//secretKey는 256bit보다 커야 한다. 영어 한단어당 8bit 이므로 32글자 이상이어야 한다는 뜻이다.
@@ -53,7 +53,7 @@ public class JwtTokenUtil {
 		String accessToken = generateAccessToken(userName, authorities);
 
 		//Refresh Token 생성
-		String refreshToken = generateRefreshToken(userName);
+		String refreshToken = generateRefreshToken();
 
 		return TokenInfo.builder()
 				.accessToken(accessToken)
@@ -77,12 +77,9 @@ public class JwtTokenUtil {
 				.compact();
 	}
 
-	public String generateRefreshToken(String userName) {
-		Claims claims = Jwts.claims();
-		claims.put("userName", userName);
+	public String generateRefreshToken() {
 
 		return Jwts.builder()
-				.setClaims(claims)
 				.setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_TIME))
 				.signWith(makeKey(), SignatureAlgorithm.HS256)
 				.compact();

@@ -5,7 +5,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
@@ -57,7 +56,7 @@ public class UserService {
 		return UserJoinResponse.from(saved);
 	}
 
-	public UserLoginResponse login(UserLoginRequest userLoginRequest) {
+	public TokenInfo login(UserLoginRequest userLoginRequest) {
 
 		//1. 해당 user 있는지 검증
 		User user = userRepository.findByUserName(userLoginRequest.getUserName())
@@ -81,7 +80,7 @@ public class UserService {
 				.set(authentication.getName(), tokenInfo.getRefreshToken(),
 						tokenInfo.getRefreshTokenExpireTime(), TimeUnit.MILLISECONDS);
 
-		return new UserLoginResponse(tokenInfo);
+		return tokenInfo;
 
 	}
 
