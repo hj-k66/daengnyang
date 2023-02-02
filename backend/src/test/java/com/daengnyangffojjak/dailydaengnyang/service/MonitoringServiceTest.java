@@ -149,7 +149,7 @@ class MonitoringServiceTest {
 			MntGetResponse response = assertDoesNotThrow(
 					() -> monitoringService.getMonitoring(1L, 1L, "user"));
 			assertEquals("양치", response.getNotes());
-			assertEquals(false, response.isVomit());
+			assertEquals(false, response.getVomit());
 			assertEquals(3, response.getUrination());
 		}
 	}
