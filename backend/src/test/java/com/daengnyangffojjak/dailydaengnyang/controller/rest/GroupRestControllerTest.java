@@ -7,6 +7,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -78,13 +79,13 @@ class GroupRestControllerTest extends ControllerTest {
 		@DisplayName("사용자 조회 성공")
 		void success() throws Exception {
 			GroupUserListResponse groupUserResponse = new GroupUserListResponse(
-					List.of(new GroupUserResponse(1L, "user", "mom", true),
-							new GroupUserResponse(2L, "user2", "dad", false)), 2);
+					List.of(new GroupUserResponse(1L, "user", "mom"),
+							new GroupUserResponse(2L, "user2", "dad")), 2);
 			given(groupService.getGroupUsers(1L, "user")).willReturn(groupUserResponse);
 
 			mockMvc.perform(
-							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/users", 1L)
-									.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/users", 1L))
+					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
 					.andExpect(jsonPath("$.result.users").exists()).andDo(restDocs.document(
 							pathParameters(parameterWithName("groupId").description("그룹 번호")),
@@ -93,7 +94,6 @@ class GroupRestControllerTest extends ControllerTest {
 									fieldWithPath("result.users[].id").description("유저 번호"),
 									fieldWithPath("result.users[].userName").description("유저 아이디"),
 									fieldWithPath("result.users[].roleInGroup").description("그룹 내 역할"),
-									fieldWithPath("result.users[].owner").description("그룹장 여부"),
 									fieldWithPath("result.count").description("그룹 내 유저 수"))));
 			verify(groupService).getGroupUsers(1L, "user");
 		}
@@ -112,8 +112,8 @@ class GroupRestControllerTest extends ControllerTest {
 			given(groupService.getGroupPets(1L, "user")).willReturn(petListResponse);
 
 			mockMvc.perform(
-							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets", 1L)
-									.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}/pets", 1L))
+					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
 					.andExpect(jsonPath("$.result.pets").exists()).andDo(restDocs.document(
 							pathParameters(parameterWithName("groupId").description("그룹 번호")),

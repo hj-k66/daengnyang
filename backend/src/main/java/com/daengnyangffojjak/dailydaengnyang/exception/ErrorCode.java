@@ -38,9 +38,15 @@ public enum ErrorCode {
 	SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 일정이 없습니다."),
 
 	/**
+	 * Record
+	 */
+	RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 일기가 없습니다."),
+
+	/**
 	 * Pet
 	 **/
 	PET_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 반려동물이 아닙니다."),
+	INVALID_BIRTHDAY(HttpStatus.BAD_REQUEST, "잘못된 생일날짜입니다."),
 
 	/**
 	 * Comment
@@ -52,7 +58,16 @@ public enum ErrorCode {
 	 **/
 	GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹이 존재하지 않습니다."),
 	GROUP_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹에 해당 유저가 존재하지 않습니다."),
-	GROUP_OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹의 그룹장이 존재하지 않습니다.");
+	GROUP_OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹의 그룹장이 존재하지 않습니다."),
+
+	/**
+	 * Monitoring
+	 **/
+	MONITORING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 모니터링이 존재하지 않습니다."),
+	/**
+	 * Tag
+	 **/
+	TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 태그가 존재하지 않습니다.");
 
 	private final HttpStatus status;
 	private final String message;

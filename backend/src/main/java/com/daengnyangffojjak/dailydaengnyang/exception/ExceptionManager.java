@@ -5,12 +5,22 @@ import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionManager {
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<?> MethodArgumentNotValidExceptionHandler(
+			MethodArgumentNotValidException e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body(Response.error(new ErrorResponse(ErrorCode.INVALID_REQUEST,
+						e.getBindingResult().getAllErrors().get(0).getDefaultMessage())));
+	}
+
 
 	@ExceptionHandler(SecurityCustomException.class)
 	public ResponseEntity<?> SecurityCustomExceptionHandler(SecurityCustomException e) {
@@ -37,15 +47,24 @@ public class ExceptionManager {
 	}
 
 	@ExceptionHandler(GroupException.class)
-	public ResponseEntity<?> groupoExceptionHandler(GroupException e) {
+	public ResponseEntity<?> groupExceptionHandler(GroupException e) {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
 
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e){
-//        log.error(e.getMessage());
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .body(Response.error(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage())));
-//    }
+	@ExceptionHandler(PetException.class)
+	public ResponseEntity<?> petExceptionHandler(PetException e) {
+		return ResponseEntity.status(e.getErrorCode().getStatus())
+				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
+	@ExceptionHandler(MonitoringException.class)
+	public ResponseEntity<?> monitoringExceptionHandler(MonitoringException e) {
+		return ResponseEntity.status(e.getErrorCode().getStatus())
+				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
+	@ExceptionHandler(TagException.class)
+	public ResponseEntity<?> tagExceptionHandler(TagException e) {
+		return ResponseEntity.status(e.getErrorCode().getStatus())
+				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
 }

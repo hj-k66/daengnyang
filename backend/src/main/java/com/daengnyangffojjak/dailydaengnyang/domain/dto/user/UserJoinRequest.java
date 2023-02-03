@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.user;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

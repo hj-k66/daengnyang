@@ -35,6 +35,8 @@ public class SecurityConfiguration {
 						.requestMatchers("/view/**").permitAll()
 						.requestMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
 						.requestMatchers("/docs/index.html").permitAll()
+						.requestMatchers("/utils/profile").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.PUT, "/api/v1/**").authenticated()
