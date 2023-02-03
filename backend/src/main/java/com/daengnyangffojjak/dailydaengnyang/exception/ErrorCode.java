@@ -57,7 +57,11 @@ public enum ErrorCode {
 	/**
 	 * Monitoring
 	 **/
-	MONITORING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 모니터링이 존재하지 않습니다.");
+	MONITORING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 모니터링이 존재하지 않습니다."),
+	/**
+	 * Tag
+	 **/
+	TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 태그가 존재하지 않습니다.");
 
 	private final HttpStatus status;
 	private final String message;
