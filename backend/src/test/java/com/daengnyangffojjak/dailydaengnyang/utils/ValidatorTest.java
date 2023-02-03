@@ -11,6 +11,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
@@ -20,11 +21,13 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
+import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
@@ -43,19 +46,22 @@ class ValidatorTest {
 	private final GroupRepository groupRepository = mock(GroupRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
 	private final MonitoringRepository monitoringRepository = mock(MonitoringRepository.class);
+	private final RecordRepository recordRepository = mock(RecordRepository.class);
 	private final TagRepository tagRepository = mock(TagRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
 	Pet pet = Pet.builder().id(1L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
 			.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
+	Record record = Record.builder().id(1L).user(user).pet(pet).title("제목").body("본문")
+			.isPublic(true).build();
 
 	private Validator validator;
 
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository, tagRepository);
+				petRepository, monitoringRepository, recordRepository, tagRepository);
 	}
 
 	@Nested
@@ -189,6 +195,7 @@ class ValidatorTest {
 			assertEquals(ErrorCode.MONITORING_NOT_FOUND, e.getErrorCode());
 		}
 	}
+
 	@Nested
 	@DisplayName("태그 등록번호로 태그 반환하기")
 	class getTagById {
@@ -253,4 +260,30 @@ class ValidatorTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("일기 아이디로 일기 반환")
+	class GetRecordById {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+
+			given(recordRepository.findById(1L)).willReturn(Optional.of(record));
+
+			Record result = assertDoesNotThrow(() -> validator.getRecordById(1L));
+			assertEquals(1L, result.getId());
+			assertEquals("제목", result.getTitle());
+		}
+
+		@Test
+		@DisplayName("실패")
+		void fail() {
+			given(recordRepository.findById(1L)).willThrow(
+					new RecordException(ErrorCode.RECORD_NOT_FOUND));
+
+			RecordException e = assertThrows(RecordException.class,
+					() -> validator.getRecordById(1L));
+			assertEquals(ErrorCode.RECORD_NOT_FOUND, e.getErrorCode());
+		}
+	}
 }

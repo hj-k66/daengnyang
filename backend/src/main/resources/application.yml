@@ -53,3 +53,72 @@ logging:
   level:
     com.daengnyangffojjak.dailydaengnyang: debug
 
+---
+
+spring:
+  profiles:
+    group:
+      development:
+        - common
+        - development_database
+        - port_8080
+      production-set1:
+        - common
+        - production_database
+        - port_9001
+      production-set2:
+        - common
+        - production_database
+        - port_9002
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: development_database
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: production_database
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: port_8080
+
+server:
+  port: 8080
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: port_9001
+
+server:
+  port: 9001
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: port_9002
+
+server:
+  port: 9002
+
