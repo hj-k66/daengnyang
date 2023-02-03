@@ -5,8 +5,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Where;
 
 @Entity
@@ -15,7 +13,6 @@ import org.hibernate.annotations.Where;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 @Where(clause = "deleted_at is NULL")
 public class Schedule extends BaseEntity {
 
@@ -38,8 +35,7 @@ public class Schedule extends BaseEntity {
 	private String body;
 	private Long assigneeId;        //책임자 user-id
 	private String place;           //추후 지도 연동 시 좌표로 변경 가능
-	@ColumnDefault("'false'")
-	private Boolean isCompleted;    //일정 수행 여부
+	private boolean isCompleted;    //일정 수행 여부
 	private LocalDateTime dueDate;      //예정일
 
 	// 수정 된 Schedule 저장
@@ -50,7 +46,7 @@ public class Schedule extends BaseEntity {
 		this.assigneeId = scheduleModifyRequest.getAssigneeId();
 		this.place = scheduleModifyRequest.getPlace();
 		this.dueDate = scheduleModifyRequest.getDueDate();
-		this.isCompleted = scheduleModifyRequest.getIsCompleted();
+		this.isCompleted = scheduleModifyRequest.isCompleted();
 
 	}
 
