@@ -1,31 +1,27 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity
-@Getter
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Pet {
-
+@Entity
+@Getter
+@EqualsAndHashCode(callSuper = false)
+@Where(clause = "deleted_at is NULL")
+public class Pet extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -51,5 +47,14 @@ public class Pet {
 			return months + "개월";
 		}
 		return ChronoUnit.YEARS.between(birthday, today) + "살";
+	}
+
+	public void update(PetAddRequest petAddRequest) {
+		this.name = petAddRequest.getName();
+		this.species = petAddRequest.getSpecies();
+		this.breed = petAddRequest.getBreed();
+		this.sex = petAddRequest.getSex();
+		this.birthday = petAddRequest.getBirthday();
+		this.weight = petAddRequest.getWeight();
 	}
 }
