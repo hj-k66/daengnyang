@@ -2,11 +2,11 @@
 
 (부제)
 
+:toc: left
+:toclevels: 2
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
-:toc: left
-:toclevels: 2
 :sectlinks:
 
 include::User-API.adoc[]
@@ -16,3 +16,5 @@ include::Schedule-API.adoc[]
 include::Group-API.adoc[]
 
 include::Monitoring-API.adoc[]
+
+include::Tag-API.adoc[]
