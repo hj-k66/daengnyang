@@ -38,6 +38,11 @@ public enum ErrorCode {
 	SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 일정이 없습니다."),
 
 	/**
+	 * Record
+	 */
+	RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 일기가 없습니다."),
+
+	/**
 	 * Pet
 	 **/
 	PET_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 반려동물이 아닙니다."),
