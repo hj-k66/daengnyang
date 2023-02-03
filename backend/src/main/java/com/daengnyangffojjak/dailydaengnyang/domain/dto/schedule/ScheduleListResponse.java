@@ -35,7 +35,7 @@ public class ScheduleListResponse {
 						.body(schedule.getBody())
 						.assigneeId(schedule.getAssigneeId())
 						.place(schedule.getPlace())
-						.isCompleted(schedule.getIsCompleted())
+						.isCompleted(schedule.isCompleted())
 						.dueDate(schedule.getDueDate())
 						.build());
 
