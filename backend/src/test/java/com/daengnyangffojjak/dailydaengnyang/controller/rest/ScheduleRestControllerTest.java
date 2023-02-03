@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import java.time.LocalDateTime;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -37,32 +36,23 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	@MockBean
 	ScheduleService scheduleService;
+	private JavaTimeModule javaTimeModule = new JavaTimeModule();
 
-	// 일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간 안맞음 해결
+	//일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간 안맞음 해결
 	LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10, 26);
 
-	// 일정등록
+	//일정등록
 	ScheduleCreateRequest scheduleCreateRequest = new ScheduleCreateRequest(Category.HOSPITAL, "병원",
 			"초음파 재검", 3L, "멋사동물병원", dateTime);
 	ScheduleCreateResponse scheduleCreateResponse = new ScheduleCreateResponse("일정 등록 완료", 1L);
 
-	// 일정수정
+	//일정수정
 	ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(Category.HOSPITAL,
-			"수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", false, dateTime);
+			"수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", true, dateTime);
 	ScheduleModifyResponse scheduleModifyResponse = new ScheduleModifyResponse(1L, "수정 병원",
 			dateTime);
 
-	// 일정삭제
-	ScheduleDeleteResponse scheduleDeleteResponse = new ScheduleDeleteResponse("일정이 삭제되었습니다.");
-
-	// 일정상세조회(단건)
-	ScheduleResponse scheduleResponse = new ScheduleResponse(1L, 1L, 1L, "pet", Category.HOSPITAL,
-			"병원", "초음파 재검", 1L, "멋사동물병원", false, dateTime, dateTime, dateTime);
-
-	// 개체별일정전체조회
-	Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "dueDate");
-
-	// ------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정등록")
@@ -76,8 +66,8 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.post("/api/v1/pets/{petId}/schedules", 1L)
-									// java 8 부터 LocalDateTime을 가진 객체를 ObjectMapper 함수를 사용하여 가져올 경우 직렬화 또는 역직렬화를 못하는 에러 발생으로 아래의 코드 작성
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									//java 8 부터 LocalDateTime을 가진 객체를 ObjectMapper 함수를 사용하여 가져올 경우 직렬화 또는 역직렬화를 못하는 에러 발생으로 아래의 코드 작성
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleCreateRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
@@ -113,7 +103,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							post("/api/v1/pets/1/schedules")
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleCreateRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isNotFound())
@@ -132,7 +122,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							post("/api/v1/pets/1/schedules")
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleCreateRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isNotFound())
@@ -144,7 +134,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 		}
 	}
 
-	// -------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정수정")
@@ -159,7 +149,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.put(
 											"/api/v1/pets/{petId}/schedules/{scheduleId}", 1L, 1L)
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleModifyRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
@@ -180,7 +170,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("assigneeId").description(
 													"책임자 userId 수정"),
 											fieldWithPath("place").description("장소수정"),
-											fieldWithPath("isCompleted").description("일정 완료 여부"),
+											fieldWithPath("completed").description("일정 완료 여부"),
 											fieldWithPath("dueDate").description("예정날짜수정")
 									),
 									responseFields(
@@ -203,7 +193,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							put("/api/v1/pets/1/schedules/1")
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleModifyRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isNotFound())
@@ -222,7 +212,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							put("/api/v1/pets/1/schedules/1")
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleModifyRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isNotFound())
@@ -241,7 +231,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							put("/api/v1/pets/1/schedules/1")
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleModifyRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isNotFound())
@@ -260,7 +250,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							put("/api/v1/pets/1/schedules/1")
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(scheduleModifyRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isUnauthorized())
@@ -273,7 +263,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	}
 
-	// -------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정삭제")
@@ -282,6 +272,10 @@ class ScheduleRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("일정삭제 성공")
 		void delete_success() throws Exception {
+			//일정삭제
+			ScheduleDeleteResponse scheduleDeleteResponse = new ScheduleDeleteResponse(
+					"일정이 삭제되었습니다.");
+
 			given(scheduleService.delete(1L, 1L, "user"))
 					.willReturn(scheduleDeleteResponse);
 
@@ -371,7 +365,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 	}
 
-	// -------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------
 
 	@Nested
 	@DisplayName("일정조회 - 상세조회(단건)")
@@ -380,6 +374,11 @@ class ScheduleRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("일정상세조회 성공")
 		void get_success() throws Exception {
+			//일정상세조회(단건)
+			ScheduleResponse scheduleResponse = new ScheduleResponse(1L, 1L, 1L, "pet",
+					Category.HOSPITAL,
+					"병원", "초음파 재검", 1L, "멋사동물병원", false, dateTime, dateTime, dateTime);
+
 			given(scheduleService.get(1L, 1L, "user"))
 					.willReturn(scheduleResponse);
 
@@ -396,7 +395,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.body").value("초음파 재검"))
 					.andExpect(jsonPath("$.result.assigneeId").value(1L))
 					.andExpect(jsonPath("$.result.place").value("멋사동물병원"))
-					.andExpect(jsonPath("$.result.isCompleted").value(false))
+					.andExpect(jsonPath("$.result.completed").value(false))
 					.andExpect(jsonPath("$.result.dueDate").value("2023-01-25 10:26:00"))
 					.andExpect(jsonPath("$.result.createdAt").value("2023-01-25 10:26:00"))
 					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023-01-25 10:26:00"))
@@ -417,7 +416,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("result.body").description("내용"),
 											fieldWithPath("result.assigneeId").description("책임자"),
 											fieldWithPath("result.place").description("장소"),
-											fieldWithPath("result.isCompleted").description(
+											fieldWithPath("result.completed").description(
 													"일정 완료 여부"),
 											fieldWithPath("result.dueDate").description("예정날짜"),
 											fieldWithPath("result.createdAt").description("일정등록시간"),
@@ -469,11 +468,14 @@ class ScheduleRestControllerTest extends ControllerTest {
 
 		@Test
 		void list_success() throws Exception {
+			//개체별일정전체조회
+			Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "dueDate");
+
 			Page<ScheduleListResponse> scheduleListResponsePage = new PageImpl<>(
 					Arrays.asList(new ScheduleListResponse(Category.HOSPITAL, "title", "body", 1L,
 							"멋사 동물병원", false, dateTime)));
 
-			given(scheduleService.list(1L, pageable)).willReturn(scheduleListResponsePage);
+			given(scheduleService.list(1L, "user", pageable)).willReturn(scheduleListResponsePage);
 
 			mockMvc.perform(
 							RestDocumentationRequestBuilders.get("/api/v1/pets/{petId}/schedules", 1L))
@@ -484,7 +486,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$['result']['content'][0]['body']").value("body"))
 					.andExpect(jsonPath("$['result']['content'][0]['assigneeId']").value(1L))
 					.andExpect(jsonPath("$['result']['content'][0]['place']").value("멋사 동물병원"))
-					.andExpect(jsonPath("$['result']['content'][0]['isCompleted']").value(false))
+					.andExpect(jsonPath("$['result']['content'][0]['completed']").value(false))
 					.andExpect(jsonPath("$['result']['content'][0]['dueDate']").value(
 							"2023-01-25 10:26:00"))
 					.andDo(
@@ -510,7 +512,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 													"['result']['content'][0].['place']").description(
 													"장소"),
 											fieldWithPath(
-													"['result']['content'][0].['isCompleted']").description(
+													"['result']['content'][0].['completed']").description(
 													"일정 완료 여부"),
 											fieldWithPath(
 													"['result']['content'][0].['dueDate']").description(

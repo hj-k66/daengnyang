@@ -24,12 +24,12 @@ public class ScheduleRestController {
 
 	private final ScheduleService scheduleService;
 
-	// 일정 등록
+	//일정 등록
 	@PostMapping(value = "/pets/{petId}/schedules")
 	public ResponseEntity<Response<ScheduleCreateResponse>> createSchedule(@PathVariable Long petId,
 			@RequestBody ScheduleCreateRequest scheduleCreateRequest,
 			@AuthenticationPrincipal UserDetails user) {
-		log.debug("petId : {} / scheduleCreateRequest : {} / authentication : {} ", petId,
+		log.debug("petId : {} /scheduleCreateRequest : {} /authentication : {} ", petId,
 				scheduleCreateRequest, user.getUsername());
 		ScheduleCreateResponse scheduleCreateResponse = scheduleService.create(petId,
 				scheduleCreateRequest, user.getUsername());
@@ -39,12 +39,12 @@ public class ScheduleRestController {
 
 	}
 
-	// 일정 수정
+	//일정 수정
 	@PutMapping(value = "/pets/{petId}/schedules/{scheduleId}")
 	public ResponseEntity<Response<ScheduleModifyResponse>> modifySchedule(@PathVariable Long petId,
 			@PathVariable Long scheduleId, @RequestBody ScheduleModifyRequest scheduleModifyRequest,
 			@AuthenticationPrincipal UserDetails user) {
-		log.debug("scheduleId : {} / scheduleModifyRequest : {} / authentication : {} ", scheduleId,
+		log.debug("scheduleId : {} /scheduleModifyRequest : {} /authentication : {} ", scheduleId,
 				scheduleModifyRequest, user.getUsername());
 		ScheduleModifyResponse scheduleModifyResponse = scheduleService.modify(petId, scheduleId,
 				scheduleModifyRequest, user.getUsername());
@@ -54,7 +54,7 @@ public class ScheduleRestController {
 
 	}
 
-	// 일정 삭제
+	//일정 삭제
 	@DeleteMapping(value = "/pets/{petId}/schedules/{scheduleId}")
 	public ResponseEntity<Response<ScheduleDeleteResponse>> deleteSchedule(@PathVariable Long petId,
 			@PathVariable Long scheduleId, @AuthenticationPrincipal UserDetails user) {
@@ -63,7 +63,7 @@ public class ScheduleRestController {
 		return ResponseEntity.ok().body(Response.success(scheduleDeleteResponse));
 	}
 
-	// 일정 상세 조회(단건)
+	//일정 상세 조회(단건)
 	@GetMapping(value = "/pets/{petId}/schedules/{scheduleId}")
 	public ResponseEntity<Response<ScheduleResponse>> getSchedule(@PathVariable Long petId,
 			@PathVariable Long scheduleId, @AuthenticationPrincipal UserDetails user) {
@@ -72,12 +72,13 @@ public class ScheduleRestController {
 		return ResponseEntity.ok().body(Response.success(scheduleResponse));
 	}
 
-	// 일정 전체 조회
+	//일정 전체 조회
 	@GetMapping(value = "/pets/{petId}/schedules")
 	public ResponseEntity<Response<Page<ScheduleListResponse>>> listSchedule(
 			@PathVariable Long petId, @AuthenticationPrincipal UserDetails user,
 			@PageableDefault(size = 20) @SortDefault(sort = "dueDate", direction = Sort.Direction.DESC) Pageable pageable) {
-		Page<ScheduleListResponse> scheduleListResponses = scheduleService.list(petId, pageable);
+		Page<ScheduleListResponse> scheduleListResponses = scheduleService.list(petId,
+				user.getUsername(), pageable);
 		return ResponseEntity.ok().body(Response.success(scheduleListResponses));
 	}
 

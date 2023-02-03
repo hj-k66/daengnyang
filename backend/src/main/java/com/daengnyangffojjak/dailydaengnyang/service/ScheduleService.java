@@ -9,6 +9,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,45 +19,47 @@ import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleService {
 
 	private final ScheduleRepository scheduleRepository;
 	private final Validator validator;
 
-	// 일정 등록
+	//일정 등록
 	@Transactional
 	public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest,
 			String userName) {
 
-		// 유저가 없는 경우 예외발생
+		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
-		// 펫이 없는 경우 예외발생
-		Pet pet = validator.getPetById(petId);
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
-		// 일정 저장
+		//일정 저장
 		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
 
 		return ScheduleCreateResponse.toResponse("일정 등록 완료", savedSchedule);
 
 	}
 
-	// 일정 수정
+	//일정 수정
 	@Transactional
 	public ScheduleModifyResponse modify(Long petId, Long scheduleId,
 			ScheduleModifyRequest scheduleModifyRequest, String userName) {
+		log.debug("scheduleModifyRequest.isCompleted : {} ", scheduleModifyRequest.isCompleted());
 
-		// 유저가 없는 경우 예외발생
+		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
-		// 펫이 없는 경우 예외발생
-		Pet pet = validator.getPetById(petId);
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
-		// 일정이 없는 경우 예외발생
+		//일정이 없는 경우 예외발생
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-		// 로그인유저 != 일정작성유저일 경우 예외발생
+		//로그인유저 != 일정작성유저일 경우 예외발생
 		Long loginUserId = user.getId();
 		Long scheduleWriteUserId = schedule.getUser().getId();
 
@@ -64,7 +67,7 @@ public class ScheduleService {
 			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
 		}
 
-		// 수정된 일정 저장
+		//수정된 일정 저장
 		schedule.changeToSchedule(scheduleModifyRequest);
 		Schedule savedSchedule = scheduleRepository.saveAndFlush(schedule);
 
@@ -72,21 +75,21 @@ public class ScheduleService {
 
 	}
 
-	// 일정 삭제
+	//일정 삭제
 	@Transactional
 	public ScheduleDeleteResponse delete(Long petId, Long scheduleId, String userName) {
 
-		// 유저가 없는 경우 예외발생
+		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
-		// 펫이 없는 경우 예외발생
-		Pet pet = validator.getPetById(petId);
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
-		// 일정이 없는 경우 예외발생
+		//일정이 없는 경우 예외발생
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-		// 로그인유저 != 일정작성유저일 경우 예외발생
+		//로그인유저 != 일정작성유저일 경우 예외발생
 		Long loginUserId = user.getId();
 		Long scheduleWriteUserId = schedule.getUser().getId();
 
@@ -94,7 +97,7 @@ public class ScheduleService {
 			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
 		}
 
-		// 일정 삭제
+		//일정 삭제
 		schedule.deleteSoftly();
 		String message = "일정이 삭제되었습니다.";
 
@@ -102,17 +105,17 @@ public class ScheduleService {
 
 	}
 
-	// 일정 상세 조회(단건)
+	//일정 상세 조회(단건)
 	@Transactional
 	public ScheduleResponse get(Long petId, Long scheduleId, String userName) {
 
-		// 유저가 없는 경우 예외발생
+		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
-		// 펫이 없는 경우 예외발생
-		Pet pet = validator.getPetById(petId);
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
-		// 일정이 없는 경우 예외발생
+		//일정이 없는 경우 예외발생
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
@@ -120,11 +123,14 @@ public class ScheduleService {
 
 	}
 
-	// 개체별 일정 전체 보기
+	//개체별 일정 전체 보기
 	@Transactional
-	public Page<ScheduleListResponse> list(Long petId, Pageable pageable) {
+	public Page<ScheduleListResponse> list(Long petId, String userName, Pageable pageable) {
 
-		Page<Schedule> schedules = scheduleRepository.findAllByPetId(petId, pageable);
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, userName);
+
+		Page<Schedule> schedules = scheduleRepository.findAllByPetId(pet.getId(), pageable);
 
 		return ScheduleListResponse.toResponse(schedules);
 

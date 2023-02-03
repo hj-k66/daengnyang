@@ -13,6 +13,7 @@ import org.hibernate.annotations.Where;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @Where(clause = "deleted_at is NULL")
 public class Schedule extends BaseEntity {
 
@@ -38,7 +39,7 @@ public class Schedule extends BaseEntity {
 	private boolean isCompleted;    //일정 수행 여부
 	private LocalDateTime dueDate;      //예정일
 
-	// 수정 된 Schedule 저장
+	//수정 된 Schedule 저장
 	public void changeToSchedule(ScheduleModifyRequest scheduleModifyRequest) {
 		this.category = scheduleModifyRequest.getCategory();
 		this.title = scheduleModifyRequest.getTitle();
