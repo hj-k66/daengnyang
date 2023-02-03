@@ -36,6 +36,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 
 	@MockBean
 	protected MonitoringService monitoringService;
+	private JavaTimeModule javaTimeModule = new JavaTimeModule();
 
 	@Nested
 	@DisplayName("모니터링 등록")
@@ -53,7 +54,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							post("/api/v1/pets/{petId}/monitorings", 1L)
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(request))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
@@ -106,7 +107,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 
 			mockMvc.perform(
 							put("/api/v1/pets/{petId}/monitorings/{monitoringId}", 1L, 1L)
-									.content(objectMapper.registerModule(new JavaTimeModule())
+									.content(objectMapper.registerModule(javaTimeModule)
 											.writeValueAsBytes(request))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
