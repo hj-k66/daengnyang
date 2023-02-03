@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.utils;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
@@ -10,11 +11,13 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
+import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
@@ -31,6 +34,7 @@ public class Validator {
 	private final GroupRepository groupRepository;
 	private final PetRepository petRepository;
 	private final MonitoringRepository monitoringRepository;
+	private final RecordRepository recordRepository;
 	private final TagRepository tagRepository;
 
 	public User getUserById(Long userId) {
@@ -71,6 +75,11 @@ public class Validator {
 		return pet;
 	}
 
+	public Record getRecordById(Long recordId) {
+		return recordRepository.findById(recordId)
+				.orElseThrow(() -> new RecordException(ErrorCode.RECORD_NOT_FOUND));
+	}
+
 	/**
 	 * User가 Group에 속해 있으면 UserGroupList 반환 추후 ADMMIN도 가능하게 수정 예정
 	 **/
@@ -81,7 +90,7 @@ public class Validator {
 		//로그인한 유저가 그룹 내 유저인지 확인 -> 그룹 내 유저가 아니면 예외 발생
 		if (userGroupList.stream()
 				.noneMatch(userGroup -> username.equals(userGroup.getUser().getUsername()))) {
-			throw new GroupException(ErrorCode.INVALID_PERMISSION, "해당 그룹에 속한 유저가 아닙니다.");
+			throw new GroupException(ErrorCode.INVALID_PERMISSION);
 		}
 		return userGroupList;
 	}
