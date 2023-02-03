@@ -20,3 +20,8 @@ operation::monitoring-delete/success[snippets='http-request,path-parameters,http
 === 모니터링 단건조회
 
 operation::monitoring-show/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Monitoring-달조회]]
+=== 모니터링 달조회
+
+operation::monitoring-show-monthly/success[snippets='http-request,path-parameters,http-response,response-fields']

@@ -21,28 +21,26 @@ public class MntWriteRequest {
 
 	@NotNull(message = "날짜를 입력하세요.")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-	@PastOrPresent
+	@PastOrPresent (message = "모니터링 날짜는 과거 또는 현재 날짜여야 합니다.")
 	private LocalDate date;          //오늘 이전 날짜
+	private Double weight;        //몸무게
 
-	private double weight;        //몸무게
-
-	private boolean vomit;        //구토
-	private boolean amPill;       //오전 투약
-	private boolean pmPill;       //오후 투약
-	private boolean customSymptom;           //custom symptom
+	private Boolean vomit;        //구토
+	private Boolean amPill;       //오전 투약
+	private Boolean pmPill;       //오후 투약
+	private Boolean customSymptom;           //custom symptom
 	private String customSymptomName;        //custom symptom 이름
 
-	private int feedToGram;        //식이량 (g)
-	private int walkCnt;         //산책횟수 - 강아지
-	private int playCnt;         //놀이횟수 - 고양이
-	private int urination;        //배뇨 횟수
-	private int defecation;       //배변 횟수
-	private int respiratoryRate;  //호흡수
-	private int customInt;        //custom 모니터링
+	private Integer feedToGram;        //식이량 (g)
+	private Integer walkCnt;         //산책횟수 - 강아지
+	private Integer playCnt;         //놀이횟수 - 고양이
+	private Integer urination;        //배뇨 횟수
+	private Integer defecation;       //배변 횟수
+	private Integer respiratoryRate;  //호흡수
+	private Integer customInt;        //custom 모니터링
 	private String customIntName;
 
 	private String notes;    //기타 특이사항
-
 	public Monitoring toEntity(Pet pet) {
 		return Monitoring.builder()
 				.pet(pet)
