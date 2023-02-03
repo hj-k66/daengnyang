@@ -38,6 +38,11 @@ public enum ErrorCode {
 	SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 일정이 없습니다."),
 
 	/**
+	 * Record
+	 */
+	RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 일기가 없습니다."),
+
+	/**
 	 * Pet
 	 **/
 	PET_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 반려동물이 아닙니다."),
@@ -58,7 +63,11 @@ public enum ErrorCode {
 	/**
 	 * Monitoring
 	 **/
-	MONITORING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 모니터링이 존재하지 않습니다.");
+	MONITORING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 모니터링이 존재하지 않습니다."),
+	/**
+	 * Tag
+	 **/
+	TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 태그가 존재하지 않습니다.");
 
 	private final HttpStatus status;
 	private final String message;
