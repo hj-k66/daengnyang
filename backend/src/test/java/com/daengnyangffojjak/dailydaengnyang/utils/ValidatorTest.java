@@ -53,13 +53,15 @@ class ValidatorTest {
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
 	Pet pet = Pet.builder().id(1L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
 			.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
+	Record record = Record.builder().id(1L).user(user).pet(pet).title("제목").body("본문")
+			.isPublic(true).build();
 
 	private Validator validator;
 
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository,recordRepository, tagRepository);
+				petRepository, monitoringRepository, recordRepository, tagRepository);
 	}
 
 	@Nested
@@ -193,6 +195,7 @@ class ValidatorTest {
 			assertEquals(ErrorCode.MONITORING_NOT_FOUND, e.getErrorCode());
 		}
 	}
+
 	@Nested
 	@DisplayName("태그 등록번호로 태그 반환하기")
 	class getTagById {
