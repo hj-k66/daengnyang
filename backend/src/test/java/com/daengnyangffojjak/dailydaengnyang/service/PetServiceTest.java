@@ -16,10 +16,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
-import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
-import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
-import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
 import java.util.List;
@@ -32,17 +29,13 @@ import org.junit.jupiter.api.Test;
 class PetServiceTest {
 
 	private PetService petService;
-	private final GroupRepository groupRepository = mock(GroupRepository.class);
-	private final UserRepository userRepository = mock(UserRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
-	private final UserGroupRepository userGroupRepository = mock(UserGroupRepository.class);
 	private final Validator validator = mock(Validator.class);
 
 
 	@BeforeEach
 	public void setUp() {
-		petService = new PetService(petRepository, userRepository, groupRepository,
-				userGroupRepository, validator);
+		petService = new PetService(petRepository, validator);
 	}
 
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
