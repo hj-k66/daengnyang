@@ -4,6 +4,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
@@ -11,11 +12,13 @@ import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
+import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import java.util.List;
@@ -32,6 +35,7 @@ public class Validator {
 	private final PetRepository petRepository;
 	private final MonitoringRepository monitoringRepository;
 	private final RecordRepository recordRepository;
+	private final TagRepository tagRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -57,6 +61,12 @@ public class Validator {
 		return monitoringRepository.findById(monitoringId)
 				.orElseThrow(() -> new MonitoringException(ErrorCode.MONITORING_NOT_FOUND));
 	}
+
+	public Tag getTagById(Long tagId) {
+		return tagRepository.findById(tagId)
+				.orElseThrow(() -> new TagException(ErrorCode.TAG_NOT_FOUND));
+	}
+
 	//Pet과 username인 User가 같은 그룹이면 Pet을 반환
 	public Pet getPetWithUsername(Long petId, String username) {
 		Pet pet = getPetById(petId);
