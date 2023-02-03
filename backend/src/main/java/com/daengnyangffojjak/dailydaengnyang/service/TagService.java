@@ -15,6 +15,7 @@ import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class TagService {
 	private final RecordRepository recordRepository;
 	private final Validator validator;
 
+	@Transactional
 	public TagWorkResponse create(Long groupId, TagWorkRequest tagWorkRequest, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);
@@ -32,7 +34,7 @@ public class TagService {
 		Tag saved = tagRepository.save(tagWorkRequest.toEntity(group));
 		return TagWorkResponse.from(saved);
 	}
-
+	@Transactional
 	public TagWorkResponse modify(Long groupId, Long tagId, TagWorkRequest tagWorkRequest,
 			String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
@@ -43,7 +45,7 @@ public class TagService {
 		Tag modified = tagRepository.saveAndFlush(tag);
 		return TagWorkResponse.from(modified);
 	}
-
+	@Transactional
 	public MessageResponse delete(Long groupId, Long tagId, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);
@@ -56,7 +58,7 @@ public class TagService {
 		tagRepository.delete(tag);
 		return new MessageResponse("태그가 삭제되었습니다.");
 	}
-
+	@Transactional
 	public TagListResponse getList(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);

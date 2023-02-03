@@ -6,7 +6,7 @@
 operation::get-one-record/success_get_one_record[snippets='http-request,path-parameters,http-response,response-fields']
 [[RECORD-전체피드조회]]
 === RECORD 전체 피드 조회
-operation::get-all-records/success_get_all_records[snippets='http-request,path-parameters,http-response,response-fields']
+operation::get-all-records/success_get_all_records[snippets='http-request,http-response,response-fields']
 [[RECORD-등록]]
 === RECORD 등록
 operation::create-record/success_create_record[snippets='http-request,path-parameters,request-fields,http-response,response-fields']

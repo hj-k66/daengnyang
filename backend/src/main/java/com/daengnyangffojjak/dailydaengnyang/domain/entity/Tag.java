@@ -4,6 +4,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
