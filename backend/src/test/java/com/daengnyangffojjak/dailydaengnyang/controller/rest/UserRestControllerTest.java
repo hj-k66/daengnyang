@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
@@ -221,6 +222,39 @@ class UserRestControllerTest extends ControllerTest {
 	}
 
 	@Nested
+	@DisplayName("로그아웃")
+	class Logout{
+		@Test
+		@DisplayName("로그아웃 성공")
+		void logout_success() throws Exception {
+
+			given(userService.logout(tokenRequest)).willReturn(
+					new MessageResponse("로그아웃이 되었습니다."));
+
+			mockMvc.perform(
+							post("/api/v1/users/logout")
+									.content(objectMapper.writeValueAsBytes(tokenRequest))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.result.msg").value("로그아웃이 되었습니다."))
+					.andDo(
+							restDocs.document(
+									requestFields(
+											fieldWithPath("accessToken").description("엑세스토큰"),
+											fieldWithPath("refreshToken").description("리프레쉬토큰")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath(
+													"result.msg").description(
+													"결과메세지")
+									)
+							));
+			verify(userService).logout(tokenRequest);
+		}
+	}
+
+	@Nested
 	@DisplayName("토큰 재발급")
 	class NewToken {
 
@@ -293,4 +327,5 @@ class UserRestControllerTest extends ControllerTest {
 							ErrorCode.INVALID_TOKEN.getMessage() + " 재로그인 하세요."));
 		}
 	}
+
 }

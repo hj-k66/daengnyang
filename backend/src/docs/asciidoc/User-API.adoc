@@ -9,6 +9,11 @@ operation::join/join_success[snippets='http-request,request-fields,http-response
 === User 로그인
 operation::login/login_success[snippets='http-request,request-fields,http-response,response-fields']
 
+[[User-로그아웃]]
+=== User 로그아웃
+operation::logout/logout_success[snippets='http-request,request-fields,http-response,response-fields']
+
+
 [[User-토큰재발급]]
 === User 토큰 재발급
 operation::new-token/newtoken_success[snippets='http-request,request-fields,http-response,response-fields']
