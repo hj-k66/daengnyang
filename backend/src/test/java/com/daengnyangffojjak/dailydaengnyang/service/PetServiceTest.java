@@ -16,6 +16,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
+import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
@@ -108,9 +110,8 @@ class PetServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(validator.getPetById(1l)).willReturn(pet);
+			given(validator.getPetWithUsername(1l, "user")).willReturn(pet);
 			given(validator.getGroupById(1l)).willReturn(group);
-			given(validator.getUserGroupListByUsername(group, "user")).willReturn(userGroupList);
 			given(petRepository.saveAndFlush(pet)).willReturn(pet);
 
 			PetUpdateResponse petUpdateResponse = assertDoesNotThrow(
@@ -130,9 +131,8 @@ class PetServiceTest {
 		@Test
 		@DisplayName("성공")
 		void success() {
-			given(validator.getPetById(1l)).willReturn(pet);
+			given(validator.getPetWithUsername(1l, "user")).willReturn(pet);
 			given(validator.getGroupById(1l)).willReturn(group);
-			given(validator.getUserGroupListByUsername(group, "user")).willReturn(userGroupList);
 
 			PetDeleteResponse petDeleteResponse = assertDoesNotThrow(
 					() -> petService.delete(1l, 1l, "user"));

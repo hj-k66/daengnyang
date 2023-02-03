@@ -45,10 +45,15 @@ public class PetService {
 		validator.getUserByUserName(userName);
 
 		// 해당 id의 그룹이 존재하는가
-		validator.getGroupById(groupId);
+		Group group = validator.getGroupById(groupId);
 
 		// 해당 id의 펫이 존재하는가
 		Pet pet = validator.getPetById(id);
+
+		// pet repository 에 저장된 group id 와 group repository 에 저장된 group id 가 같은가
+		if (!pet.getGroup().getId().equals(group.getId())) {
+			throw new PetException(ErrorCode.INVALID_PERMISSION);
+		}
 
 		return PetShowResponse.showFrom(pet);
 	}
@@ -58,8 +63,8 @@ public class PetService {
 	public PetUpdateResponse modify(Long groupId, Long id, PetAddRequest petAddRequest,
 			String userName) {
 
-		// 해당 id의 펫이 존재하는가
-		Pet pet = validator.getPetById(id);
+		// 사용자가 그룹에 속해있는 멤버이고 해당 id의 펫이 존재하는가
+		Pet pet = validator.getPetWithUsername(id, userName);
 
 		// 해당 id의 그룹이 존재하는가
 		Group group = validator.getGroupById(groupId);
@@ -68,9 +73,6 @@ public class PetService {
 		if (!pet.getGroup().getId().equals(group.getId())) {
 			throw new PetException(ErrorCode.INVALID_PERMISSION);
 		}
-
-		// 사용자가 그룹에 속해있는 멤버인가
-		validator.getUserGroupListByUsername(group, userName);
 
 		pet.update(petAddRequest);
 		Pet savedPet = petRepository.saveAndFlush(pet);
@@ -82,8 +84,8 @@ public class PetService {
 	@Transactional
 	public PetDeleteResponse delete(Long groupId, Long id, String userName) {
 
-		// 해당 id의 펫이 존재하는가
-		Pet pet = validator.getPetById(id);
+		// 사용자가 그룹에 속해있는 멤버이고 해당 id의 펫이 존재하는가
+		Pet pet = validator.getPetWithUsername(id, userName);
 
 		// 해당 id의 그룹이 존재하는가
 		Group group = validator.getGroupById(groupId);
@@ -92,9 +94,6 @@ public class PetService {
 		if (!pet.getGroup().getId().equals(group.getId())) {
 			throw new PetException(ErrorCode.INVALID_PERMISSION);
 		}
-
-		// 사용자가 그룹에 속해있는 멤버인가
-		validator.getUserGroupListByUsername(group, userName);
 
 		pet.deleteSoftly();
 
