@@ -20,6 +20,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
+import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
@@ -245,6 +246,16 @@ class ValidatorTest {
 			assertEquals(1L, result.getId());
 			assertEquals("제목", result.getTitle());
 		}
-	}
 
+		@Test
+		@DisplayName("실패")
+		void fail() {
+			given(recordRepository.findById(1L)).willThrow(
+					new RecordException(ErrorCode.RECORD_NOT_FOUND));
+
+			RecordException e = assertThrows(RecordException.class,
+					() -> validator.getRecordById(1L));
+			assertEquals(ErrorCode.RECORD_NOT_FOUND, e.getErrorCode());
+		}
+	}
 }

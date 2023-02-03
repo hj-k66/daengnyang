@@ -7,9 +7,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
-import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
-import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.util.Objects;
@@ -25,8 +23,6 @@ import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class RecordService {
 
-	private final UserRepository userRepository;
-	private final PetRepository petRepository;
 	private final RecordRepository recordRepository;
 	private final Validator validator;
 

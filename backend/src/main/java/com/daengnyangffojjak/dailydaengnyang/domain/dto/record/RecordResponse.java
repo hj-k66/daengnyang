@@ -28,7 +28,7 @@ public class RecordResponse {
 	private String title;
 	private String body;
 	private String userName;
-//	private boolean isPublic;
+	private Boolean isPublic;
 	private Category category;
 	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -45,6 +45,7 @@ public class RecordResponse {
 				.title(record.getTitle())
 				.body(record.getBody())
 				.userName(record.getUser().getUsername())
+				.isPublic(record.getIsPublic())
 				.category(record.getCategory())
 				.createdAt(record.getCreatedAt())
 				.lastModifiedAt(record.getLastModifiedAt())

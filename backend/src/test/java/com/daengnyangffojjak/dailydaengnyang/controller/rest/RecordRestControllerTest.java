@@ -54,7 +54,7 @@ class RecordRestControllerTest extends ControllerTest {
 		void success_get_one_record() throws Exception {
 
 			// 일기 상세(1개) 조회
-			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user",
+			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user", true,
 					Category.WALK, createdAt, lastmodifiedAt);
 
 			given(recordService.getOneRecord(1L, 1L, "user"))
@@ -70,6 +70,7 @@ class RecordRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.title").value("제목"))
 					.andExpect(jsonPath("$.result.body").value("본문"))
 					.andExpect(jsonPath("$.result.userName").value("user"))
+					.andExpect(jsonPath("$.result.isPublic").value(true))
 					.andExpect(jsonPath("$.result.category").value("WALK"))
 					.andExpect(jsonPath("$.result.createdAt").value("2023-01-01 11:11:00"))
 					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023-01-02 22:22:00"))
@@ -87,6 +88,7 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath("result.title").description("제목"),
 											fieldWithPath("result.body").description("본문"),
 											fieldWithPath("result.userName").description("작성자"),
+											fieldWithPath("result.isPublic").description("공유 여부"),
 											fieldWithPath("result.category").description("카테고리"),
 											fieldWithPath("result.createdAt").description(
 													"일기 등록시간"),
@@ -155,6 +157,9 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath(
 													"['result']['content'][0].['userName']").description(
 													"user"),
+											fieldWithPath(
+													"['result']['content'][0].['isPublic']").description(
+													"ispublic"),
 											fieldWithPath(
 													"['result']['content'][0].['category']").description(
 													"카테고리"),
@@ -286,7 +291,6 @@ class RecordRestControllerTest extends ControllerTest {
 
 			// 일기 삭제
 			RecordWorkResponse deleteRecordResponse = new RecordWorkResponse("일기 삭제 완료", 1L);
-
 
 			given(recordService.deleteRecord(1L, 1L, "user"))
 					.willReturn(deleteRecordResponse);
