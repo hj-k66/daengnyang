@@ -11,6 +11,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
@@ -19,10 +20,12 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
+import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import java.time.LocalDate;
@@ -40,6 +43,7 @@ class ValidatorTest {
 	private final GroupRepository groupRepository = mock(GroupRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
 	private final MonitoringRepository monitoringRepository = mock(MonitoringRepository.class);
+	private final TagRepository tagRepository = mock(TagRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
@@ -51,7 +55,7 @@ class ValidatorTest {
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository);
+				petRepository, monitoringRepository, tagRepository);
 	}
 
 	@Nested
@@ -124,8 +128,7 @@ class ValidatorTest {
 		@Test
 		@DisplayName("실패 - 없음")
 		void fail() {
-			given(groupRepository.findById(1L)).willThrow(
-					new GroupException(ErrorCode.GROUP_NOT_FOUND));
+			given(groupRepository.findById(1L)).willReturn(Optional.empty());
 
 			GroupException e = assertThrows(GroupException.class,
 					() -> validator.getGroupById(1L));
@@ -150,8 +153,7 @@ class ValidatorTest {
 		@Test
 		@DisplayName("실패")
 		void fail() {
-			given(petRepository.findById(1L)).willThrow(
-					new PetException(ErrorCode.PET_NOT_FOUND));
+			given(petRepository.findById(1L)).willReturn(Optional.empty());
 
 			PetException e = assertThrows(PetException.class,
 					() -> validator.getPetById(1L));
@@ -180,12 +182,37 @@ class ValidatorTest {
 		@Test
 		@DisplayName("실패")
 		void fail() {
-			given(monitoringRepository.findById(1L)).willThrow(
-					new MonitoringException(ErrorCode.MONITORING_NOT_FOUND));
+			given(monitoringRepository.findById(1L)).willReturn(Optional.empty());
 
 			MonitoringException e = assertThrows(MonitoringException.class,
 					() -> validator.getMonitoringById(1L));
 			assertEquals(ErrorCode.MONITORING_NOT_FOUND, e.getErrorCode());
+		}
+	}
+	@Nested
+	@DisplayName("태그 등록번호로 태그 반환하기")
+	class getTagById {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			Tag tag = new Tag(1L, group, "여행");
+			given(tagRepository.findById(1L)).willReturn(Optional.of(tag));
+
+			Tag response = assertDoesNotThrow(
+					() -> validator.getTagById(1L));
+			assertEquals(1L, response.getId());
+			assertEquals("여행", response.getName());
+		}
+
+		@Test
+		@DisplayName("실패")
+		void fail() {
+			given(tagRepository.findById(1L)).willReturn(Optional.empty());
+
+			TagException e = assertThrows(TagException.class,
+					() -> validator.getTagById(1L));
+			assertEquals(ErrorCode.TAG_NOT_FOUND, e.getErrorCode());
 		}
 	}
 

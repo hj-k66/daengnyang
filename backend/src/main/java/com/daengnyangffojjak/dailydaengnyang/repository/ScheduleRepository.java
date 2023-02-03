@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
 	Page<Schedule> findAllByPetId(Long petId, Pageable pageable); // petId 기준 일정 모아보기
+	boolean existsByTagId(Long tagId);
 }

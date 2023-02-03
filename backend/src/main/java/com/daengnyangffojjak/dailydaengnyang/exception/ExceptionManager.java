@@ -62,5 +62,9 @@ public class ExceptionManager {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
-
+	@ExceptionHandler(TagException.class)
+	public ResponseEntity<?> tagExceptionHandler(TagException e) {
+		return ResponseEntity.status(e.getErrorCode().getStatus())
+				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
 }
