@@ -181,7 +181,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("assigneeId").description(
 													"책임자 userId 수정"),
 											fieldWithPath("place").description("장소수정"),
-											fieldWithPath("isCompleted").description("일정 완료 여부"),
+											fieldWithPath("completed").description("일정 완료 여부"),
 											fieldWithPath("dueDate").description("예정날짜수정")
 									),
 									responseFields(
