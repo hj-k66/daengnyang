@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,5 +45,13 @@ public class DiseaseRestController {
 		return ResponseEntity.created(
 						URI.create("/api/v1/pets/" + petId + "/diseases/" + diseaseId))
 				.body(Response.success(dizWriteResponse));
+	}
+
+	@DeleteMapping(value = "/pets/{petId}/diseases/{diseaseId}")
+	public Response<MessageResponse> delete(
+			@AuthenticationPrincipal UserDetails user, @PathVariable Long petId,
+			@PathVariable Long diseaseId) {
+		MessageResponse response = diseaseService.delete(petId, diseaseId, user.getUsername());
+		return Response.success(response);
 	}
 }

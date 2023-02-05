@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
@@ -39,9 +40,12 @@ class DiseaseServiceTest {
 	@Nested
 	@DisplayName("질병 등록")
 	class CreateDisease {
-		DizWriteRequest request = DizWriteRequest.builder().name("질병이름").category(DiseaseCategory.DERMATOLOGY)
+
+		DizWriteRequest request = DizWriteRequest.builder().name("질병이름")
+				.category(DiseaseCategory.DERMATOLOGY)
 				.startedAt(LocalDate.of(2023, 1, 1)).endedAt(LocalDate.of(2023, 1, 31)).build();
-		Disease saved = Disease.builder().id(1L).pet(pet).name(request.getName()).category(request.getCategory())
+		Disease saved = Disease.builder().id(1L).pet(pet).name(request.getName())
+				.category(request.getCategory())
 				.startedAt(request.getStartedAt()).endedAt(request.getEndedAt()).build();
 
 		@Test
@@ -62,11 +66,15 @@ class DiseaseServiceTest {
 	@Nested
 	@DisplayName("질병 수정")
 	class ModifyDisease {
-		DizWriteRequest request = DizWriteRequest.builder().name("질병이름").category(DiseaseCategory.DERMATOLOGY)
+
+		DizWriteRequest request = DizWriteRequest.builder().name("질병이름")
+				.category(DiseaseCategory.DERMATOLOGY)
 				.startedAt(LocalDate.of(2023, 1, 1)).endedAt(LocalDate.of(2023, 1, 31)).build();
-		Disease saved = Disease.builder().id(1L).pet(pet).name("바꾸기전").category(request.getCategory())
+		Disease saved = Disease.builder().id(1L).pet(pet).name("바꾸기전")
+				.category(request.getCategory())
 				.startedAt(request.getStartedAt()).endedAt(request.getEndedAt()).build();
-		Disease modified = Disease.builder().id(1L).pet(pet).name(request.getName()).category(request.getCategory())
+		Disease modified = Disease.builder().id(1L).pet(pet).name(request.getName())
+				.category(request.getCategory())
 				.startedAt(request.getStartedAt()).endedAt(request.getEndedAt()).build();
 
 		@Test
@@ -87,7 +95,8 @@ class DiseaseServiceTest {
 		@Test
 		@DisplayName("실패 - 질병의 펫 정보와 펫 아이디가 다른 경우")
 		void fail_펫정보불일치() {
-			Pet pet2 = Pet.builder().id(100L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
+			Pet pet2 = Pet.builder().id(100L).birthday(LocalDate.of(2018, 3, 1))
+					.species(Species.CAT)
 					.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
 			given(validator.getPetWithUsername(100L, "user")).willReturn(pet2);
 			given(validator.getDiseaseById(1L)).willReturn(saved);
@@ -95,6 +104,27 @@ class DiseaseServiceTest {
 			DiseaseException e = assertThrows(DiseaseException.class,
 					() -> diseaseService.modify(100L, 1L, request, "user"));
 			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
+		}
+	}
+
+
+	@Nested
+	@DisplayName("질병 기록 삭제")
+	class DeleteDisease {
+
+		Disease saved = Disease.builder().id(1L).pet(pet).name("질병")
+				.category(DiseaseCategory.DERMATOLOGY)
+				.build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(validator.getDiseaseById(1L)).willReturn(saved);
+
+			MessageResponse response = assertDoesNotThrow(
+					() -> diseaseService.delete(1L, 1L, "user"));
+			assertEquals("질병 기록이 삭제되었습니다.", response.getMsg());
 		}
 	}
 }

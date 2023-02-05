@@ -10,3 +10,8 @@ operation::disease-create/success[snippets='http-request,path-parameters,request
 === 질병 수정
 
 operation::disease-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Disease-삭제]]
+=== 질병 삭제
+
+operation::disease-delete/success[snippets='http-request,path-parameters,http-response,response-fields']

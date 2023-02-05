@@ -119,7 +119,7 @@ class MonitoringServiceTest {
 		Monitoring saved = Monitoring.builder()
 				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
-
+		@Test
 		@DisplayName("성공")
 		void success() {
 			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);

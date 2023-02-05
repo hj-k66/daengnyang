@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import static com.daengnyangffojjak.dailydaengnyang.utils.RestDocsConfiguration.field;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -13,6 +14,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.DiseaseCategory;
@@ -110,6 +112,30 @@ class DiseaseRestControllerTest extends ControllerTest {
 									fieldWithPath("result.petName").description("반려동물 이름"),
 									fieldWithPath("result.name").description("질병 이름"))));
 			verify(diseaseService).modify(1L, 1L, request, "user");
+		}
+	}
+
+	@Nested
+	@DisplayName("질병 삭제")
+	class DiseaseDelete {
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			given(diseaseService.delete(1L, 1L, "user")).willReturn(
+					new MessageResponse("질병 기록이 삭제되었습니다."));
+
+			mockMvc.perform(
+							delete("/api/v1/pets/{petId}/diseases/{diseaseId}", 1L, 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result.msg").value("질병 기록이 삭제되었습니다."))
+					.andDo(restDocs.document(
+							pathParameters(
+									parameterWithName("petId").description("반려동물 번호"),
+									parameterWithName("diseaseId").description("질병 등록 번호")),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.msg").description("결과 메세지"))));
+			verify(diseaseService).delete(1L, 1L, "user");
 		}
 	}
 
