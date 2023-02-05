@@ -5,3 +5,8 @@
 === 질병 작성
 
 operation::disease-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Disease-수정]]
+=== 질병 수정
+
+operation::disease-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']

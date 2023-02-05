@@ -2,8 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -19,6 +18,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
+import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
@@ -96,19 +97,18 @@ class MonitoringServiceTest {
 
 		@Test
 		@DisplayName("실패 - 펫등록번호와 모니터링의 펫 정보가 다를 때")
-		void fail() {
+		void fail_펫정보불일치() {
+			Pet pet2 = Pet.builder().id(100L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
+					.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
 			Monitoring saved = Monitoring.builder()
 					.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 					.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
-			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(validator.getPetWithUsername(100L, "user")).willReturn(pet2);
 			given(validator.getMonitoringById(1L)).willReturn(saved);
-			given(monitoringRepository.saveAndFlush(saved)).willReturn(modified);
 
-			MntWriteResponse response = assertDoesNotThrow(
-					() -> monitoringService.modify(1L, 1L, request, "user"));
-			assertEquals(1L, response.getId());
-			assertEquals("hoon", response.getPetName());
-			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
+			MonitoringException e = assertThrows(MonitoringException.class,
+					() -> monitoringService.modify(100L, 1L, request, "user"));
+			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
 		}
 	}
 

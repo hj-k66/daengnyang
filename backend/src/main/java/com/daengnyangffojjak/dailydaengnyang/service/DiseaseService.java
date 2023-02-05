@@ -4,6 +4,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
+import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
+import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,24 @@ public class DiseaseService {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		Disease saved = diseaseRepository.save(dizWriteRequest.toEntity(pet));
 		return DizWriteResponse.from(saved);
+	}
+
+	@Transactional
+	public DizWriteResponse modify(Long petId, Long diseaseId, DizWriteRequest dizWriteRequest,
+			String username) {
+		Pet pet = validator.getPetWithUsername(petId, username);
+		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
+
+		disease.modify(dizWriteRequest);
+		Disease modified = diseaseRepository.saveAndFlush(disease);
+		return DizWriteResponse.from(modified);
+	}
+
+	private Disease validateDiseaseWithPetId(Long petId, Long diseaseId) {
+		Disease disease = validator.getDiseaseById(diseaseId);
+		if (!disease.getPet().getId().equals(petId)) {   //질병의 펫 정보가 PathVariable의 펫 정보와 다르면 에러
+			throw new DiseaseException(ErrorCode.INVALID_REQUEST);
+		}
+		return disease;
 	}
 }

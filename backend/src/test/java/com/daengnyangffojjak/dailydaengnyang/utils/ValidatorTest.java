@@ -8,6 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
@@ -15,8 +16,10 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.DiseaseCategory;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
+import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
@@ -24,6 +27,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
@@ -48,6 +52,7 @@ class ValidatorTest {
 	private final MonitoringRepository monitoringRepository = mock(MonitoringRepository.class);
 	private final RecordRepository recordRepository = mock(RecordRepository.class);
 	private final TagRepository tagRepository = mock(TagRepository.class);
+	private final DiseaseRepository diseaseRepository = mock(DiseaseRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
@@ -61,7 +66,7 @@ class ValidatorTest {
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository, recordRepository, tagRepository);
+				petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository);
 	}
 
 	@Nested
@@ -220,6 +225,34 @@ class ValidatorTest {
 			TagException e = assertThrows(TagException.class,
 					() -> validator.getTagById(1L));
 			assertEquals(ErrorCode.TAG_NOT_FOUND, e.getErrorCode());
+		}
+	}
+
+	@Nested
+	@DisplayName("질병 등록번호로 태그 반환하기")
+	class getDiseaseById {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			Disease disease = new Disease(1L, pet, "질병", DiseaseCategory.DERMATOLOGY,
+					LocalDate.of(2000, 1, 1), LocalDate.of(2000, 12,31));
+			given(diseaseRepository.findById(1L)).willReturn(Optional.of(disease));
+
+			Disease response = assertDoesNotThrow(
+					() -> validator.getDiseaseById(1L));
+			assertEquals(1L, response.getId());
+			assertEquals("질병", response.getName());
+		}
+
+		@Test
+		@DisplayName("실패")
+		void fail() {
+			given(tagRepository.findById(1L)).willReturn(Optional.empty());
+
+			DiseaseException e = assertThrows(DiseaseException.class,
+					() -> validator.getDiseaseById(1L));
+			assertEquals(ErrorCode.DISEASE_NOT_FOUND, e.getErrorCode());
 		}
 	}
 

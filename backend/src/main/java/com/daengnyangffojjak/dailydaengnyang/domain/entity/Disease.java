@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.DiseaseCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,4 +39,11 @@ public class Disease extends BaseEntity{
 	private DiseaseCategory category;
 	private LocalDate startedAt;
 	private LocalDate endedAt;
+
+	public void modify(DizWriteRequest request) {
+		this.name = request.getName();
+		this.category = request.getCategory();
+		this.startedAt = request.getStartedAt();
+		this.endedAt = request.getEndedAt();
+	}
 }
