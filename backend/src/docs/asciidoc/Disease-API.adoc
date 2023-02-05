@@ -1,0 +1,7 @@
+[[Disease-API]]
+== Disease API
+
+[[Disease-작성]]
+=== 질병 작성
+
+operation::disease-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
