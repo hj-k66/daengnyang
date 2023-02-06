@@ -4,6 +4,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.DiseaseCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DizWriteRequest {
+
 	@NotBlank(message = "질병명을 입력해주세요.")
 	private String name;
 	private DiseaseCategory category;
@@ -27,6 +29,11 @@ public class DizWriteRequest {
 	private LocalDate startedAt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private LocalDate endedAt;
+
+	@AssertTrue(message = "시작일이 종료일보다 이전이어야 합니다.")
+	public boolean isValidateEndedAt() {
+		return endedAt.isAfter(startedAt);
+	}
 
 	public Disease toEntity(Pet pet) {
 		return Disease.builder()

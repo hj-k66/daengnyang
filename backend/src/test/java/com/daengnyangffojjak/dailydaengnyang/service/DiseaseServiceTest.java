@@ -21,9 +21,15 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 class DiseaseServiceTest {
 
@@ -147,6 +153,31 @@ class DiseaseServiceTest {
 					() -> diseaseService.getDisease(1L, 1L, "user"));
 			assertEquals(1L, response.getId());
 			assertEquals("질병", response.getName());
+		}
+	}
+
+	@Nested
+	@DisplayName("질병 리스트 조회")
+	class GetListDisease {
+
+		Disease saved = Disease.builder().id(1L).pet(pet).name("질병")
+				.category(DiseaseCategory.DERMATOLOGY)
+				.build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+
+			Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "createdAt");
+			Page<Disease> dizList = new PageImpl<>(List.of(saved));
+
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(diseaseRepository.findAllByPetId(1L, pageable)).willReturn(dizList);
+
+			Page<DizGetResponse> response = assertDoesNotThrow(
+					() -> diseaseService.getDiseaseList(1L, pageable, "user"));
+			assertEquals(1, response.getContent().size());
+			assertEquals("질병", response.getContent().get(0).getName());
 		}
 	}
 }

@@ -20,3 +20,8 @@ operation::disease-delete/success[snippets='http-request,path-parameters,http-re
 === 질병 단건조회
 
 operation::disease-get/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Disease-리스트조회]]
+=== 질병 리스트조회
+
+operation::disease-get-list/success[snippets='http-request,path-parameters,http-response,response-fields']
