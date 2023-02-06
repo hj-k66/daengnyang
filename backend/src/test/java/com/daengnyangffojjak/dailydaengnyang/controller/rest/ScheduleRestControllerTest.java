@@ -398,7 +398,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.body").value("초음파 재검"))
 					.andExpect(jsonPath("$.result.assigneeId").value(1L))
 					.andExpect(jsonPath("$.result.place").value("멋사동물병원"))
-					.andExpect(jsonPath("$.result.isCompleted").value(false))
+					.andExpect(jsonPath("$.result.completed").value(false))
 					.andExpect(jsonPath("$.result.dueDate").value("2023/01/25 10:26:00"))
 					.andExpect(jsonPath("$.result.createdAt").value("2023/01/25 10:26:00"))
 					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023/01/25 10:26:00"))
@@ -419,7 +419,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("result.body").description("내용"),
 											fieldWithPath("result.assigneeId").description("책임자"),
 											fieldWithPath("result.place").description("장소"),
-											fieldWithPath("result.isCompleted").description(
+											fieldWithPath("result.completed").description(
 													"일정 완료 여부"),
 											fieldWithPath("result.dueDate").description("예정날짜"),
 											fieldWithPath("result.createdAt").description("일정등록시간"),
@@ -486,7 +486,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$['result']['content'][0]['body']").value("body"))
 					.andExpect(jsonPath("$['result']['content'][0]['assigneeId']").value(1L))
 					.andExpect(jsonPath("$['result']['content'][0]['place']").value("멋사 동물병원"))
-					.andExpect(jsonPath("$['result']['content'][0]['isCompleted']").value(false))
+					.andExpect(jsonPath("$['result']['content'][0]['completed']").value(false))
 					.andExpect(jsonPath("$['result']['content'][0]['dueDate']").value(
 							"2023/01/25 10:26:00"))
 					.andDo(
@@ -512,7 +512,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 													"['result']['content'][0].['place']").description(
 													"장소"),
 											fieldWithPath(
-													"['result']['content'][0].['isCompleted']").description(
+													"['result']['content'][0].['completed']").description(
 													"일정 완료 여부"),
 											fieldWithPath(
 													"['result']['content'][0].['dueDate']").description(
