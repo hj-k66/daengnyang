@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.utils;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
@@ -7,6 +8,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
+import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
@@ -14,6 +16,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
@@ -36,6 +39,7 @@ public class Validator {
 	private final MonitoringRepository monitoringRepository;
 	private final RecordRepository recordRepository;
 	private final TagRepository tagRepository;
+	private final DiseaseRepository diseaseRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -65,6 +69,10 @@ public class Validator {
 	public Tag getTagById(Long tagId) {
 		return tagRepository.findById(tagId)
 				.orElseThrow(() -> new TagException(ErrorCode.TAG_NOT_FOUND));
+	}
+	public Disease getDiseaseById(Long diseaseId) {
+		return diseaseRepository.findById(diseaseId)
+				.orElseThrow(() -> new DiseaseException(ErrorCode.DISEASE_NOT_FOUND));
 	}
 
 	//Pet과 username인 User가 같은 그룹이면 Pet을 반환

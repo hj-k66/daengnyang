@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionManager {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<?> MmthodArgumentNotValidExceptionHandler(
+	public ResponseEntity<?> MethodArgumentNotValidExceptionHandler(
 			MethodArgumentNotValidException e) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 				.body(Response.error(new ErrorResponse(ErrorCode.INVALID_REQUEST,
@@ -57,13 +57,21 @@ public class ExceptionManager {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
+
 	@ExceptionHandler(MonitoringException.class)
 	public ResponseEntity<?> monitoringExceptionHandler(MonitoringException e) {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}
+
 	@ExceptionHandler(TagException.class)
 	public ResponseEntity<?> tagExceptionHandler(TagException e) {
+		return ResponseEntity.status(e.getErrorCode().getStatus())
+				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
+	}
+
+	@ExceptionHandler(DiseaseException.class)
+	public ResponseEntity<?> diseaseExceptionHandler(DiseaseException e) {
 		return ResponseEntity.status(e.getErrorCode().getStatus())
 				.body(Response.error(new ErrorResponse(e.getErrorCode(), e.toString())));
 	}

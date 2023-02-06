@@ -47,7 +47,7 @@ public class Schedule extends BaseEntity {
 		this.assigneeId = scheduleModifyRequest.getAssigneeId();
 		this.place = scheduleModifyRequest.getPlace();
 		this.dueDate = scheduleModifyRequest.getDueDate();
-		this.isCompleted = scheduleModifyRequest.getIsCompleted();
+		this.isCompleted = scheduleModifyRequest.isCompleted();
 
 	}
 

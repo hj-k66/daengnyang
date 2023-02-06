@@ -1,0 +1,27 @@
+[[Disease-API]]
+== Disease API
+
+[[Disease-작성]]
+=== 질병 작성
+
+operation::disease-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Disease-수정]]
+=== 질병 수정
+
+operation::disease-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Disease-삭제]]
+=== 질병 삭제
+
+operation::disease-delete/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Disease-단건조회]]
+=== 질병 단건조회
+
+operation::disease-get/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Disease-리스트조회]]
+=== 질병 리스트조회
+
+operation::disease-get-list/success[snippets='http-request,path-parameters,http-response,response-fields']

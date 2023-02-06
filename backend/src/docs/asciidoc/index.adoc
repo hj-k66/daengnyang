@@ -17,6 +17,8 @@ include::Group-API.adoc[]
 
 include::Monitoring-API.adoc[]
 
+include::Pet-API.adoc[]
+
 include::Tag-API.adoc[]
 
-include::RECORD-API.adoc[]
+include::Disease-API.adoc[]

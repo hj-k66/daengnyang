@@ -17,7 +17,7 @@ public class ScheduleModifyRequest {
 	private String body;
 	private Long assigneeId;
 	private String place;
-	private Boolean isCompleted;
+	private boolean completed;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime dueDate;
