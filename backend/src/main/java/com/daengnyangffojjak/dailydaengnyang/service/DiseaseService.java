@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
@@ -44,6 +45,13 @@ public class DiseaseService {
 		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
 		disease.deleteSoftly();
 		return new MessageResponse("질병 기록이 삭제되었습니다.");
+	}
+
+	@Transactional
+	public DizGetResponse getDisease(Long petId, Long diseaseId, String username) {
+		Pet pet = validator.getPetWithUsername(petId, username);
+		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
+		return DizGetResponse.from(disease);
 	}
 
 	private Disease validateDiseaseWithPetId(Long petId, Long diseaseId) {

@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
@@ -125,6 +126,27 @@ class DiseaseServiceTest {
 			MessageResponse response = assertDoesNotThrow(
 					() -> diseaseService.delete(1L, 1L, "user"));
 			assertEquals("질병 기록이 삭제되었습니다.", response.getMsg());
+		}
+	}
+
+	@Nested
+	@DisplayName("질병 단건 조회")
+	class GetDisease {
+
+		Disease saved = Disease.builder().id(1L).pet(pet).name("질병")
+				.category(DiseaseCategory.DERMATOLOGY)
+				.build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(validator.getDiseaseById(1L)).willReturn(saved);
+
+			DizGetResponse response = assertDoesNotThrow(
+					() -> diseaseService.getDisease(1L, 1L, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("질병", response.getName());
 		}
 	}
 }
