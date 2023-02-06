@@ -34,6 +34,7 @@ public class SecurityConfiguration {
 				//Instead of using authorizeRequests, use authorizeHttpRequests
 				.cors().and().authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/utils/profile").permitAll()
+						.requestMatchers("/actuator/health").permitAll()
 						.requestMatchers("/api/v1/users/**").permitAll()
 						.requestMatchers("/docs/index.html").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/**").authenticated()
