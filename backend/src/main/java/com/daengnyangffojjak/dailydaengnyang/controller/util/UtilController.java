@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.controller;
+package com.daengnyangffojjak.dailydaengnyang.controller.util;
 
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
