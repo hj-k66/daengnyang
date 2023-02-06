@@ -58,7 +58,7 @@ public class TagService {
 		tagRepository.delete(tag);
 		return new MessageResponse("태그가 삭제되었습니다.");
 	}
-	@Transactional
+	@Transactional(readOnly = true)
 	public TagListResponse getList(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);

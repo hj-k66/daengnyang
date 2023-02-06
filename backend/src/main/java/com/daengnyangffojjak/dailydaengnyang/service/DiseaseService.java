@@ -49,14 +49,14 @@ public class DiseaseService {
 		return new MessageResponse("질병 기록이 삭제되었습니다.");
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public DizGetResponse getDisease(Long petId, Long diseaseId, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
 		return DizGetResponse.from(disease);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public Page<DizGetResponse> getDiseaseList(Long petId, Pageable pageable, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		return diseaseRepository.findAllByPetId(petId, pageable)
