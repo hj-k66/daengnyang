@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.configuration;
 
 import com.daengnyangffojjak.dailydaengnyang.security.CustomAccessDeniedHadler;
 import com.daengnyangffojjak.dailydaengnyang.security.CustomAuthenticationEntryPoint;
+import com.daengnyangffojjak.dailydaengnyang.security.CustomOAuth2Service;
 import com.daengnyangffojjak.dailydaengnyang.security.JwtExceptionFilter;
 import com.daengnyangffojjak.dailydaengnyang.security.JwtTokenFilter;
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
@@ -16,6 +17,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 @Configuration
@@ -24,6 +27,7 @@ public class SecurityConfiguration {
 
 	private final JwtTokenUtil jwtTokenUtil;
 	private final RedisTemplate redisTemplate;
+	private final CustomOAuth2Service customOAuth2Service;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -36,6 +40,7 @@ public class SecurityConfiguration {
 						.requestMatchers("/utils/profile").permitAll()
 						.requestMatchers("/api/v1/users/**").permitAll()
 						.requestMatchers("/docs/index.html").permitAll()
+						.requestMatchers("/oauth2/authorization/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
@@ -48,10 +53,33 @@ public class SecurityConfiguration {
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
 				.and()
+				.oauth2Login()
+				.userInfoEndpoint().userService(customOAuth2Service)	//provider로부터 획득한 유저정보를 다룰 service단을 지정한다.
+				.and()
+				.successHandler(OAuth2AuthenticationSuccessHandler)
+				.failureHandler(authenticationFailureHandler)
+				.and()
 				.addFilterBefore(new JwtTokenFilter(jwtTokenUtil,redisTemplate),
 						UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
 				.addFilterBefore(new JwtExceptionFilter(), JwtTokenFilter.class)
 				.build();
+	}
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer(){
+		return new WebMvcConfigurer() {
+			private final long MAX_AGE_SECS = 3600;
+
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**")
+						.allowedOrigins("http://localhost:3000")
+						.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
+						.allowCredentials(true)
+						.maxAge(MAX_AGE_SECS);
+			}
+		};
 	}
 }
 
