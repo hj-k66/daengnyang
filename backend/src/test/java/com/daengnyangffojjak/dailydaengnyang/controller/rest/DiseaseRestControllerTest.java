@@ -71,7 +71,8 @@ class DiseaseRestControllerTest extends ControllerTest {
 									fieldWithPath("category").optional().description("진료 과목"),
 									fieldWithPath("startedAt").optional().description("진단 날짜")
 											.attributes(field("constraints", "오늘 이전만 가능")),
-									fieldWithPath("endedAt").optional().description("종료 날짜")
+									fieldWithPath("endedAt").optional().description("종료 날짜"),
+									fieldWithPath("validateEndedAt").ignored()
 
 							),
 							responseFields(fieldWithPath("resultCode").description("결과코드"),
@@ -112,7 +113,8 @@ class DiseaseRestControllerTest extends ControllerTest {
 									fieldWithPath("category").optional().description("진료 과목"),
 									fieldWithPath("startedAt").optional().description("진단 날짜")
 											.attributes(field("constraints", "오늘 이전만 가능")),
-									fieldWithPath("endedAt").optional().description("종료 날짜")
+									fieldWithPath("endedAt").optional().description("종료 날짜"),
+									fieldWithPath("validateEndedAt").ignored()
 
 							),
 							responseFields(fieldWithPath("resultCode").description("결과코드"),
