@@ -6,6 +6,7 @@ import com.daengnyangffojjak.dailydaengnyang.security.CustomAuthenticationEntryP
 import com.daengnyangffojjak.dailydaengnyang.security.CustomOAuth2Service;
 import com.daengnyangffojjak.dailydaengnyang.security.JwtExceptionFilter;
 import com.daengnyangffojjak.dailydaengnyang.security.JwtTokenFilter;
+import com.daengnyangffojjak.dailydaengnyang.security.OAuth2AuthenticationSuccessHandler;
 import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ public class SecurityConfiguration {
 	private final JwtTokenUtil jwtTokenUtil;
 	private final RedisTemplate redisTemplate;
 	private final CustomOAuth2Service customOAuth2Service;
+	private final OAuth2AuthenticationSuccessHandler OAuth2AuthenticationSuccessHandler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -54,19 +56,20 @@ public class SecurityConfiguration {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
 				.and()
 				.oauth2Login()
-				.userInfoEndpoint().userService(customOAuth2Service)	//provider로부터 획득한 유저정보를 다룰 service단을 지정한다.
+				.userInfoEndpoint()
+				.userService(customOAuth2Service)    //provider로부터 획득한 유저정보를 다룰 service단을 지정한다.
 				.and()
 				.successHandler(OAuth2AuthenticationSuccessHandler)
-				.failureHandler(authenticationFailureHandler)
+//				.failureHandler(authenticationFailureHandler)
 				.and()
-				.addFilterBefore(new JwtTokenFilter(jwtTokenUtil,redisTemplate),
+				.addFilterBefore(new JwtTokenFilter(jwtTokenUtil, redisTemplate),
 						UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
 				.addFilterBefore(new JwtExceptionFilter(), JwtTokenFilter.class)
 				.build();
 	}
 
 	@Bean
-	public WebMvcConfigurer corsConfigurer(){
+	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			private final long MAX_AGE_SECS = 3600;
 

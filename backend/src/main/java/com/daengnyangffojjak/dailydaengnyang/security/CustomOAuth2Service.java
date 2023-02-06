@@ -27,27 +27,28 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
 		OAuth2User oAuth2User = delegate.loadUser(userRequest); //OAuth 서비스(google..)에서 가져온 유저 정보
 		log.info("oAuth2User : {}", oAuth2User.toString());
 		Map<String, Object> attributes = oAuth2User.getAttributes();   //유저 정보 Map에 담음
-		log.info("attribue : {}", attributes.toString());
 
 		String registrationId = userRequest.getClientRegistration().getRegistrationId(); //사용한 OAuth 서비스 이름
 		//OAuth 서비스에 따라 유저정보를 공통된 class인 UserProfile 객체로 만들어 준다.
 		Map<String, Object> customAttributes = OAuthAttribute.getAttribute(registrationId, attributes);
+		log.info("attributes : {}", customAttributes.toString());
 		User user = User.builder()
 				.userName((String) customAttributes.get("oauthId"))
 				.role(UserRole.ROLE_USER)
+				.name((String) customAttributes.get("name"))
+				.email((String) customAttributes.get("email"))
 				.attributes(customAttributes)
 				.build();
 		log.info("userName : {}", user.getName());
 
 		User savedUser = saveOrUpdate(user);      //DB에 저장
 
-		/**리팩토링할 때 쓸 거**/
         return user;
 	}
 	private User saveOrUpdate(User user){
 		String userName = user.getUsername();
 		User updated = userRepository.findByUserName(userName)
-				.map(m -> m.update(userName, (String) user.getAttributes().get("email"))) //OAuth 서비스 유저정보 변경이 있으면 업데이트
+				.map(u -> u.update(userName, (String) user.getAttributes().get("email"))) //OAuth 서비스 유저정보 변경이 있으면 업데이트
 				.orElse(user);          //user가 없으면 새로운 user 생성
 		return userRepository.save(updated);
 	}
