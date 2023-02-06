@@ -136,21 +136,21 @@ public class JwtTokenUtil {
 		try {
 			return Jwts.parserBuilder().setSigningKey(makeKey()).build().parseClaimsJws(accessToken)
 					.getBody();
-		} catch (ExpiredJwtException e) {
-			return e.getClaims();
 		} catch (SignatureException e) {
 			log.info("서명이 일치하지 않습니다.");
 			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN, "서명 불일치");
 		} catch (IllegalArgumentException e) {
 			throw new SecurityCustomException(ErrorCode.INVALID_TOKEN);
+		} catch (ExpiredJwtException e) {
+			return e.getClaims();
 		}
 	}
 
-	public Long getExpiration(String accessToken){
+	public Long getExpiration(String accessToken) {
 		// accessToken 남은 유효시간
-		Date expiration = Jwts.parserBuilder().setSigningKey(makeKey()).build().parseClaimsJws(accessToken).getBody().getExpiration();
+		Date expiration = extractClaims(accessToken).getExpiration();
 		// 현재 시간
-		Long now = new Date().getTime();
+		long now = new Date().getTime();
 		return (expiration.getTime() - now);
 	}
 
