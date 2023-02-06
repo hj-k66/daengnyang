@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
@@ -21,6 +22,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +99,12 @@ public class UserService {
 		//Redis에서 userName이 key인 refreshToken(value)를 가져오기
 		String selectedToken = (String) redisTemplate.opsForValue().get(authentication.getName());
 
-		//refreshToken이 유효하지 않거나 입력받은 refreshToken과 redis 저장된게 일치하지 않으면
+		//2-1. 로그아웃되어 Redis 에 RefreshToken 이 존재하지 않는 경우 처리
+		if(ObjectUtils.isEmpty(refreshToken)) {
+			throw new SecurityCustomException(ErrorCode.INVALID_REQUEST);
+		}
+
+		//2-2. refreshToken이 유효하지 않거나 입력받은 refreshToken과 redis 저장된게 일치하지 않으면
 		// 토큰 탈취되었다고 판단
 		// redis에서 refreshToken 삭제하고 예외처리
 		if (!isvalidToken || !Objects.equals(selectedToken, refreshToken)) {
@@ -112,5 +119,27 @@ public class UserService {
 				.set(authentication.getName(), tokenInfo.getRefreshToken(),
 						tokenInfo.getRefreshTokenExpireTime(), TimeUnit.MILLISECONDS);
 		return tokenInfo;
+	}
+
+	public MessageResponse logout(TokenRequest tokenRequest) {
+		String accessToken = tokenRequest.getAccessToken();
+
+		//1. AccessToken에서 userName 가져오기 >> accessToken 유효성도 검사
+		String userName = jwtTokenUtil.getUserName(accessToken);
+
+		//2. Redis에서 해당 userName(key)으로 저장된 refreshToken(value) 있는지 확인
+		if(redisTemplate.opsForValue().get(userName) != null){
+			//2-1. 있으면 삭제
+			redisTemplate.delete(userName);
+		}
+
+		//3. 해당 accessToken 남은 유효시간 가지고 와서 redis BlackList에 저장
+		// key : accesstoken, value: logout
+		Long expiration = jwtTokenUtil.getExpiration(accessToken);
+		log.info("남은 만료 시간: " + expiration);
+		redisTemplate.opsForValue().set(accessToken,"logout",expiration,TimeUnit.MILLISECONDS);
+
+		return new MessageResponse("로그아웃이 되었습니다.");
+
 	}
 }
