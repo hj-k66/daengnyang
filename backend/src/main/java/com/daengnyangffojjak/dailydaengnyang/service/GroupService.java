@@ -45,14 +45,14 @@ public class GroupService {
 		return GroupMakeResponse.from(savedGroup);
 	}
 
-	@Transactional      //그룹 내 유저 조회
+	@Transactional(readOnly = true)		//그룹 내 유저 조회
 	public GroupUserListResponse getGroupUsers(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group, username);
 		return GroupUserListResponse.from(userGroupList);
 	}
 
-	@Transactional      //그룹 내 반려동물 조회
+	@Transactional(readOnly = true)      //그룹 내 반려동물 조회
 	public GroupPetListResponse getGroupPets(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group,

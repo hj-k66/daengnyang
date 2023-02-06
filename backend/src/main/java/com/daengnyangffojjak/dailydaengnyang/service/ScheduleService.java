@@ -105,8 +105,8 @@ public class ScheduleService {
 
 	}
 
-	//일정 상세 조회(단건)
-	@Transactional
+	// 일정 상세 조회(단건)
+	@Transactional(readOnly = true)
 	public ScheduleResponse get(Long petId, Long scheduleId, String userName) {
 
 		//유저가 없는 경우 예외발생
@@ -123,8 +123,8 @@ public class ScheduleService {
 
 	}
 
-	//개체별 일정 전체 보기
-	@Transactional
+	// 개체별 일정 전체 보기
+	@Transactional(readOnly = true)
 	public Page<ScheduleListResponse> list(Long petId, String userName, Pageable pageable) {
 
 		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
