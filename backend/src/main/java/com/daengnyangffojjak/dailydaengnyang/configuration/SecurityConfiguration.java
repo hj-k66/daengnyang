@@ -1,7 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.configuration;
 
 
-import com.daengnyangffojjak.dailydaengnyang.security.CustomAccessDeniedHadler;
+import com.daengnyangffojjak.dailydaengnyang.security.CustomAccessDeniedHandler;
 import com.daengnyangffojjak.dailydaengnyang.security.CustomAuthenticationEntryPoint;
 import com.daengnyangffojjak.dailydaengnyang.security.JwtExceptionFilter;
 import com.daengnyangffojjak.dailydaengnyang.security.JwtTokenFilter;
@@ -41,7 +41,7 @@ public class SecurityConfiguration {
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.PUT, "/api/v1/**").authenticated()
 				)
-				.exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHadler())
+				.exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
 				.and()
 				.exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 				.and()
