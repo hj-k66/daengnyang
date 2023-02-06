@@ -21,13 +21,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-		log.info("인증 실패, 로그인 하지 않았습니다.");
+		log.info("인증 실패");
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		SecurityCustomException securityCustomException = new SecurityCustomException(
-				ErrorCode.INVALID_PERMISSION, "로그인 하지 않은 사용자입니다.");
+				ErrorCode.INVALID_PERMISSION);
 		ErrorResponse errorResponse = new ErrorResponse(securityCustomException.getErrorCode(),
-				securityCustomException.toString());
+				securityCustomException.getErrorCode().getMessage());
 		Response<ErrorResponse> error = Response.error(errorResponse);
 
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
