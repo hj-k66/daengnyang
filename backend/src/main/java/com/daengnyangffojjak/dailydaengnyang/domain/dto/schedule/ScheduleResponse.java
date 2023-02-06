@@ -49,7 +49,7 @@ public class ScheduleResponse {
 				.title(schedule.getTitle())
 				.body(schedule.getBody())
 				.assigneeId(schedule.getAssigneeId())
-				.isCompleted(schedule.getIsCompleted())
+				.isCompleted(schedule.isCompleted())
 				.place(schedule.getPlace())
 				.dueDate(schedule.getDueDate())
 				.createdAt(schedule.getCreatedAt())

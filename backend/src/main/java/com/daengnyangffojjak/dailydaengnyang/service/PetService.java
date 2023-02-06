@@ -39,6 +39,7 @@ public class PetService {
 
 
 	// pet 단건 조회
+	@Transactional(readOnly = true)
 	public PetShowResponse show(Long groupId, Long id, String userName) {
 
 		// 유저 확인

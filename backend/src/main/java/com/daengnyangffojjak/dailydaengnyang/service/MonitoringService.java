@@ -31,7 +31,7 @@ public class MonitoringService {
 		Monitoring saved = monitoringRepository.save(mntWriteRequest.toEntity(pet));
 		return MntWriteResponse.from(saved);
 	}
-	@Transactional
+	@Transactional(readOnly = true)
 	public MntMonthlyResponse getMonthly(Long petId, Integer year, Integer month, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		LocalDate start = LocalDate.of(year, month, 1);
@@ -60,7 +60,7 @@ public class MonitoringService {
 		return MntDeleteResponse.from(monitoring);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public MntGetResponse getMonitoring(Long petId, Long monitoringId, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		Monitoring monitoring = validateMonitoringWithPetId(monitoringId, petId);
