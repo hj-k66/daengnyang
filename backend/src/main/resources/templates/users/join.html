@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:replace="~{fragments/header :: head}">
   <meta charset="UTF-8">
@@ -18,14 +19,16 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form th:method="POST" th:action="@{/api/v1/users/join}" th:object="${userJoinRequest}" id="userJoinRequest">
+      <form th:method="POST" th:action="@{/api/v1/users/join}" th:object="${userJoinRequest}"
+            id="userJoinRequest">
         <div class="form-group">
           <label th:for="email">
             이메일
           </label>
           <input type="email" th:field="*{email}" class="form-control" oninput="email_ck()"
-          placeholder="이메일을 입력하세요" th:class="${#fields.hasErrors('email')}? 'form-control fieldError' : 'form-control'"/>
-          <p th:if = "${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect data</p>
+                 placeholder="이메일을 입력하세요"
+                 th:class="${#fields.hasErrors('email')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect data</p>
           <span id="email_span"></span>
 
         </div>
@@ -35,8 +38,9 @@
             이름
           </label>
           <input type="text" th:field="*{userName}" class="form-control" oninput="userName_ck()"
-          placeholder="아이디를 입력하세요"th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
-          <p th:if = "${#fields.hasErrors('userName')}" th:errors="*{userName}">Incorrect data</p>
+                 placeholder="아이디를 입력하세요"
+                 th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">Incorrect data</p>
           <span id="userName_span"></span>
 
         </div>
@@ -46,13 +50,15 @@
             비밀번호
           </label>
           <input type="password" th:field="*{password}" class="form-control" oninput="password_ck()"
-          placeholder="비밀번호를 입력하세요" th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
-          <p th:if = "${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
+                 placeholder="비밀번호를 입력하세요"
+                 th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
           <span id="pw_span"></span> <br>
           비밀번호 확인
           <input type="password" class="form-control" oninput="password_ck()" id="password-check"
-          placeholder="비밀번호 확인" th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
-          <p th:if = "${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
+                 placeholder="비밀번호 확인"
+                 th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
           <span id="pw1_span"></span>
         </div>
 
@@ -92,7 +98,7 @@
       return;
     }
 
-    if (regexp.test(email) == false){
+    if (regexp.test(email) == false) {
       $("#email_span").html("유효한 이메일이 아닙니다");
       emailPass = false;
       check_join()
@@ -107,7 +113,7 @@
       },
       success: function (data) {
         console.log('결과 ' + data + ' ' + email);
-        if (data == true){
+        if (data == true) {
           $("#email_span").html("중복된 이메일입니다");
           emailPass = false;
           check_join()
@@ -139,7 +145,7 @@
       },
       success: function (data) {
         console.log('결과 ' + data + ' ' + userName);
-        if (data == true){
+        if (data == true) {
           $("#userName_span").html("중복된 아이디입니다");
           userNamePass = false;
           check_join();
@@ -182,7 +188,7 @@
     let pw1 = $("#password-check").val();
 
     if (emailPass == true && userNamePass == true && passwordPass == true) {
-        document.getElementById("join_btn").removeAttribute("disabled")
+      document.getElementById("join_btn").removeAttribute("disabled")
     } else {
       document.getElementById("join_btn").setAttribute('disabled', true)
     }

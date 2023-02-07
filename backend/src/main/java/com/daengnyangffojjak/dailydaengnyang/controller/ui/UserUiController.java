@@ -21,7 +21,6 @@ public class UserUiController {
 	private final UserService userService;
 
 
-
 	@GetMapping("/join")
 	public String join(Model model) {
 		model.addAttribute("userJoinRequest", new UserJoinRequest());
@@ -40,8 +39,9 @@ public class UserUiController {
 	public boolean checkUserName(@RequestParam String userName) {
 		return userService.checkUserName(userName);
 	}
+
 	@ResponseBody
-	@GetMapping ("/check-email")
+	@GetMapping("/check-email")
 	public boolean checkEmail(@RequestParam String email) {
 		return userService.checkEmail(email);
 	}

@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/view")
 @RequiredArgsConstructor
 public class PetUiController {
+
+	@GetMapping("/pets")
+	public String petCreate(Model model) {
+		model.addAttribute("petAddRequest", new PetAddRequest());
+		return "/users/join_pet";
+	}
 
 	@PostMapping("/groups/{groupId}/pets")
 	public String petRegistration(@PathVariable Long groupId, Model model) {

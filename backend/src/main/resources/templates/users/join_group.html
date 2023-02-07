@@ -20,7 +20,7 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form role="form" th:method="POST"  th:object="${groupMakeRequest}">
+      <form role="form" th:method="POST" th:object="${groupMakeRequest}">
         <div class="form-group">
           <label th:for="name">
             그룹 이름
@@ -40,7 +40,7 @@
         <button type="button" class="btn btn-primary" onclick="group_join()">
           생성 완료
         </button>
-        <button type="button"> 테스트 </button>
+        <button type="button"> 테스트</button>
       </form>
       <br>
     </div>
@@ -57,23 +57,22 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
 
-  axios.interceptors.request.use(function(config) {
+  axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
-    if(accessToken) {
+    if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     }
     return config;
   })
 
   axios.interceptors.response.use(
-
       success => success,
-      async(error) => {
+      async (error) => {
         console.log("인터셉터 에러" + error);
         const status = error.response.status
 
-        if(status === 401) {
+        if (status === 401) {
           const originRequest = error.config
 
           await axios.post('/api/v1/users/new-token')
@@ -99,11 +98,12 @@
 
     await axios.post("/api/v1/groups", {
       "name": name,
-      "roleInGroup": roleInGroup}, {
-    headers: {
-      "Content-Type": `application/json`,
-      Authorization: "Bearer " + localStorage.getItem("accessToken")
-    },
+      "roleInGroup": roleInGroup
+    }, {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      },
     }).then(res => {
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
@@ -118,8 +118,6 @@
       }
     });
   }
-
-
 
 
 </script>
