@@ -157,6 +157,17 @@
     });
 
   }
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    const cookie = document.cookie;
+    console.log("헤더" + config.headers);
+    console.log("cookie" + cookie);
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  })
 
   // axios.interceptors.request.use(function (config) {
   //   console.log("인터셉터 시작")
