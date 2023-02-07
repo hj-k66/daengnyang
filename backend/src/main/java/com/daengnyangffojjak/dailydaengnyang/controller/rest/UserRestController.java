@@ -16,6 +16,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,7 @@ public class UserRestController {
 				.body(Response.success(userJoinResponse));
 	}
 
+	@CrossOrigin("*")
 	@PostMapping("/login")  //로그인
 	public Response<UserResponse> login(
 			@RequestBody @Valid UserLoginRequest userLoginRequest,
@@ -64,9 +66,8 @@ public class UserRestController {
 	private ResponseCookie makeCookie(String refreshToken) {
 		ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
 				.maxAge(7 * 24 * 60 * 60) //만료시간 : 7일
-				.secure(true)
 				.sameSite("None") //
-				.httpOnly(true)
+				.path("/")
 				.build();
 		return cookie;
 	}

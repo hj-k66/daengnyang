@@ -18,17 +18,13 @@
   <script>
 
     $(function () {
-      $("#birthday").datepicker();
+      $("#birthday").datepicker({dateFormat: 'yy-mm-dd'});
     });
   </script>
 
   <title>개묘한 이야기</title>
 </head>
 <body>
-<!--
-유효성 검사 추가 예정
-건너뛰기 클릭시 유효성 검사 무시
--->
 
 <div th:replace="~{fragments/header :: header}"/>
 
@@ -43,39 +39,39 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form role="form" action="home">
+      <form role="form" th:method="POST" th:object="${petAddRequest}">
         <div class="form-group">
 
           <label th:for="species">
             종
           </label>
           <br>
-          <label><input type="radio" name="species" value="dog"> 강아지</label>
-          <label><input type="radio" name="species" value="cat"> 고양이</label>
+          <label><input type="radio" name="species" th:field="*{species}" value="DOG"> 강아지</label>
+          <label><input type="radio" name="species" th:field="*{species}" value="CAT"> 고양이</label>
         </div>
 
         <div class="form-group">
 
-          <label for="breed">
+          <label th:for="breed">
             품종
           </label>
-          <input type="text" class="form-control" id="breed"/>
+          <input type="text" class="form-control" th:field="*{breed}"/>
         </div>
 
         <div class="form-group">
 
-          <label for="petName">
+          <label th:for="name">
             이름
           </label>
-          <input type="text" class="form-control" id="petName"/>
+          <input type="text" class="form-control" th:field="*{name}"/>
         </div>
 
         <div class="form-group">
 
-          <label for="birthday">
+          <label th:for="birthday">
             생일
           </label>
-          <input type="text" class="form-control" id="birthday"/>
+          <input type="text" class="form-control" th:field="*{birthday}"/>
         </div>
 
         <div class="form-group">
@@ -84,35 +80,26 @@
             성별
           </label>
           <br>
-          <label><input type="radio" name="sex" value="female"> 암컷</label>
-          <label><input type="radio" name="sex" value="male"> 수컷</label>
-          <label><input type="radio" name="sex" value="spayed_female"> 중성화 암컷</label>
-          <label><input type="radio" name="sex" value="neutered_female"> 중성화 수컷</label>
+          <label><input type="radio" name="sex" th:field="*{sex}" value="FEMALE"> 암컷</label>
+          <label><input type="radio" name="sex" th:field="*{sex}" value="MALE"> 수컷</label>
+          <label><input type="radio" name="sex" th:field="*{sex}" value="SPAYED_FEMALE"> 중성화 암컷</label>
+          <label><input type="radio" name="sex" th:field="*{sex}" value="NEUTERED_MALE"> 중성화 수컷</label>
         </div>
 
         <div class="form-group">
 
-          <label for="weight">
+          <label th:for="weight">
             몸무게
           </label>
-          <input type="text" class="form-control" id="weight"/>
+          <input type="text" class="form-control" th:field="*{weight}"/>
         </div>
 
 
         <br>
-        <button type="submit" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" onclick="pet_create()">
           작성 완료
         </button>
       </form>
-      <br>
-      <!--토큰 있을때는 hidden으로 숨길 예정-->
-      <button type="button" class="btn active btn-secondary"
-              onclick="location.href = 'groupCreate'">
-        뒤로가기
-      </button>
-      <button type="button" class="btn active btn-secondary" onclick="location.href = 'home'">
-        건너뛰기
-      </button>
 
 
     </div>
@@ -125,5 +112,86 @@
   </div>
 </div>
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+
+  async function pet_create() {
+    let groupId = sessionStorage.getItem("groupId");
+    console.log(sessionStorage.getItem("groupId"));
+
+    let name = $("#name").val();
+    let species = $("input:radio[name=species]:checked").val();
+    let breed = $("#breed").val();
+    let sex = $("input:radio[name=sex]:checked").val();
+    let birthday = $("#birthday").val();
+    let weight = $("#weight").val();
+
+    console.log("성별" + sex)
+    console.log("강쥐 냥냥" + species)
+
+    console.log(birthday)
+    await axios.post(`/api/v1/groups/${groupId}/pets`, {
+      "name": name,
+      "species": species,
+      "breed": breed,
+      "sex": sex,
+      "birthday": birthday,
+      "weight": weight}, {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log("바로 실행 로그");
+        console.log(res.data.resultCode);
+        console.log(res.data.result.id);
+
+        document.location.href = "/view/calendar"
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+
+  }
+
+  axios.interceptors.request.use(function(config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if(accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  })
+
+  axios.interceptors.response.use(
+
+      success => success,
+      async(error) => {
+        console.log("인터셉터 에러" + error);
+        const status = error.response.status
+
+        if(status === 401) {
+          await axios.post('/api/v1/users/new-token', {}, {
+            headers: {
+              "Content-Type": `application/json`,
+              Authorization: "Bearer " + localStorage.getItem("accessToken")
+            },
+          })
+          .then(response => {
+            console.log("인터셉터 리스폰스 데이터" + response.data.result.accessToken);
+            localStorage.setItem("accessToken", response.data.result.accessToken);
+          })
+          .catch(error => {
+            console.log('fail' + error);
+            localStorage.removeItem('accessToken')
+          })
+          return Promise.reject(error)
+        }
+      }
+  )
+
+</script>
 </body>
 </html>

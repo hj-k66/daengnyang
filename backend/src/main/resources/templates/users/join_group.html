@@ -2,14 +2,11 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: head}">
   <meta charset="UTF-8">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+  <script th:src="@{/js/login.js}"></script>
   <title>개묘한 이야기</title>
 </head>
 <body>
-<!--
-유효성 검사 그룹 이름 필수
-건너뛰기 클릭시 유효성 검사 무시
--->
-
 
 <div th:replace="~{fragments/header :: header}"/>
 
@@ -23,27 +20,29 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form role="form" action="/view/groups">
+      <form role="form" th:method="POST"  th:object="${groupMakeRequest}">
         <div class="form-group">
-
-          <label for="groupName">
+          <label th:for="name">
             그룹 이름
           </label>
-          <input type="text" class="form-control" id="groupName"/>
+          <input type="text" class="form-control" th:field="*{name}"
+                 placeholder="그룹 이름을 입력하세요"/>
+        </div>
+        <div class="form-group">
+          <label th:for="roleInGroup">
+            그룹 이름
+          </label>
+          <input type="text" class="form-control" th:field="*{roleInGroup}"
+                 placeholder="닉네임을 입력하세요"/>
         </div>
 
         <br>
-        <button type="submit" class="btn btn-primary">
-          다음
+        <button type="button" class="btn btn-primary" onclick="group_join()">
+          생성 완료
         </button>
+        <button type="button"> 테스트 </button>
       </form>
       <br>
-      <!--토큰 있을때는 hidden으로 숨길 예정-->
-      <button type="button" class="btn active btn-secondary"
-              onclick="location.href = 'petRegistration'">
-        건너뛰기
-      </button>
-
     </div>
     <div class="col-md-4">
     </div>
@@ -55,5 +54,74 @@
 </div>
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+
+  axios.interceptors.request.use(function(config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if(accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    }
+    return config;
+  })
+
+  axios.interceptors.response.use(
+
+      success => success,
+      async(error) => {
+        console.log("인터셉터 에러" + error);
+        const status = error.response.status
+
+        if(status === 401) {
+          const originRequest = error.config
+
+          await axios.post('/api/v1/users/new-token')
+          .then(response => {
+            console.log("인터셉터 리스폰스 데이터" + response.data);
+            localStorage.setItem("accessToken", response.data);
+          })
+          .catch(error => {
+            console.log('fail');
+            localStorage.removeItem('accessToken')
+          })
+          return Promise.reject(error)
+        }
+      }
+  )
+
+  async function group_join() {
+    let name = $("#name").val();
+    let roleInGroup = $("#roleInGroup").val();
+    const token = localStorage.getItem("accessToken")
+    const tt = `Bearer ${token}`
+    console.log(tt);
+
+    await axios.post("/api/v1/groups", {
+      "name": name,
+      "roleInGroup": roleInGroup}, {
+    headers: {
+      "Content-Type": `application/json`,
+      Authorization: "Bearer " + localStorage.getItem("accessToken")
+    },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log("바로 실행 로그");
+        console.log(res.data.resultCode);
+        console.log(res.data.result.id);
+
+        sessionStorage.setItem("groupId", res.data.result.id);
+        document.location.href = "/view/pets"
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+
+
+
+</script>
 </body>
 </html>

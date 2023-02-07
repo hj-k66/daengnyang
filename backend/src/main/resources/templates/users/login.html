@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script th:src="@{/js/login.js}"></script>
   <title>개묘한 이야기</title>
 </head>
 <body>
@@ -20,13 +21,14 @@
           <h3> 로그인 </h3>
         </div>
         <div class="col-md-4">
-          <form th:method="post" action="/view/users/login" th:object="${userLoginRequest}" class="login-form form-group">
+          <form th:action="@{/api/v1/users/login}" th:object="${userLoginRequest}" class="login-form form-group">
             <div class="form-group">
-              <label th:for="email">
-                이메일
+              <label th:for="userName">
+                아이디
               </label>
-              <input type="email" th:field="*{email}" class="form-control" oninput="email_ck()"
-                     placeholder="이메일을 입력하세요" th:class="${#fields.hasErrors('email')}? 'form-control fieldError' : 'form-control'"/>
+              <input type="text" th:field="*{userName}" class="form-control"
+                     placeholder="아이디를 입력하세요" th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
+              <p th:if = "${#fields.hasErrors('userName')}" th:errors="*{userName}">Incorrect data</p>
             </div>
 
             <label th:for="password">
@@ -37,14 +39,14 @@
             <p th:if = "${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
             <br>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" onclick="login()">
               로그인
             </button>
           </form>
 
           <br>
 
-          <button type="button" class="btn btn-secondary" onclick="location.href = 'join'">
+          <button type="button" class="btn btn-secondary" onclick="location.href='/view/users/join'">
             회원 가입
           </button>
         </div>
@@ -55,5 +57,95 @@
   </div>
 </div>
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<!--<script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+
+  async function login() {
+
+    let userName = $("#userName").val();
+    let password = $("#password").val();
+
+    await axios.post("/api/v1/users/login", {
+      "userName": userName,
+      "password": password,
+    },
+        { withCredentials: true }
+    ).then(res => {
+      let config = {
+        headers: {
+          "Authorization": "Bearer " + res.data.result.accessToken
+        }
+      }
+      if (res.data.resultCode == 'SUCCESS') {
+        // const accessToken  = res.data.result.accessToken;
+        // axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+        console.log("바로 실행 로그");
+        console.log(config.headers)
+
+        window.localStorage.setItem("accessToken", res.data.result.accessToken);
+
+      } else {
+        console.log("로그인 실패" + res.resultCode)
+        localStorage.clear()
+      }
+    });
+    const accessToken = window.localStorage.getItem("accessToken");
+    if (accessToken != null) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      document.location.href = "/view/groups";
+      return true;
+    }
+  }
+
+  axios.interceptors.request.use(function(config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if(accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  })
+
+  axios.interceptors.response.use(
+
+      success => success,
+      async(error) => {
+        console.log("인터셉터 에러" + error);
+        const status = error.response.status
+
+        if(status === 401) {
+          await axios.post('/api/v1/users/new-token', {}, {
+            headers: {
+              "Content-Type": `application/json`,
+              Authorization: "Bearer " + localStorage.getItem("accessToken")
+            },
+          })
+          .then(response => {
+            console.log("인터셉터 리스폰스 데이터" + response.data.result.accessToken);
+            localStorage.setItem("accessToken", response.data.result.accessToken);
+          })
+          .catch(error => {
+            console.log('fail' + error);
+            localStorage.removeItem('accessToken')
+          })
+          return Promise.reject(error)
+        }
+      }
+  )
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
 </body>
 </html>

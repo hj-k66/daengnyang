@@ -18,7 +18,7 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form th:method="post" action="/view/users/join" th:object="${userJoinRequest}" id="userJoinRequest">
+      <form th:method="POST" th:action="@{/api/v1/users/join}" th:object="${userJoinRequest}" id="userJoinRequest">
         <div class="form-group">
           <label th:for="email">
             이메일
@@ -57,7 +57,7 @@
         </div>
 
         <br>
-        <button type="submit" class="btn btn-primary" id="join_btn" onclick="join()" disabled>
+        <button type="button" class="btn btn-primary" id="join_btn" onclick="join_click()" disabled>
           회원 가입
         </button>
       </form>
@@ -83,9 +83,8 @@
 
   /* 이메일 유효성 검사 */
   function email_ck() {
-    let email = $("#email").val();
     let regexp = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
-
+    let email = $("#email").val();
     if (email == "") {
       $("#email_span").html("이메일을 입력하지 않으셨습니다");
       emailPass = false;
@@ -127,7 +126,6 @@
   /* 아이디 유효성 검사 */
   function userName_ck() {
     let userName = $("#userName").val();
-
     if (userName == "") {
       $("#userName_span").html("아이디를 입력하지 않으셨습니다");
       return;
@@ -161,7 +159,6 @@
   function password_ck() {
     let pw = $("#password").val();
     let pw1 = $("#password-check").val();
-
     if (pw == "") {
       $("#pw_span").html("패스워드를 입력하지 않으셨습니다");
       return;
@@ -189,6 +186,29 @@
     } else {
       document.getElementById("join_btn").setAttribute('disabled', true)
     }
+  }
+
+  function join_click() {
+    let email = $("#email").val();
+    let userName = $("#userName").val();
+    let password = $("#password").val();
+    $.ajax({
+      type: "POST",
+      url: "/api/v1/users/join",
+      contentType: 'application/json',
+      data: JSON.stringify({
+        email: email,
+        userName: userName,
+        password: password
+      }),
+      success: function (data) {
+        console.log('결과 ' + data + ' ' + email);
+        location.replace("/view/users/login")
+      },
+      error: function () {
+        console.log('실패')
+      }
+    });
   }
 
 </script>
