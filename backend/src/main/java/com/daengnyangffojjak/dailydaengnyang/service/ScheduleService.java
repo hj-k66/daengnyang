@@ -4,12 +4,18 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCreateEvent;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +30,8 @@ public class ScheduleService {
 	private final ScheduleRepository scheduleRepository;
 	private final UserRepository userRepository;
 	private final PetRepository petRepository;
+	private final ApplicationEventPublisher applicationEventPublisher;
+	private final Validator validator;
 
 	// 일정 등록
 	@Transactional
@@ -40,6 +48,15 @@ public class ScheduleService {
 
 		// 일정 저장
 		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
+
+		//알림 전송 - 그룹원 모두에게 전송
+		//해당 그룹(pet의 그룹) 내 멤버 이름 불러오기
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), userName);
+		List<String> userNameList = userGroupList.stream()
+				.map(userGroup -> userGroup.getUser().getUsername()).collect(
+						Collectors.toList());
+		applicationEventPublisher.publishEvent(new ScheduleCreateEvent(userNameList));
 
 		return ScheduleCreateResponse.builder()
 				.message("일정 등록 완료")
