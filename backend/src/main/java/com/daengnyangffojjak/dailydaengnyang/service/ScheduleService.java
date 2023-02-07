@@ -8,7 +8,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
-import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,8 @@ public class ScheduleService {
 		Tag tag = validator.getTagById(scheduleCreateRequest.getTagId());
 
 		//일정 저장
-		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user, tag));
+		Schedule savedSchedule = scheduleRepository.save(
+				scheduleCreateRequest.toEntity(pet, user, tag));
 		String message = "일정 등록 완료";
 
 		return ScheduleCreateResponse.toResponse(message, savedSchedule);
