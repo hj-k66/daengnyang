@@ -42,6 +42,10 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.0.2'
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 타임리프 추가
+    // https://mvnrepository.com/artifact/org.webjars.bower/jquery
+    implementation group: 'org.webjars.bower', name: 'jquery', version: '3.6.2' // jquery 추가
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1' // json 추가
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis' // redis 의존성 추가
 

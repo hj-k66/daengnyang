@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.controller;
+package com.daengnyangffojjak.dailydaengnyang.controller.util;
 
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,7 @@ public class UtilController {
 
 	@GetMapping("/profile")
 	public String getProfile() {
-//		System.out.println("get success");
-//		String[] activeProfiles = env.getActiveProfiles();
-//		log.info("activeProfiles : " + activeProfiles);
-//		return Arrays.stream(activeProfiles).findFirst().orElse("");
-		return "get success";
+
+		return Arrays.stream(env.getActiveProfiles()).findFirst().orElse("");
 	}
 }
