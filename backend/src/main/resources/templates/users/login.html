@@ -94,62 +94,66 @@
         localStorage.clear()
       }
     });
+
     const accessToken = window.localStorage.getItem("accessToken");
+
     if (accessToken != null) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      document.location.href = "/view/groups";
+      // document.location.href = "/view/groups";
       return true;
     }
+
+
   }
 
-  // axios.interceptors.request.use(function (config) {
-  //   console.log("인터셉터 시작")
-  //   const accessToken = localStorage.getItem('accessToken');
-  //   const cookie = document.cookie;
-  //   console.log("헤더" + config.headers);
-  //   console.log("cookie" + cookie);
-  //   if (accessToken) {
-  //     config.headers.Authorization = `Bearer ${accessToken}`;
-  //   }
-  //   return config;
-  // })
-  //
-  // axios.interceptors.response.use(
-  //     (response) => {
-  //       return response;
-  //     },
-  //     async (error) => {
-  //       const {
-  //         config,
-  //         response: { status },
-  //       } = error;
-  //
-  //       const originalRequest = config;
-  //
-  //       if (status === 401) {
-  //         const accessToken = localStorage.getItem('ACCESS_TOKEN');
-  //         const cookie = document.cookie;
-  //
-  //         try {
-  //           const { data } = await axios({
-  //             method: 'post',
-  //             url: `/api/v1/users/new-token`,
-  //             data: { accessToken, cookie },
-  //           });
-  //           const newAccessToken = data.data.accessToken;
-  //           originalRequest.headers = {
-  //             'Content-Type': 'application/json',
-  //             Authorization: 'Bearer ' + newAccessToken,
-  //           };
-  //           localStorage.setItem('ACCESS_TOKEN', newAccessToken);
-  //           return await axios(originalRequest);
-  //         } catch (err) {
-  //           new Error(err);
-  //         }
-  //       }
-  //       return Promise.reject(error);
-  //     }
-  // );
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    const cookie = document.cookie;
+    console.log("헤더" + config.headers);
+    console.log("cookie" + cookie);
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  })
+
+  axios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async (error) => {
+        const {
+          config,
+          response: { status },
+        } = error;
+
+        const originalRequest = config;
+
+        if (status === 401) {
+          const accessToken = localStorage.getItem('ACCESS_TOKEN');
+          const cookie = document.cookie;
+
+          try {
+            const { data } = await axios({
+              method: 'post',
+              url: `/api/v1/users/new-token`,
+              data: { accessToken, cookie },
+            });
+            const newAccessToken = data.data.accessToken;
+            originalRequest.headers = {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + newAccessToken,
+            };
+            localStorage.setItem('ACCESS_TOKEN', newAccessToken);
+            return await axios(originalRequest);
+          } catch (err) {
+            new Error(err);
+          }
+        }
+        return Promise.reject(error);
+      }
+  );
 
 
 </script>

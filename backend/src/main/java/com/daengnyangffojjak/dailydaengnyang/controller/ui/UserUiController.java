@@ -5,8 +5,10 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +30,7 @@ public class UserUiController {
 	}
 
 	@GetMapping("/login")
-	public String login(Model model) {
+	public String login(Model model, @CookieValue(value = "Set-Cookie", required = false) Cookie cookie) {
 		model.addAttribute("userLoginRequest", new UserLoginRequest());
 		return "users/login";
 	}
