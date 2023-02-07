@@ -3,10 +3,12 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +38,14 @@ public class ScheduleService {
 		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
 		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
-		//일정 저장
-		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user));
+		//등록 된 태그가 없으면 예외발생
+		Tag tag = validator.getTagById(scheduleCreateRequest.getTagId());
 
-		return ScheduleCreateResponse.toResponse("일정 등록 완료", savedSchedule);
+		//일정 저장
+		Schedule savedSchedule = scheduleRepository.save(scheduleCreateRequest.toEntity(pet, user, tag));
+		String message = "일정 등록 완료";
+
+		return ScheduleCreateResponse.toResponse(message, savedSchedule);
 
 	}
 
@@ -47,13 +53,15 @@ public class ScheduleService {
 	@Transactional
 	public ScheduleModifyResponse modify(Long petId, Long scheduleId,
 			ScheduleModifyRequest scheduleModifyRequest, String userName) {
-		log.debug("scheduleModifyRequest.isCompleted : {} ", scheduleModifyRequest.isCompleted());
 
 		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
 		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
 		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
+
+		//등록 된 태그가 없으면 예외발생
+		Tag tag = validator.getTagById(scheduleModifyRequest.getTagId());
 
 		//일정이 없는 경우 예외발생
 		Schedule schedule = scheduleRepository.findById(scheduleId)
@@ -68,22 +76,19 @@ public class ScheduleService {
 		}
 
 		//수정된 일정 저장
-		schedule.changeToSchedule(scheduleModifyRequest);
-		Schedule savedSchedule = scheduleRepository.saveAndFlush(schedule);
+		schedule.changeToSchedule(pet, scheduleModifyRequest, tag);
+		Schedule modifySchedule = scheduleRepository.saveAndFlush(schedule);
 
-		return ScheduleModifyResponse.toResponse(savedSchedule, schedule);
+		return ScheduleModifyResponse.toResponse(modifySchedule);
 
 	}
 
 	//일정 삭제
 	@Transactional
-	public ScheduleDeleteResponse delete(Long petId, Long scheduleId, String userName) {
+	public ScheduleDeleteResponse delete(Long scheduleId, String userName) {
 
 		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
-
-		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
-		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
 		//일정이 없는 경우 예외발생
 		Schedule schedule = scheduleRepository.findById(scheduleId)

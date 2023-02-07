@@ -58,7 +58,7 @@ public class ScheduleRestController {
 	@DeleteMapping(value = "/pets/{petId}/schedules/{scheduleId}")
 	public ResponseEntity<Response<ScheduleDeleteResponse>> deleteSchedule(@PathVariable Long petId,
 			@PathVariable Long scheduleId, @AuthenticationPrincipal UserDetails user) {
-		ScheduleDeleteResponse scheduleDeleteResponse = scheduleService.delete(petId, scheduleId,
+		ScheduleDeleteResponse scheduleDeleteResponse = scheduleService.delete(scheduleId,
 				user.getUsername());
 		return ResponseEntity.ok().body(Response.success(scheduleDeleteResponse));
 	}

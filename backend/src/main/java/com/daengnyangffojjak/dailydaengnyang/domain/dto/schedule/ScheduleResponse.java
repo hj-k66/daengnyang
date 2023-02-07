@@ -3,7 +3,6 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,18 +17,20 @@ import java.time.LocalDateTime;
 public class ScheduleResponse {
 
 	private Long id;
+	private String tag;
 	private Long userId;
+	private String userName;
 	private Long petId;
 	private String petName;
-	private Category category;
 	private String title;
 	private String body;
 	private Long assigneeId;
 	private String place;
-	private boolean isCompleted;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime dueDate;
+
+	private boolean isCompleted;
 
 	@CreatedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -42,16 +43,17 @@ public class ScheduleResponse {
 	public static ScheduleResponse toResponse(User user, Pet pet, Schedule schedule) {
 		return ScheduleResponse.builder()
 				.id(schedule.getId())
+				.tag(schedule.getTag().getName())
 				.userId(user.getId())
+				.userName(user.getUsername())
 				.petId(pet.getId())
 				.petName(pet.getName())
-				.category(schedule.getCategory())
 				.title(schedule.getTitle())
 				.body(schedule.getBody())
 				.assigneeId(schedule.getAssigneeId())
-				.isCompleted(schedule.isCompleted())
 				.place(schedule.getPlace())
 				.dueDate(schedule.getDueDate())
+				.isCompleted(schedule.isCompleted())
 				.createdAt(schedule.getCreatedAt())
 				.lastModifiedAt(schedule.getLastModifiedAt())
 				.build();

@@ -10,12 +10,12 @@ import lombok.*;
 @Builder
 public class ScheduleCreateResponse {
 
-	private String message;
+	private String msg;
 	private Long id;
 
 	public static ScheduleCreateResponse toResponse(String message, Schedule savedSchedule) {
 		return ScheduleCreateResponse.builder()
-				.message(message)
+				.msg(message)
 				.id(savedSchedule.getId())
 				.build();
 	}

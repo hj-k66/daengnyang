@@ -20,11 +20,11 @@ public class ScheduleModifyResponse {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime lastModifiedAt;
 
-	public static ScheduleModifyResponse toResponse(Schedule savedSchedule, Schedule schedule) {
+	public static ScheduleModifyResponse toResponse(Schedule modifySchedule) {
 		return ScheduleModifyResponse.builder()
-				.id(savedSchedule.getId())
-				.title(schedule.getTitle())
-				.lastModifiedAt(schedule.getLastModifiedAt())
+				.id(modifySchedule.getId())
+				.title(modifySchedule.getTitle())
+				.lastModifiedAt(modifySchedule.getLastModifiedAt())
 				.build();
 	}
 }
