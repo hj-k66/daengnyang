@@ -57,44 +57,47 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
 
-  axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers.Authorization = 'Bearer' + ' ' + accessToken
-    }
-    return config;
-  })
+  // axios.interceptors.request.use(function (config) {
+  //   console.log("인터셉터 시작")
+  //   const accessToken = localStorage.getItem('accessToken');
+  //   if (accessToken) {
+  //     config.headers.Authorization = 'Bearer' + ' ' + accessToken
+  //   }
+  //   return config;
+  // })
+  //
+  // axios.interceptors.response.use(
+  //     success => success,
+  //     async (error) => {
+  //       console.log("인터셉터 에러" + error);
+  //       const status = error.response.status
+  //
+  //       if (status === 401) {
+  //         const originRequest = error.config
+  //
+  //         await axios.post('/api/v1/users/new-token')
+  //         .then(response => {
+  //           console.log("인터셉터 리스폰스 데이터" + response.data);
+  //           localStorage.setItem("accessToken", response.data);
+  //         })
+  //         .catch(error => {
+  //           console.log('fail');
+  //           localStorage.removeItem('accessToken')
+  //         })
+  //         return Promise.reject(error)
+  //       }
+  //     }
+  // )
 
-  axios.interceptors.response.use(
-      success => success,
-      async (error) => {
-        console.log("인터셉터 에러" + error);
-        const status = error.response.status
-
-        if (status === 401) {
-          const originRequest = error.config
-
-          await axios.post('/api/v1/users/new-token')
-          .then(response => {
-            console.log("인터셉터 리스폰스 데이터" + response.data);
-            localStorage.setItem("accessToken", response.data);
-          })
-          .catch(error => {
-            console.log('fail');
-            localStorage.removeItem('accessToken')
-          })
-          return Promise.reject(error)
-        }
-      }
-  )
+  axios.defaults.withCredentials = true;
 
   async function group_join() {
     let name = $("#name").val();
     let roleInGroup = $("#roleInGroup").val();
     const token = localStorage.getItem("accessToken")
-    const tt = `Bearer ${token}`
-    console.log(tt);
+    const cookie = document.cookie;
+
+    console.log("쿠키" + cookie);
 
     await axios.post("/api/v1/groups", {
       "name": name,
@@ -118,6 +121,17 @@
       }
     });
   }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
 
 
 </script>
