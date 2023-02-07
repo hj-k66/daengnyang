@@ -17,7 +17,7 @@ public class PetUiController {
 	@GetMapping("/pets")
 	public String petCreate(Model model) {
 		model.addAttribute("petAddRequest", new PetAddRequest());
-		return "/users/join_pet";
+		return "users/join_pet";
 	}
 
 	@PostMapping("/groups/{groupId}/pets")
