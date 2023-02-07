@@ -1,6 +1,6 @@
-= REST Docs (글의 제목)
+= 댕냥뽀짝 REST Docs
 
-(부제)
+개묘한 이야기 Rest API 문서입니다.
 
 :doctype: book
 :icons: font
@@ -18,3 +18,7 @@ include::Group-API.adoc[]
 include::Monitoring-API.adoc[]
 
 include::Pet-API.adoc[]
+
+include::Tag-API.adoc[]
+
+include::Disease-API.adoc[]

@@ -3,16 +3,16 @@
 
 [[Pet-등록하기]]
 === Pet 등록하기
-operation::add-pet/add_-pet_success[snippets='http-request,request-fields,http-response,response-fields,']
+operation::add-pet/success[snippets='http-request,request-fields,http-response,response-fields,']
 
 [[Pet-조회하기]]
 === Pet 단건 조회하기
-operation::show-pet/show_-pet_success[snippets='http-request,path-parameters,http-response,response-fields']
+operation::show-pet/success[snippets='http-request,path-parameters,http-response,response-fields']
 
 [[Pet-수정하기]]
 === Pet 수정하기
-operation::update-pet/update_success[snippets='http-request,path-parameters,http-response,response-fields']
+operation::update-pet/success[snippets='http-request,path-parameters,http-response,response-fields']
 
 [[Pet-삭제하기]]
 === Pet 삭제하기
-operation::delete-pet/delete_success[snippets='http-request,path-parameters,http-response,response-fields']
+operation::delete-pet/success[snippets='http-request,path-parameters,http-response,response-fields']

@@ -8,11 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
 	private final JwtTokenUtil jwtTokenUtil;
+	private final RedisTemplate redisTemplate;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -44,13 +47,19 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		if (authorizationHeader.startsWith("Bearer ")) {
 			UserDetails userDetails = jwtTokenUtil.getUserDetails(token);
-			//문열어주기 >> 허용
-			//Role 바인딩
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-					userDetails, null, userDetails.getAuthorities());
-			authenticationToken.setDetails(
-					new WebAuthenticationDetailsSource().buildDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			//Redis에 해당 accessToken logout 여부 확인
+			// 해당 accssToken은 블랙리스트에 있는지 확인
+			String isLogout = (String) redisTemplate.opsForValue().get(token);
+			if (ObjectUtils.isEmpty(isLogout)) {
+				//문열어주기 >> 허용
+				//Role 바인딩
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				authenticationToken.setDetails(
+						new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			}
+
 		} else {
 			log.error("헤더를 가져오는 과정에서 에러가 났습니다. 헤더가 null이거나 잘못되었습니다.");
 		}

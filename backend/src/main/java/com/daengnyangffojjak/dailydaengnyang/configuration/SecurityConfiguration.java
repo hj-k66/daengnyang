@@ -9,6 +9,7 @@ import com.daengnyangffojjak.dailydaengnyang.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
 	private final JwtTokenUtil jwtTokenUtil;
+	private final RedisTemplate redisTemplate;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -30,12 +32,13 @@ public class SecurityConfiguration {
 				.csrf().disable()
 				//springboot 3.0부터 security HTTP 요청 권한 승인 로직 변경
 				//Instead of using authorizeRequests, use authorizeHttpRequests
-				.cors().and()
-				.authorizeHttpRequests(authorize -> authorize
+				.cors().and().authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/view/**").permitAll()
+						.requestMatchers("/utils/profile").permitAll()
+						.requestMatchers("/actuator/health").permitAll()
+						.requestMatchers("/api/v1/users/**").permitAll()
 						.requestMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
 						.requestMatchers("/docs/index.html").permitAll()
-						.requestMatchers("/utils/profile").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
 						.requestMatchers(HttpMethod.DELETE, "/api/v1/**").authenticated()
@@ -48,7 +51,7 @@ public class SecurityConfiguration {
 				.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt사용하는 경우 씀
 				.and()
-				.addFilterBefore(new JwtTokenFilter(jwtTokenUtil),
+				.addFilterBefore(new JwtTokenFilter(jwtTokenUtil,redisTemplate),
 						UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용
 				.addFilterBefore(new JwtExceptionFilter(), JwtTokenFilter.class)
 				.build();

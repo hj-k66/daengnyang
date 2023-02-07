@@ -31,7 +31,7 @@ public class PetRestController {
 		PetAddResponse petAddResponse = petService.add(groupId, petAddRequest,
 				user.getUsername());
 
-		return ResponseEntity.created(URI.create("/api/v1/groups/" + groupId + "/pets"))
+		return ResponseEntity.created(URI.create("/api/v1/groups/" + groupId + "/pets/"+petAddResponse.getId()))
 				.body(Response.success(petAddResponse));
 	}
 

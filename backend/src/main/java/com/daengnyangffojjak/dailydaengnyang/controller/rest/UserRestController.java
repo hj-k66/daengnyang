@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenInfo;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.token.TokenRequest;
@@ -50,6 +51,12 @@ public class UserRestController {
 		httpServletResponse.setHeader("Set-Cookie", cookie.toString());
 		//access Token은 body로 전송
 		return Response.success(new UserResponse(tokenInfo.getAccessToken()));
+	}
+
+	@PostMapping("/logout") //로그아웃
+	public Response<MessageResponse> logout(@RequestBody @Valid TokenRequest tokenRequest){
+		MessageResponse messageResponse = userService.logout(tokenRequest);
+		return Response.success(messageResponse);
 	}
 
 	@PostMapping("/new-token")  //토큰 재발급

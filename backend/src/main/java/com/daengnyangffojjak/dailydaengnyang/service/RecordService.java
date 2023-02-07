@@ -27,6 +27,7 @@ public class RecordService {
 	private final Validator validator;
 
 	// 일기 상세(1개) 조회
+	@Transactional(readOnly = true)
 	public RecordResponse getOneRecord(Long petId, Long recordId, String userName) {
 
 		// 유저가 없는 경우 예외발생
@@ -42,7 +43,7 @@ public class RecordService {
 	}
 
 	// 전체 피드 조회
-	@Transactional
+	@Transactional(readOnly = true)
 	public Page<RecordResponse> getAllRecords(Pageable pageable) {
 
 		return recordRepository.findAllByIsPublicTrue(pageable)
