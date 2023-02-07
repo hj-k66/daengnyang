@@ -88,18 +88,20 @@
         console.log(config.headers)
 
         window.localStorage.setItem("accessToken", res.data.result.accessToken);
+        document.location.href = "/view/groups";
 
       } else {
         console.log("로그인 실패" + res.resultCode)
         localStorage.clear()
       }
     });
-    const accessToken = window.localStorage.getItem("accessToken");
-    if (accessToken != null) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      document.location.href = "/view/groups";
-      return true;
-    }
+
+    // const accessToken = window.localStorage.getItem("accessToken");
+    // if (accessToken != null) {
+    //   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+    //   document.location.href = "/view/groups";
+    //   return true;
+    // }
   }
 
   // axios.interceptors.request.use(function (config) {
