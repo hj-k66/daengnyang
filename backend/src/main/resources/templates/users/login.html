@@ -96,7 +96,6 @@
     });
 
     const accessToken = window.localStorage.getItem("accessToken");
-
     if (accessToken != null) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       // document.location.href = "/view/groups";
