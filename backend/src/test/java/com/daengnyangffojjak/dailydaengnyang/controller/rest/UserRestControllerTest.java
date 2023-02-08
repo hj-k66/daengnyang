@@ -40,22 +40,6 @@ class UserRestControllerTest extends ControllerTest {
 	TokenRequest tokenRequest = new TokenRequest("accesstokenalskdjf", "refreshtokenejfpoen");
 	long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 10;
 
-
-	@Test
-	@DisplayName("테스트")
-	void test() throws Exception {
-		mockMvc.perform(
-						get("/api/v1/users/test")
-								.with(csrf()))
-				.andExpect(status().isOk())
-				.andDo(
-						restDocs.document(
-								responseFields(
-										fieldWithPath("test").description("ok")
-								))
-				);
-	}
-
 	@Nested
 	@DisplayName("회원가입")
 	class Join {

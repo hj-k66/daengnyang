@@ -161,7 +161,7 @@ class DiseaseServiceTest {
 	class GetListDisease {
 
 		Disease saved = Disease.builder().id(1L).pet(pet).name("질병")
-				.category(DiseaseCategory.DERMATOLOGY)
+				.category(DiseaseCategory.DERMATOLOGY).startedAt(LocalDate.of(2000, 1, 1))
 				.build();
 
 		@Test
@@ -178,6 +178,7 @@ class DiseaseServiceTest {
 					() -> diseaseService.getDiseaseList(1L, pageable, "user"));
 			assertEquals(1, response.getContent().size());
 			assertEquals("질병", response.getContent().get(0).getName());
+			assertEquals(LocalDate.of(2000, 1, 1), response.getContent().get(0).getStartedAt());
 		}
 	}
 }

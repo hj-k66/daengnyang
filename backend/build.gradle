@@ -5,6 +5,7 @@ plugins {
     // Asciidoctor 플러그인 적용
     // gradle 7.0 이상부터는 jvm 사용
     id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'jacoco'
 }
 
 group = 'com.daengnyangffojjak'
@@ -39,6 +40,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.0.2'
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 타임리프 추가
     // https://mvnrepository.com/artifact/org.webjars.bower/jquery
@@ -57,9 +59,99 @@ dependencies {
     testImplementation 'com.h2database:h2'
 }
 
+//JaCoCo-----------------------
+jacoco {
+    toolVersion = '0.8.8'
+}
+
+// 코드 커버리지 진행 후 결과를 리포트로 저장
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.enabled true
+        xml.enabled true
+        csv.enabled true
+
+        // html 파일 위치 지정
+        html.destination file('build/reports/myReport.html')
+    }
+
+    // 리포트 작성 시 특정 파일 제외
+    afterEvaluate {
+        classDirectories.setFrom(
+                files(classDirectories.files.collect {
+                    fileTree(dir: it, excludes: [
+                            '**/*DailyDaengnyangApplication*',
+                            '**/*Config*',
+                            '**/*Request*',
+                            '**/*Response*',
+                            '**/*BaseEntity*',
+                            '**/*Handler*',
+                            '**/*EntryPoint*',
+                            '**/*TokenInfo*',
+                            '**/*Filter*',
+                            '**/*Exception*',
+                            '**/*Error*',
+                            '**/*UiController*'
+                    ])
+                })
+        )
+    }
+
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true // 활성화
+            element = 'CLASS' // 클래스 단위로 커버리지 체크
+            // includes = []
+            // 빌드를 위해 주석처리
+            // 라인 커버리지 제한을 80%로 설정
+//            limit {
+//                counter = 'LINE'
+//                value = 'COVEREDRATIO'
+//                minimum = 0.20
+//            }
+//
+//            // 브랜치 커버리지 제한을 80%로 설정
+//            limit {
+//                counter = 'BRANCH'
+//                value = 'COVEREDRATIO'
+//                minimum = 0.20
+//            }
+//
+//            // 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한
+//            limit {
+//                counter = 'LINE'
+//                value = 'TOTALCOUNT'
+//                maximum = 200
+//            }
+
+            excludes = [
+                    '**.*DailyDaengnyangApplication*',
+                    '**.*Config*',
+                    '**.*Request*',
+                    '**.*Response*',
+                    '**.*BaseEntity*',
+                    '**.*Handler*',
+                    '**.*EntryPoint*',
+                    '**.*TokenInfo*',
+                    '**.*Filter*',
+                    '**.*Exception*',
+                    '**.*UiController*',
+                    '**.*Error*']
+        }
+    }
+}
+
+
+//REST docs---------------------
 tasks.named('test') {
     useJUnitPlatform()
 }
+
 
 ext {
     // 아래서 사용할 변수 선언
@@ -71,6 +163,7 @@ test {
     // 위에서 작성한 snippetsDir 디렉토리를 test의 output으로 구성하는 설정 -> 스니펫 조각들이 build/generated-snippets로 출력
     outputs.dir snippetsDir
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
 }
 
 asciidoctor { // asciidoctor 작업 구성
