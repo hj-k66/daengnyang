@@ -72,7 +72,14 @@ public enum ErrorCode {
 	/**
 	 * Disease
 	 **/
-	DISEASE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질병 정보가 존재하지 않습니다.");
+	DISEASE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질병 정보가 존재하지 않습니다."),
+
+	/**
+	 * File
+	 */
+	FILE_NOT_FOUND(HttpStatus.BAD_REQUEST,"파일이 없습니다."),
+	WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "파일의 형식이 잘못되었습니다."),
+	FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
 
 	private final HttpStatus status;
 	private final String message;

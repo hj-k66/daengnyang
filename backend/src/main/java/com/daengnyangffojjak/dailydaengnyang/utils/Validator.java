@@ -10,6 +10,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.FileException;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
@@ -27,6 +28,7 @@ import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -101,5 +103,14 @@ public class Validator {
 			throw new GroupException(ErrorCode.INVALID_PERMISSION);
 		}
 		return userGroupList;
+	}
+
+	// 빈 파일을 업로드 하거나 파일을 업로드 안했을 때
+	public void validateFile(List<MultipartFile> multipartFiles) {
+		for(MultipartFile multipartFile : multipartFiles) {
+			if (multipartFile.isEmpty()) {
+				throw new FileException(ErrorCode.FILE_NOT_FOUND);
+			}
+		}
 	}
 }

@@ -8,16 +8,38 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Entity
-public class Picture {
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Where(clause = "deleted_at is NULL")
+public class RecordFile extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "record_id")   //일기 번호
 	private Record record;
+
 	@Column(nullable = false)
-	private String url;
+	private String storedUrl;
+	private String uploadFilename;
+
+	public static RecordFile makeRecordFile(String uploadFilename, String storedUrl,
+			Record record) {
+		return RecordFile.builder()
+				.uploadFilename(uploadFilename)
+				.storedUrl(storedUrl)
+				.record(record)
+				.build();
+	}
 }
