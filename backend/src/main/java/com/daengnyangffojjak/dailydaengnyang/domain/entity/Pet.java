@@ -57,4 +57,7 @@ public class Pet extends BaseEntity {
 		this.birthday = petAddRequest.getBirthday();
 		this.weight = petAddRequest.getWeight();
 	}
+	public void updateWeight(double weight) {
+		this.weight = weight;
+	}
 }

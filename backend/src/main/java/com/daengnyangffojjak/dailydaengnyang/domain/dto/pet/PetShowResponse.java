@@ -23,6 +23,7 @@ public class PetShowResponse {
 	private String breed;
 	private Sex sex;
 	private LocalDate birthday;
+	private Double weight;
 	private LocalDateTime createdAt;
 	private LocalDateTime lastModifiedAt;
 
@@ -34,6 +35,7 @@ public class PetShowResponse {
 				.breed(pet.getBreed())
 				.sex(pet.getSex())
 				.birthday(pet.getBirthday())
+				.weight(pet.getWeight())
 				.createdAt(pet.getCreatedAt())
 				.lastModifiedAt(pet.getLastModifiedAt())
 				.build();
