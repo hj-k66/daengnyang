@@ -1,4 +1,4 @@
-package com.daengnyangffojjak.dailydaengnyang.domain.dto;
+package com.daengnyangffojjak.dailydaengnyang.domain.dto.notification;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.NotificationType;
 import java.util.List;
@@ -9,16 +9,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class NotificationRequest {
+public class NotificationMultiUserRequest {
 
 	private List<String> userTokenList;
 	private String title;
 	private String body;
 
-	public static NotificationRequest toRequest(List<String> userTokenList,
+	public static NotificationMultiUserRequest toRequest(List<String> userTokenList,
 			NotificationType notificationType,
 			String body) {
-		return new NotificationRequest(userTokenList, notificationType.getMessageTitle(),body);
+		return new NotificationMultiUserRequest(userTokenList, notificationType.getMessageTitle(),body);
 	}
 
 

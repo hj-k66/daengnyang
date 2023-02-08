@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.NotificationRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationMultiUserRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationOneUserRequest;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -15,6 +16,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,15 +56,34 @@ public class NotificationService {
 		}
 	}
 
-	public void sendByUserTokenList(NotificationRequest notificationRequest) {
-		//메세지
-		List<Message> messages = notificationRequest.getUserTokenList().stream().map(token -> Message.builder()
-				.setToken(token)
-				.setWebpushConfig(WebpushConfig.builder()
-						.putHeader("ttl", "300")
-						.setNotification(new WebpushNotification(notificationRequest.getTitle(), notificationRequest.getBody()))
+	public void sendOneUser(NotificationOneUserRequest notificationOneUserRequest)
+			throws ExecutionException, InterruptedException {
+		Message message = Message.builder()
+				.setToken(notificationOneUserRequest.getUserToken())
+				.setWebpushConfig(WebpushConfig.builder().putHeader("ttl", "300")
+						.setNotification(
+								new WebpushNotification(notificationOneUserRequest.getTitle(),
+										notificationOneUserRequest.getBody()))
 						.build())
-				.build()).collect(Collectors.toList());
+				.build();
+
+		String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+		log.info("Sent message: " + response);
+
+	}
+
+	public void sendByUserTokenList(NotificationMultiUserRequest notificationMultiUserRequest) {
+		//메세지
+		List<Message> messages = notificationMultiUserRequest.getUserTokenList().stream()
+				.map(token -> Message.builder()
+						.setToken(token)
+						.setWebpushConfig(WebpushConfig.builder()
+								.putHeader("ttl", "300")
+								.setNotification(new WebpushNotification(
+										notificationMultiUserRequest.getTitle(),
+										notificationMultiUserRequest.getBody()))
+								.build())
+						.build()).collect(Collectors.toList());
 		//response
 		BatchResponse response;
 		try {
@@ -76,7 +97,7 @@ public class NotificationService {
 
 				for (int i = 0; i < responses.size(); i++) {
 					if (!responses.get(i).isSuccessful()) {
-						failedTokens.add(notificationRequest.getUserTokenList().get(i));
+						failedTokens.add(notificationMultiUserRequest.getUserTokenList().get(i));
 					}
 				}
 				log.error("List of invalid tokens : " + failedTokens);
@@ -86,16 +107,16 @@ public class NotificationService {
 		}
 	}
 
-	public void registerFCMToken(String userName, String token){
+	public void registerFCMToken(String userName, String token) {
 		//fcm 토큰 redis에 저장
 		//key: fcm:userName, value: token
 		redisTemplate.opsForValue()
-				.set("fcm:"+userName, token);
+				.set("fcm:" + userName, token);
 	}
 
-	public void deleteToken(String userName){
+	public void deleteToken(String userName) {
 		//fcm 토큰 redis에서 삭제
-		redisTemplate.delete("fcm:"+userName);
+		redisTemplate.delete("fcm:" + userName);
 	}
 
 }
