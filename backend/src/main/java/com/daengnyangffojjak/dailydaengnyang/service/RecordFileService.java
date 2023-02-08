@@ -27,9 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class RecordFileService {
 
-	private AmazonS3Client amazonS3Client;
-	private Validator validator;
-	private RecordFileRepository recordFileRepository;
+	private final AmazonS3Client amazonS3Client;
+	private final Validator validator;
+	private final RecordFileRepository recordFileRepository;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
@@ -40,7 +40,7 @@ public class RecordFileService {
 			String userName) {
 
 		// 빈 파일이거나 파일을 업로드 안했을 때 예외 발생
-		validator.validateFile(multipartFiles);
+		//validator.validateFile(multipartFiles);
 
 		// 펫이 없는 경우 예외발생
 		Pet pet = validator.getPetById(petId);
@@ -73,7 +73,7 @@ public class RecordFileService {
 			String storedFileName = UUID.randomUUID() + "." + ext;
 
 			// 저장할 디렉토리 경로 + 파일 이름
-			String key = "announcement/" + storedFileName;
+			String key = "test/" + storedFileName;
 
 			try (InputStream inputStream = file.getInputStream()) {
 				amazonS3Client.putObject(

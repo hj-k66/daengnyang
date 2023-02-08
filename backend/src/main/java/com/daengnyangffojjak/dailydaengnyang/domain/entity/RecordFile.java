@@ -30,15 +30,14 @@ public class RecordFile extends BaseEntity {
 	@JoinColumn(name = "record_id")   //일기 번호
 	private Record record;
 
-	@Column(nullable = false)
-	private String storedUrl;
+	private String storedFileUrl;
 	private String uploadFilename;
 
-	public static RecordFile makeRecordFile(String uploadFilename, String storedUrl,
+	public static RecordFile makeRecordFile(String uploadFilename, String storedFileUrl,
 			Record record) {
 		return RecordFile.builder()
 				.uploadFilename(uploadFilename)
-				.storedUrl(storedUrl)
+				.storedFileUrl(storedFileUrl)
 				.record(record)
 				.build();
 	}
