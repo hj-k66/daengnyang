@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
-import com.google.api.services.storage.model.Notification;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.NotificationRequest;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -15,7 +15,6 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,13 +54,13 @@ public class NotificationService {
 		}
 	}
 
-	public void sendByUserTokenList(List<String> userTokenList) {
+	public void sendByUserTokenList(NotificationRequest notificationRequest) {
 		//메세지
-		List<Message> messages = userTokenList.stream().map(token -> Message.builder()
+		List<Message> messages = notificationRequest.getUserTokenList().stream().map(token -> Message.builder()
 				.setToken(token)
 				.setWebpushConfig(WebpushConfig.builder()
 						.putHeader("ttl", "300")
-						.setNotification(new WebpushNotification("제목", "알림입니다."))
+						.setNotification(new WebpushNotification(notificationRequest.getTitle(), notificationRequest.getBody()))
 						.build())
 				.build()).collect(Collectors.toList());
 		//response
@@ -77,7 +76,7 @@ public class NotificationService {
 
 				for (int i = 0; i < responses.size(); i++) {
 					if (!responses.get(i).isSuccessful()) {
-						failedTokens.add(userTokenList.get(i));
+						failedTokens.add(notificationRequest.getUserTokenList().get(i));
 					}
 				}
 				log.error("List of invalid tokens : " + failedTokens);

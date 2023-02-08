@@ -33,6 +33,7 @@ public class ScheduleRestController {
 				scheduleCreateRequest, user.getUsername());
 		ScheduleCreateResponse scheduleCreateResponse = scheduleService.create(petId,
 				scheduleCreateRequest, user.getUsername());
+		log.info("일정 등록이 완료되었습니다.");
 		return ResponseEntity.created(
 						URI.create("api/v1/pets/" + petId + "/schedules" + scheduleCreateResponse.getId()))
 				.body(Response.success(scheduleCreateResponse));

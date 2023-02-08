@@ -5,15 +5,14 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
-import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCreateEvent;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,6 +36,7 @@ public class ScheduleService {
 	@Transactional
 	public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest,
 			String userName) {
+		log.info("일정 생성 로직 시작");
 
 		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
@@ -59,7 +59,8 @@ public class ScheduleService {
 		List<String> userNameList = userGroupList.stream()
 				.map(userGroup -> userGroup.getUser().getUsername()).collect(
 						Collectors.toList());
-		applicationEventPublisher.publishEvent(new ScheduleCreateEvent(userNameList));
+
+		applicationEventPublisher.publishEvent(new ScheduleCreateEvent(userNameList,scheduleCreateRequest.getTitle(),userName));
 
 		return ScheduleCreateResponse.toResponse(message, savedSchedule);
 
