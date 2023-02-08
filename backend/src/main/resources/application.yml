@@ -48,6 +48,10 @@ server:
 jwt:
   token:
     secret: temp
+#Log
+logging:
+  level:
+    com.daengnyangffojjak.dailydaengnyang: debug
 
 ---
 
