@@ -38,29 +38,15 @@ public class MonitoringService {
 	@Transactional(readOnly = true)
 	public MntMonthlyResponse getMonitoringList(Long petId, String fromDate, String toDate, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		LocalDate start = getLocalDateFromString(fromDate);
-		LocalDate end = getLocalDateFromString(toDate);
+		List<Monitoring> monitorings = getMonitoringListFromDate(fromDate, toDate);
 
-		long days = ChronoUnit.DAYS.between(start, end);
-		if (days < 7 || days > 93) {
-			throw new MonitoringException(ErrorCode.INVALID_REQUEST, "레포트 작성은 7일 이상, 3달 이하의 기간만 가능합니다.");
-		}
-
-		List<Monitoring> monitorings = monitoringRepository.findAllByDateBetween(start, end);
 		return MntMonthlyResponse.from(monitorings);
 	}
 
 	@Transactional(readOnly = true)
 	public MntReportResponse getReport(Long petId, String fromDate, String toDate, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		LocalDate start = getLocalDateFromString(fromDate);
-		LocalDate end = getLocalDateFromString(toDate);
-
-		long days = ChronoUnit.DAYS.between(start, end);
-		if (days < 7 || days > 93) {
-			throw new MonitoringException(ErrorCode.INVALID_REQUEST, "레포트 작성은 7일 이상, 3달 이하의 기간만 가능합니다.");
-		}
-		List<Monitoring> monitorings = monitoringRepository.findAllByDateBetween(start, end);
+		List<Monitoring> monitorings = getMonitoringListFromDate(fromDate, toDate);
 
 		return makeReport(monitorings);
 	}
@@ -109,6 +95,17 @@ public class MonitoringService {
 		int day = Integer.parseInt(date.substring(6, 8));
 
 		return LocalDate.of(year, month, day);
+	}
+
+	private List<Monitoring> getMonitoringListFromDate (String fromDate, String toDate) {
+		LocalDate start = getLocalDateFromString(fromDate);
+		LocalDate end = getLocalDateFromString(toDate);
+
+		long days = ChronoUnit.DAYS.between(start, end);
+		if (days < 7 || days > 93) {
+			throw new MonitoringException(ErrorCode.INVALID_REQUEST, "레포트 작성은 7일 이상, 3달 이하의 기간만 가능합니다.");
+		}
+		return monitoringRepository.findAllByDateBetween(start, end);
 	}
 
 	// ^^;;; 좋은 방법이 있으면 알려주세요.
