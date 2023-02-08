@@ -34,7 +34,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 		TokenInfo tokenInfo = jwtTokenUtil.createToken(authentication);
-		ResponseCookie cookie = makeCookie(tokenInfo.getRefreshToken());
+		ResponseCookie cookie = tokenInfo.makeCookie();
 		//refresh Token은 쿠키로 전송
 		response.setHeader("Set-Cookie", cookie.toString());
 
@@ -44,15 +44,4 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		objectMapper.writeValue(response.getWriter(),
 				Response.success(new UserResponse(tokenInfo.getAccessToken())));
 	}
-
-	private ResponseCookie makeCookie(String refreshToken) {
-		ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-				.maxAge(7 * 24 * 60 * 60) //만료시간 : 7일
-				.secure(true)
-				.sameSite("None") //
-				.httpOnly(true)
-				.build();
-		return cookie;
-	}
-
 }

@@ -44,7 +44,7 @@ public class UserRestController {
 			@RequestBody @Valid UserLoginRequest userLoginRequest,
 			HttpServletResponse httpServletResponse) {
 		TokenInfo tokenInfo = userService.login(userLoginRequest);
-		ResponseCookie cookie = makeCookie(tokenInfo.getRefreshToken());
+		ResponseCookie cookie = tokenInfo.makeCookie();
 		//refresh Token은 쿠키로 전송
 		httpServletResponse.setHeader("Set-Cookie", cookie.toString());
 		//access Token은 body로 전송
@@ -61,19 +61,10 @@ public class UserRestController {
 	public Response<UserResponse> generateNewToken(
 			@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse httpServletResponse) {
 		TokenInfo tokenInfo = userService.generateNewToken(tokenRequest);
-		ResponseCookie cookie = makeCookie(tokenInfo.getRefreshToken());
+		ResponseCookie cookie = tokenInfo.makeCookie();
 		//refresh Token은 쿠키로 전송
 		httpServletResponse.setHeader("Set-Cookie", cookie.toString());
 		//access Token은 body로 전송
 		return Response.success(new UserResponse(tokenInfo.getAccessToken()));
-	}
-
-	private ResponseCookie makeCookie(String refreshToken) {
-		ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
-				.maxAge(7 * 24 * 60 * 60) //만료시간 : 7일
-				.sameSite("None") //
-				.path("/")
-				.build();
-		return cookie;
 	}
 }
