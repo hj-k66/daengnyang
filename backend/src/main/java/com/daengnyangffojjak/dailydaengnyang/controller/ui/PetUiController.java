@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class PetUiController {
 
-	@GetMapping("/pets")
+	@GetMapping("/groups/{groupId}/pets")
 	public String petCreate(Model model) {
 		model.addAttribute("petAddRequest", new PetAddRequest());
 		return "users/join_pet";
@@ -25,8 +25,10 @@ public class PetUiController {
 		return "users/join_pet";
 	}
 
-	@GetMapping("/pet/{petId}")
-	public String petManage(@PathVariable Long petId, Model model) {
+	@GetMapping("/groups/{groupId}/pets/{petId}")
+	public String petManage(@PathVariable Long groupId, @PathVariable Long petId, Model model) {
+		model.addAttribute("groupId", groupId);
+		model.addAttribute("petId", petId);
 		return "pet/pet_manage";
 	}
 }
