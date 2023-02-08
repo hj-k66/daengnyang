@@ -52,4 +52,33 @@ public class CustomEventListener {
 
 	}
 
+	@EventListener
+	public void handleRecordCreateEvent(RecordCreateEvent recordCreateEvent) {
+		//알림 보낼 멤버 목록
+		List<String> userNameList = recordCreateEvent.getUserNameList();
+		System.out.println(userNameList.toString());
+
+		// 로그인한 유저의 fcmToken 뽑기
+		// 로그아웃한 회원들은 redis에 저장 x
+		List<String> loginUserTokenList = userNameList
+				.stream()
+				.filter(userName -> redisTemplate.hasKey("fcm:" + userName))
+				.map(userName -> (String) redisTemplate.opsForValue().get("fcm:" + userName))
+				.collect(Collectors.toList());
+		//로그인한 유저에게 알림 보내기
+		if (loginUserTokenList.size() != 0) {
+			String message = NotificationType.RECORD_CREATE.generateNotificationMessage(
+					recordCreateEvent.getTitle(), recordCreateEvent.getUserName());
+			NotificationRequest notificationRequest = NotificationRequest.toRequest(
+					loginUserTokenList, NotificationType.RECORD_CREATE, message);
+
+			notificationService.sendByUserTokenList(notificationRequest);
+		}
+		log.info("알람 전송");
+
+		//알림 기록 db에 저장
+		//title, body, user_id, NotificationType 저장
+
+	}
+
 }
