@@ -40,6 +40,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.0.2'
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 타임리프 추가
     // https://mvnrepository.com/artifact/org.webjars.bower/jquery

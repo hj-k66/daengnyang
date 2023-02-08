@@ -43,6 +43,12 @@ public class User extends BaseEntity implements OAuth2User, UserDetails  {
     private Map<String, Object> attributes; // oauthId, name, email
 
 
+    public User update(String userName, String email){
+        this.userName = userName;
+        this.email = email;
+        return this;
+    }
+
 
     /**UserDetails**/
     @Override
