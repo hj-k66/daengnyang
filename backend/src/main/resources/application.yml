@@ -52,6 +52,10 @@ server:
 jwt:
   token:
     secret: temp
+#Log
+logging:
+  level:
+    com.daengnyangffojjak.dailydaengnyang: debug
 
 cloud:
   aws:
@@ -135,3 +139,7 @@ spring:
 server:
   port: 9002
 
+#redirect Uri
+app:
+  oauth2:
+    authorizedRedirectUri: "http://localhost:3000/oauth2/redirect"

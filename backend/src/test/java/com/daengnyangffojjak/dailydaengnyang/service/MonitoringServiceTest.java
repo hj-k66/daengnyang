@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMonthlyResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntReportResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
@@ -23,7 +24,6 @@ import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -98,7 +98,8 @@ class MonitoringServiceTest {
 		@Test
 		@DisplayName("실패 - 펫등록번호와 모니터링의 펫 정보가 다를 때")
 		void fail_펫정보불일치() {
-			Pet pet2 = Pet.builder().id(100L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
+			Pet pet2 = Pet.builder().id(100L).birthday(LocalDate.of(2018, 3, 1))
+					.species(Species.CAT)
 					.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
 			Monitoring saved = Monitoring.builder()
 					.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
@@ -119,6 +120,7 @@ class MonitoringServiceTest {
 		Monitoring saved = Monitoring.builder()
 				.id(1L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 				.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build();
+
 		@Test
 		@DisplayName("성공")
 		void success() {
@@ -155,7 +157,7 @@ class MonitoringServiceTest {
 	}
 
 	@Nested
-	@DisplayName("모니터링 달조회")
+	@DisplayName("모니터링 리스트 조회")
 	class ShowMonitoringMonthly {
 
 		List<Monitoring> saved = List.of(
@@ -176,8 +178,37 @@ class MonitoringServiceTest {
 			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
 
 			MntMonthlyResponse response = assertDoesNotThrow(
-					() -> monitoringService.getMonthly(1L, 2023, 1, "user"));
+					() -> monitoringService.getMonitoringList(1L, "20230101", "20230131", "user"));
 			assertEquals(2, response.getMonthlyMonitorings().size());
+		}
+	}
+
+	@Nested
+	@DisplayName("모니터링 레포트 조회")
+	class ShowMonitoringReport {
+
+		List<Monitoring> saved = List.of(
+				Monitoring.builder()
+						.id(1L).pet(pet).date(LocalDate.of(2023, 1, 25)).weight(7.7).vomit(false)
+						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build(),
+				Monitoring.builder()
+						.id(2L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
+						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build()
+		);
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			LocalDate start = LocalDate.of(2023, 1, 1);
+			LocalDate end = LocalDate.of(2023, 1, 31);
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
+
+			MntReportResponse response = assertDoesNotThrow(
+					() -> monitoringService.getReport(1L, "20230101", "20230131", "user"));
+			assertEquals(2, response.getVomitCount());
+			assertEquals(2, response.getPmPillTrue());
+			assertEquals(2, response.getDefecationAvg());
 		}
 	}
 }

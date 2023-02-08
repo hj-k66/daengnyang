@@ -4,6 +4,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMonthlyResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntReportResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.MonitoringService;
@@ -71,10 +72,17 @@ public class MonitoringRestController {
 		return Response.success(mntGetResponse);
 	}
 
-	@GetMapping(value = "/pets/{petId}/monitorings/monthly")
-	public Response<MntMonthlyResponse> getMonthly(@AuthenticationPrincipal UserDetails user,
-			@PathVariable Long petId, @RequestParam Integer year, @RequestParam Integer month) {
-		MntMonthlyResponse mntMonthlyResponse = monitoringService.getMonthly(petId, year, month, user.getUsername());
+	@GetMapping(value = "/pets/{petId}/monitorings")
+	public Response<MntMonthlyResponse> getMonitoringList(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate) {
+		MntMonthlyResponse mntMonthlyResponse = monitoringService.getMonitoringList(petId, fromDate, toDate, user.getUsername());
 		return Response.success(mntMonthlyResponse);
+	}
+
+	@GetMapping(value = "/pets/{petId}/monitorings/report")
+	public Response<MntReportResponse> getReport(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate) {
+		MntReportResponse mntReportResponse = monitoringService.getReport(petId, fromDate, toDate, user.getUsername());
+		return Response.success(mntReportResponse);
 	}
 }

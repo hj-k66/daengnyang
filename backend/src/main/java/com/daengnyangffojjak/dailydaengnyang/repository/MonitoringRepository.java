@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MonitoringRepository extends JpaRepository<Monitoring, Long> {
 	List<Monitoring> findAllByDateBetween(LocalDate start, LocalDate end);
+
+	boolean existsByDate(LocalDate date);
 }
