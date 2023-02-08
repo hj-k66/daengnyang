@@ -55,7 +55,7 @@
               <li class="dropdown-item" onclick="location.href='/boards/list'">그룹 관리</li>
               <li class="dropdown-item" href="#">반려동물 관리</li>
               <li class="dropdown-item" href="#">찜 리스트</li>
-              <li class="dropdown-item" href="#">로그아웃</li>
+              <li class="dropdown-item" onclick="logout()">로그아웃</li>
             </ul>
           </li>
           </ul>
@@ -71,6 +71,49 @@
   </nav>
 
 </div>
+<script type="text/javascript" th:src="@{/js/sign.js}"></script>
+<script th:inline="javascript">
+
+  axios.defaults.withCredentials = true;
+
+  async function logout() {
+
+    const cookie = document.cookie;
+    const accessToken = localStorage.getItem('accessToken');
+
+    function deleteCookie(cName) {
+      var expireDate = new Date();
+      expireDate.setDate(expireDate.getDate() - 1);
+      document.cookie = cName + "= " + "; expires=" + expireDate.toGMTString() + "; path=/";
+    }
+
+
+    await axios.post(`/api/v1/users/logout`, {
+      "accessToken": accessToken,
+      "refreshToken": cookie
+    }, {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken"),
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log("바로 실행 로그");
+        console.log(res.data.resultCode);
+
+        localStorage.clear();
+        sessionStorage.clear();
+        deleteCookie('refreshToken');
+
+        document.location.href = "/view/users/login";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+</script>
 
 </body>
 </html>
