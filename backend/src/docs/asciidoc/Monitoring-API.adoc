@@ -21,7 +21,12 @@ operation::monitoring-delete/success[snippets='http-request,path-parameters,http
 
 operation::monitoring-show/success[snippets='http-request,path-parameters,http-response,response-fields']
 
-[[Monitoring-달조회]]
-=== 모니터링 달조회
+[[Monitoring-기간조회]]
+=== 모니터링 기간조회
 
-operation::monitoring-show-monthly/success[snippets='http-request,path-parameters,http-response,response-fields']
+operation::monitoring-list-show/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Monitoring-기간레포트]]
+=== 모니터링 기간레포트
+
+operation::monitoring-report-show/success[snippets='http-request,path-parameters,http-response,response-fields']

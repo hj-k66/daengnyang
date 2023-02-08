@@ -95,7 +95,7 @@ public class UserService {
 	}
 
 	public TokenInfo generateNewToken(TokenRequest tokenRequest) {
-		String refreshToken = tokenRequest.getRefreshToken();
+		String refreshToken = tokenRequest.parseRefreshToken();
 		String accessToken = tokenRequest.getAccessToken();
 
 		//1. accessToken에서 userName 가져오기 >> accessToken 유효성도 검사
