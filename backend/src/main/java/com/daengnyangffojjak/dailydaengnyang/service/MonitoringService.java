@@ -33,7 +33,7 @@ public class MonitoringService {
 	@Transactional
 	public MntWriteResponse create(Long petId, MntWriteRequest mntWriteRequest, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		if (monitoringRepository.existsByDate(mntWriteRequest.getDate())) {
+		if (monitoringRepository.existsByDateAndPetId(mntWriteRequest.getDate(), petId)) {
 			throw new MonitoringException(ErrorCode.INVALID_REQUEST, "해당 날짜의 모니터링이 이미 존재합니다.");
 		}
 		Monitoring saved = monitoringRepository.save(mntWriteRequest.toEntity(pet));

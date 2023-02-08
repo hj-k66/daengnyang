@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.dto.pet;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -18,6 +19,7 @@ public class PetAddResponse {
 	private Long id;
 	private String name;
 	private String age;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime createdAt;
 
 	public static PetAddResponse addFrom(Pet pet) {
