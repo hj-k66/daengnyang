@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/view")
 @RequiredArgsConstructor
 public class PetUiController {
-
-	@GetMapping("/groups/{groupId}/pets")
+	@GetMapping("/pets")
 	public String petCreate(Model model) {
 		model.addAttribute("petAddRequest", new PetAddRequest());
 		return "users/join_pet";
 	}
-
 	@PostMapping("/groups/{groupId}/pets")
 	public String petRegistration(@PathVariable Long groupId, Model model) {
 		return "users/join_pet";
@@ -30,5 +28,11 @@ public class PetUiController {
 		model.addAttribute("groupId", groupId);
 		model.addAttribute("petId", petId);
 		return "pet/pet_manage";
+	}
+
+	@GetMapping("/groups/{groupId}/pets")
+	public String petList(@PathVariable Long groupId, Model model) {
+		model.addAttribute("groupId", groupId);
+		return "pet/pet_list";
 	}
 }

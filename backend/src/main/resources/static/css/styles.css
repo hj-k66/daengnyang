@@ -259,3 +259,33 @@ table {
   color: red;
   border-color: red;
 }
+
+#pet-list {
+  display: inline-block;
+  margin-left: 250px;
+}
+
+div.card {
+  display: grid;
+  grid-template-columns: 150px 300px;
+  padding: 20px;
+  height: 120px;
+  margin-bottom: 20px;
+}
+
+div.card:hover {
+  box-shadow: 5px 5px 10px hsl(0, 0%, 60%);
+}
+
+img.pet-img {
+  width: 80px;
+  border-radius: 50%;
+}
+
+div.info {
+  text-align: right;
+}
+
+h3.name {
+  margin-top: 10px;
+}
