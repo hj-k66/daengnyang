@@ -1,16 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:replace="~{fragments/header :: head}">
   <meta charset="UTF-8">
-  <title>개묘한 이야기</title>
+
 </head>
-
 <body>
-<!--
-유효성 검사 추가 예정
--->
-
 <div th:replace="~{fragments/header :: header}"/>
 <div class="container-fluid">
   <div class="row">
@@ -22,31 +18,51 @@
     <div class="col-md-4">
     </div>
     <div class="col-md-4">
-      <form role="form" action="groupCreate">
+      <form th:method="POST" th:action="@{/api/v1/users/join}" th:object="${userJoinRequest}"
+            id="userJoinRequest">
         <div class="form-group">
-
-          <label for="exampleInputEmail1">
+          <label th:for="email">
             이메일
           </label>
-          <input type="email" class="form-control" id="exampleInputEmail1"/>
+          <input type="email" th:field="*{email}" class="form-control" oninput="email_ck()"
+                 placeholder="이메일을 입력하세요"
+                 th:class="${#fields.hasErrors('email')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect data</p>
+          <span id="email_span"></span>
+
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">
-            아이디
+
+          <label th:for="userName">
+            이름
           </label>
-          <input type="password" class="form-control" id="exampleInputId1"/>
+          <input type="text" th:field="*{userName}" class="form-control" oninput="userName_ck()"
+                 placeholder="아이디를 입력하세요"
+                 th:class="${#fields.hasErrors('userName')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">Incorrect data</p>
+          <span id="userName_span"></span>
+
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">
+
+          <label th:for="password">
             비밀번호
           </label>
-          <input type="password" class="form-control" id="exampleInputPassword1"/>
+          <input type="password" th:field="*{password}" class="form-control" oninput="password_ck()"
+                 placeholder="비밀번호를 입력하세요"
+                 th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
+          <span id="pw_span"></span> <br>
           비밀번호 확인
-          <input type="password" class="form-control" id="exampleInputPassword2"/>
+          <input type="password" class="form-control" oninput="password_ck()" id="password-check"
+                 placeholder="비밀번호 확인"
+                 th:class="${#fields.hasErrors('password')}? 'form-control fieldError' : 'form-control'"/>
+          <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect data</p>
+          <span id="pw1_span"></span>
         </div>
 
         <br>
-        <button type="submit" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" id="join_btn" onclick="join_click()" disabled>
           회원 가입
         </button>
       </form>
@@ -63,4 +79,142 @@
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 </body>
 
+<script th:inline="javascript">
+
+  /* 전부 true로 바뀌었을때 비활성화 된 회원가입 버튼 활성화됨 */
+  let emailPass = false;
+  let userNamePass = false;
+  let passwordPass = false;
+
+  /* 이메일 유효성 검사 */
+  function email_ck() {
+    let regexp = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+    let email = $("#email").val();
+    if (email == "") {
+      $("#email_span").html("이메일을 입력하지 않으셨습니다");
+      emailPass = false;
+      check_join()
+      return;
+    }
+
+    if (regexp.test(email) == false) {
+      $("#email_span").html("유효한 이메일이 아닙니다");
+      emailPass = false;
+      check_join()
+      return;
+    }
+
+    $.ajax({
+      type: "GET",
+      url: "/view/users/check-email",
+      data: {
+        email: email
+      },
+      success: function (data) {
+        console.log('결과 ' + data + ' ' + email);
+        if (data == true) {
+          $("#email_span").html("중복된 이메일입니다");
+          emailPass = false;
+          check_join()
+        } else {
+          $("#email_span").html("사용 가능한 이메일입니다");
+          emailPass = true;
+          check_join();
+        }
+      },
+      error: function () {
+        console.log('실패')
+      }
+    });
+  }
+
+  /* 아이디 유효성 검사 */
+  function userName_ck() {
+    let userName = $("#userName").val();
+    if (userName == "") {
+      $("#userName_span").html("아이디를 입력하지 않으셨습니다");
+      return;
+    }
+
+    $.ajax({
+      type: "GET",
+      url: "/view/users/check-userName",
+      data: {
+        userName: userName
+      },
+      success: function (data) {
+        console.log('결과 ' + data + ' ' + userName);
+        if (data == true) {
+          $("#userName_span").html("중복된 아이디입니다");
+          userNamePass = false;
+          check_join();
+        } else {
+          $("#userName_span").html("사용 가능한 아이디입니다");
+          userNamePass = true;
+          check_join();
+        }
+      },
+      error: function () {
+        console.log('실패')
+      }
+    });
+  }
+
+  /* 비밀번호 유효성 검사 */
+  function password_ck() {
+    let pw = $("#password").val();
+    let pw1 = $("#password-check").val();
+    if (pw == "") {
+      $("#pw_span").html("패스워드를 입력하지 않으셨습니다");
+      return;
+    }
+
+    if (pw == pw1) {
+      $("#pw1_span").html("패스워드 확인 완료");
+      passwordPass = true;
+      check_join();
+    } else {
+      $("#pw1_span").html("패스워드가 일치하지 않습니다");
+      passwordPass = false;
+      check_join();
+    }
+  }
+
+  /* 버튼 활성화 + 비밀번호 일치 한번 더 검증*/
+  function check_join() {
+
+    let pw = $("#password").val();
+    let pw1 = $("#password-check").val();
+
+    if (emailPass == true && userNamePass == true && passwordPass == true) {
+      document.getElementById("join_btn").removeAttribute("disabled")
+    } else {
+      document.getElementById("join_btn").setAttribute('disabled', true)
+    }
+  }
+
+  function join_click() {
+    let email = $("#email").val();
+    let userName = $("#userName").val();
+    let password = $("#password").val();
+    $.ajax({
+      type: "POST",
+      url: "/api/v1/users/join",
+      contentType: 'application/json',
+      data: JSON.stringify({
+        email: email,
+        userName: userName,
+        password: password
+      }),
+      success: function (data) {
+        console.log('결과 ' + data + ' ' + email);
+        location.replace("/view/users/login")
+      },
+      error: function () {
+        console.log('실패')
+      }
+    });
+  }
+
+</script>
 </html>
