@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +59,12 @@ public class UserRestController {
 	@PostMapping("/new-token")  //토큰 재발급
 	public Response<UserResponse> generateNewToken(
 			@RequestBody @Valid TokenRequest tokenRequest, HttpServletResponse httpServletResponse) {
-		TokenInfo tokenInfo = userService.generateNewToken(tokenRequest);
+		//TokenRequest 파싱하기
+		//"refreshToken=" 제거
+		String refreshTokenParsed = tokenRequest.parseRefreshToken();
+		TokenRequest tokenRequestParsing = new TokenRequest(tokenRequest.getAccessToken(),refreshTokenParsed);
+
+		TokenInfo tokenInfo = userService.generateNewToken(tokenRequestParsing);
 		ResponseCookie cookie = tokenInfo.makeCookie();
 		//refresh Token은 쿠키로 전송
 		httpServletResponse.setHeader("Set-Cookie", cookie.toString());

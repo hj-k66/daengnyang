@@ -15,4 +15,10 @@ public class TokenRequest {
 	private String accessToken;
 	@NotEmpty(message = "refreshToken은 필수 입력값입니다.")
 	private String refreshToken;
+
+	//TokenRequest 파싱하기
+	//"refreshToken=" 제거
+	public String parseRefreshToken(){
+		return this.refreshToken.substring(13);
+	}
 }
