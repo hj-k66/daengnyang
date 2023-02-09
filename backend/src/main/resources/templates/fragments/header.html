@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head th:fragment="head">
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -25,7 +26,7 @@
 <div th:fragment="header">
 
   <!-- Responsive navbar-->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom: 20px">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">DAENG NYANG</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -34,12 +35,12 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
-        <ul class="navbar-nav">
+        <ul class="login-on navbar-nav visually-hidden">
           <li class="nav-item"><a class="nav-link" th:href="@{/view/calendar}">캘린더</a></li>
           <li class="nav-item"><a class="nav-link" href="/">다이어리</a></li>
         </ul>
         <!-- 로그인 했을때 -->
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAuthenticated()">
+        <ul class="login-on navbar-nav ms-auto mb-2 mb-lg-0 visually-hidden">
           <li class="nav-item"><a class="nav-link" aria-current="page" href="/">알람</a></li>
 
           <li class="nav-item"><a class="nav-link" href="/">오늘의 일정</a></li>
@@ -62,7 +63,7 @@
           <!-- <li class="nav-item"><a class="nav-link" href="/users/login">로그인</a></li> -->
 
           <!-- 로그인 안 했을때 -->
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAnonymous()">
+          <ul id="logout-on" class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAnonymous()">
             <li class="nav-item"><a class="nav-link" th:href="@{/view/users/join}">회원가입</a></li>
             <li class="nav-item"><a class="nav-link" th:href="@{/view/users/login}">로그인</a></li>
           </ul>
@@ -71,6 +72,21 @@
   </nav>
 
 </div>
+<script th:inline="javascript">
+  const token = localStorage.getItem("accessToken");
+  $(document).ready(function () {
+    if (token != null){
+      let ob = document.getElementsByClassName('login-on');
+      for (let i = 0; i < ob.length; i++) {
+        ob.item(i).classList.remove('visually-hidden');
+      }
+
+      document.getElementById('logout-on').classList.add('visually-hidden');
+    }
+  });
+
+
+</script>
 
 </body>
 </html>
