@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
@@ -156,6 +157,40 @@ public class ScheduleService {
 		Page<Schedule> schedules = scheduleRepository.findAllByPetId(pet.getId(), pageable);
 
 		return ScheduleListResponse.toResponse(schedules);
+
+	}
+	@Transactional
+	public MessageResponse assign(Long petId, Long scheduleId, ScheduleAssignRequest scheduleAssignRequest, String userName) {
+		//1. 로그인 유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(userName);
+
+		//2. 일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+		//3. Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
+
+		//4. assignrequest receiverId가 userName(pet)과 같은 그룹이 아닐 경우 예외발생
+		//receiver 유저가 없는 경우 예외 발생 같이 처리
+		validator.getUserGroupListByUsername(pet.getGroup(),scheduleAssignRequest.getReceiverName());
+
+
+		//5. 로그인유저 != (일정작성유저 or 이전 일정 책임자)일 경우 예외발생
+		Long loginUserId = user.getId();
+		Long scheduleWriteUserId = schedule.getUser().getId();
+		Long assigneeId = schedule.getAssigneeId();
+
+		if (!loginUserId.equals(scheduleWriteUserId) || !loginUserId.equals(assigneeId)) {
+			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+		}
+
+		//수정된 일정 저장
+		User receiver = validator.getUserByUserName(scheduleAssignRequest.getReceiverName());
+		schedule.changeToAssignee(receiver.getId());
+		scheduleRepository.saveAndFlush(schedule);
+
+		return new MessageResponse("일정의 책임자가 변경되었습니다.");
 
 	}
 }
