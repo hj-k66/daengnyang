@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+  <!-- CSS -->
+  <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<!--header----------------------------->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+      <section id="pet-list">
+        <div class="card visually-hidden" style="width: 500px;">
+
+          <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
+          <div class="info">
+            <h1 class="name card-title">훈이</h1>
+            <h6 class="card-subtitle mb-2 text-muted">
+              <span class="age">4살</span> |
+              <span class="species">CAT</span> |
+              <span class="breed">KSH</span> |
+              <span class="sex">중성화 수컷</span>
+            </h6>
+          </div>
+        </div>
+
+      </section>
+    </div>
+    <div class="col-md-4">
+    </div>
+  </div>
+</div>
+
+
+
+<!--show Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody>
+          <tr>
+            <th scope="row">종</th>
+            <td id="species"></td>
+          </tr>
+          <tr>
+            <th scope="row">품종</th>
+            <td id="breed"></td>
+          </tr>
+          <tr>
+            <th scope="row">성별</th>
+            <td id="sex"></td>
+          </tr>
+          <tr>
+            <th scope="row">생일</th>가
+            <td id="birthday"></td>
+          </tr>
+          <tr>
+            <th scope="row">몸무게</th>
+            <td id="weight"></td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#modifyModal" onclick="show_pet_modify()">수정</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--modify Modal-->
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form role="form">
+        <div class="modal-header">
+          <input id="name-inp" type="text" class="form-control"/>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <table class="table">
+            <tbody>
+            <tr>
+              <th scope="row">종</th>
+              <td>
+                <input type="radio" name="species" value="DOG">
+                  강아지
+                <input type="radio" name="species" value="CAT">
+                  고양이
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">품종</th>
+              <td>
+                <input id="breed-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">성별</th>
+              <td>
+
+                <input type="radio" name="sex" value="FEMALE"> 암컷
+                <input type="radio" name="sex" value="MALE"> 수컷
+                <input type="radio" name="sex" value="SPAYED_FEMALE"> 중성화
+                  암컷
+                <input type="radio" name="sex" value="NEUTERED_MALE"> 중성화
+                  수컷
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">생일</th>
+              <td>
+                <input id="birthday-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">몸무게</th>
+              <td>
+                <input id="weight-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          <button type="button" class="btn btn-primary" onclick="modify_pet_info()">
+            수정 완료
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--footer---------------------------->
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  const groupId = [[${groupId}]];
+  let rct_id;
+  let rct_name;
+  let rct_birthday;
+  let rct_breed;
+  let rct_sex;
+  let rct_species;
+  let rct_weight;
+
+  $(document).ready(function () {
+    get_pet_list();
+  });
+
+  axios.defaults.withCredentials = true;
+
+  async function get_pet_list() {
+    await axios.get("/api/v1/groups/" + groupId + "/pets", {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        let pets = res.data.result.pets;
+        console.log(pets)
+        for (let i = 0; i < pets.length; i++) {
+          let id = pets[i]['id'];
+          let name = pets[i]['name'];
+          let species = pets[i]['species'];
+          let age = pets[i]['age'];
+          let breed = pets[i]['breed'];
+          let sex_enum = pets[i]['sex'];
+          let sex = convert_sex_enum(sex_enum);
+
+          let temp_html = `
+                <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
+                  <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
+                  <div class="info">
+                    <h3 class="name card-title">${name}</h3>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                      <span class="pet_id" style="display: none;">${id}</span>
+                      <span class="age">${species}</span> |
+                      <span class="species">${age}</span> |
+                      <span class="breed">${breed}</span> |
+                      <span class="sex">${sex}</span>
+                    </h6>
+                  </div>
+                </div>
+          `
+          $('#pet-list').append(temp_html);
+        }
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+
+
+  async function get_pet_info(petId) {
+    await axios.get("/api/v1/groups/" + groupId + "/pets/" + petId, {}, {
+      headers: {},
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        rct_id = petId;
+        rct_name = res.data.result.name;
+        rct_birthday = res.data.result.birthday;
+        rct_breed = res.data.result.breed;
+        rct_sex = res.data.result.sex;
+        rct_species = res.data.result.species;
+        rct_weight = res.data.result.weight;
+
+        $('#name').text(rct_name);
+        $('#exampleModalLabel').text(rct_name);
+        $('#birthday').text(rct_birthday);
+        $('#breed').text(rct_breed);
+        $('#sex').text(convert_sex_enum(rct_sex));
+        $('#species').text(rct_species);
+        $('#weight').text(rct_weight + "kg");
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  function show_pet_modify() {
+    document.querySelector('#name-inp').value = rct_name;
+    document.querySelector('#breed-inp').value = rct_breed;
+    document.querySelector('#birthday-inp').value = rct_birthday;
+    document.querySelector('#weight-inp').value = rct_weight;
+    document.querySelector("table td input[name=species][value="+rct_species+"]").checked = true;
+    document.querySelector("table td input[name=sex][value="+rct_sex+"]").checked = true;
+  }
+
+  async function modify_pet_info() {
+    let name = $("#name-inp").val();
+    let species = $("input:radio[name=species]:checked").val();
+    let breed = $("#breed-inp").val();
+    let sex = $("input:radio[name=sex]:checked").val();
+    let birthday = $("#birthday-inp").val();
+    let weight = $("#weight-inp").val();
+    console.log(name)
+
+    await axios.put("/api/v1/groups/" + groupId + "/pets/" + rct_id,
+        {
+          "name" : name,
+          "species" : species,
+          "breed" : breed,
+          "sex" : sex,
+          "birthday" : birthday,
+          "weight" : weight
+        }
+    , {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+          console.log(res.data.result);
+          document.location.href = "/view/groups/"+groupId+"/pets";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  function convert_sex_enum(sex_enum) {
+    switch (sex_enum) {
+      case "FEMALE":
+        return "여아"
+      case "SPAYED_FEMALE":
+        return "중성화 여아"
+      case "MALE":
+        return "남아"
+      case "NEUTERED_MALE":
+        return "중성화 남아"
+      default:
+        return "?"
+    }
+  }
+
+
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+
+
+</body>
+</html>

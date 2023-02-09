@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -12,19 +13,24 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableRedisRepositories
 public class RedisRepositoryConfiguration {
+	@Value("${spring.data.redis.host}")
+	private String redisHost;
 
-	private final String redisHost;
-	private final int redisPort;
+	@Value("${spring.data.redis.port}")
+	private int redisPort;
 
-	public RedisRepositoryConfiguration(@Value("${spring.data.redis.host}") final String redisHost,
-			@Value("${spring.data.redis.port}") final int redisPort) {
-		this.redisHost = redisHost;
-		this.redisPort = redisPort;
-	}
+	@Value("${spring.data.redis.password}")
+	private String redisPwd;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-		return new LettuceConnectionFactory(redisHost, redisPort);
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setHostName(redisHost);
+		redisStandaloneConfiguration.setPort(redisPort);
+		// 패스워드 있으면 설정
+		redisStandaloneConfiguration.setPassword(redisPwd);
+		LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
+		return lettuceConnectionFactory;
 	}
 
 	@Bean

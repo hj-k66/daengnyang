@@ -20,6 +20,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListRespon
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
@@ -107,8 +108,8 @@ class GroupRestControllerTest extends ControllerTest {
 		@DisplayName("반려동물 조회 성공")
 		void success() throws Exception {
 			GroupPetListResponse petListResponse = new GroupPetListResponse(
-					List.of(new GroupPetResponse(1L, "hoon", Species.CAT, "4살"),
-							new GroupPetResponse(2L, "hoon2", Species.CAT, "4개월")), 2);
+					List.of(new GroupPetResponse(1L, "hoon", Species.CAT, "4살", "KSH", Sex.NEUTERED_MALE),
+							new GroupPetResponse(2L, "hoon2", Species.CAT, "4개월", "KSH", Sex.FEMALE)), 2);
 			given(groupService.getGroupPets(1L, "user")).willReturn(petListResponse);
 
 			mockMvc.perform(
@@ -123,6 +124,8 @@ class GroupRestControllerTest extends ControllerTest {
 									fieldWithPath("result.pets[].name").description("반려동물 이름"),
 									fieldWithPath("result.pets[].species").description("종"),
 									fieldWithPath("result.pets[].age").description("나이"),
+									fieldWithPath("result.pets[].breed").description("품종"),
+									fieldWithPath("result.pets[].sex").description("성별"),
 									fieldWithPath("result.count").description("그룹 내 반려동물 수"))));
 			verify(groupService).getGroupPets(1L, "user");
 		}

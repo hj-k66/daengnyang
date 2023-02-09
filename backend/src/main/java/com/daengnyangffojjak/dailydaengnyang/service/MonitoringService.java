@@ -11,28 +11,37 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MonitoringService {
 
 	private final MonitoringRepository monitoringRepository;
+	private final PetRepository petRepository;
 	private final Validator validator;
 
 	@Transactional
 	public MntWriteResponse create(Long petId, MntWriteRequest mntWriteRequest, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		if (monitoringRepository.existsByDate(mntWriteRequest.getDate())) {
+		if (monitoringRepository.existsByDateAndPetId(mntWriteRequest.getDate(), petId)) {
 			throw new MonitoringException(ErrorCode.INVALID_REQUEST, "해당 날짜의 모니터링이 이미 존재합니다.");
 		}
 		Monitoring saved = monitoringRepository.save(mntWriteRequest.toEntity(pet));
+		if (saved.getWeight() != null && saved.getDate().isAfter(pet.getLastModifiedAt().toLocalDate())) {
+			pet.updateWeight(saved.getWeight());	//모니터링에 몸무게가 포함되고, 펫의 최근 변경일자보다 후이면
+			petRepository.save(pet);		//몸무게 업데이트
+		}
+
 		return MntWriteResponse.from(saved);
 	}
 	@Transactional(readOnly = true)
@@ -59,6 +68,10 @@ public class MonitoringService {
 
 		monitoring.modify(mntWriteRequest);
 		Monitoring modified = monitoringRepository.saveAndFlush(monitoring);
+		if (modified.getWeight() != null && modified.getDate().isAfter(pet.getLastModifiedAt().toLocalDate())) {
+			pet.updateWeight(modified.getWeight());	//모니터링에 몸무게가 포함되고, 펫의 최근 변경일자보다 후이면
+			petRepository.save(pet);		//몸무게 업데이트
+		}
 		return MntWriteResponse.from(modified);
 	}
 
