@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
@@ -27,6 +28,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +51,50 @@ class ScheduleRestControllerTest extends ControllerTest {
 	//일정수정
 	ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(1L,
 			"수정 병원", "수정 초음파 재검", 1L, "수정 멋사동물병원", dateTime, true);
+
+	//일정 부탁하기
+	ScheduleAssignRequest scheduleAssignRequest = new ScheduleAssignRequest("희정", "내일까지 부탁해!");
+
+	//------------------------------------------------------------------------------------------
+	@Nested
+	@DisplayName("일정부탁하기")
+	class ScheduleAssign {
+
+		@Test
+		@DisplayName("일정부탁하기 성공")
+		void assign_success() throws Exception {
+			MessageResponse messageResponse = new MessageResponse("일정의 책임자가 변경되었습니다.");
+			given(scheduleService.assign(1L, 1L, scheduleAssignRequest, "user"))
+					.willReturn(messageResponse);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.put(
+											"/api/v1/pets/{petId}/schedules/{scheduleId}/assign", 1L, 1L)
+									.with(csrf())
+									.content(objectMapper.writeValueAsBytes(scheduleAssignRequest))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isCreated())
+					.andExpect(jsonPath("$.result.msg").exists())
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("petId").description("반려동물 번호"),
+											parameterWithName("scheduleId").description("일정 번호")
+
+									),
+									requestFields(
+											fieldWithPath("receiverName").description("부탁받을 유저"),
+											fieldWithPath("message").description("부탁 메세지")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath("result.msg").description("결과메세지")
+							)
+					));
+			verify(scheduleService).assign(1L, 1L,scheduleAssignRequest, "user");
+
+		}
+	}
 
 	//------------------------------------------------------------------------------------------
 
