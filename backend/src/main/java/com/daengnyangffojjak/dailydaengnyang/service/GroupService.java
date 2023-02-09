@@ -87,7 +87,7 @@ public class GroupService {
 				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup()));   //그룹 멤버로 저장
 
 		//알림 전송 - 초대받은 대상자에게만 전송
-		applicationEventPublisher.publishEvent(new GroupInviteEvent(invited.getUsername(),group.getName(),username));
+		applicationEventPublisher.publishEvent(new GroupInviteEvent(invited,group.getName(),username));
 
 
 		return new MessageResponse(invited.getUsername() + "이(가) 그룹에 등록되었습니다.");

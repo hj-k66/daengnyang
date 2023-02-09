@@ -73,12 +73,12 @@ public class RecordService {
 		//알림 전송 - 그룹원 모두에게 전송
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
 				pet.getGroup(), userName);
-		List<String> userNameList = userGroupList.stream()
-				.map(userGroup -> userGroup.getUser().getUsername()).collect(
+		List<User> userList = userGroupList.stream()
+				.map(UserGroup::getUser).collect(
 						Collectors.toList());
 		//이벤트 발생
 		applicationEventPublisher.publishEvent(
-				new RecordCreateEvent(userNameList, recordWorkRequest.getTitle(), userName));
+				new RecordCreateEvent(userList, recordWorkRequest.getTitle(), userName));
 
 		return RecordWorkResponse.builder()
 				.message("일기 작성 완료")

@@ -58,12 +58,12 @@ public class ScheduleService {
 		//해당 그룹(pet의 그룹) 내 멤버 이름 불러오기
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
 				pet.getGroup(), userName);
-		List<String> userNameList = userGroupList.stream()
-				.map(userGroup -> userGroup.getUser().getUsername()).collect(
+		List<User> userList = userGroupList.stream()
+				.map(UserGroup::getUser).collect(
 						Collectors.toList());
 
 		applicationEventPublisher.publishEvent(
-				new ScheduleCreateEvent(userNameList, scheduleCreateRequest.getTitle(), userName));
+				new ScheduleCreateEvent(userList, scheduleCreateRequest.getTitle(), userName));
 
 		return ScheduleCreateResponse.toResponse(message, savedSchedule);
 
@@ -185,7 +185,7 @@ public class ScheduleService {
 		Long scheduleWriteUserId = schedule.getUser().getId();
 		Long assigneeId = schedule.getAssigneeId();
 
-		if (!loginUserId.equals(scheduleWriteUserId) || !loginUserId.equals(assigneeId)) {
+		if (!loginUserId.equals(scheduleWriteUserId) && !loginUserId.equals(assigneeId)) {
 			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
 		}
 
@@ -196,7 +196,7 @@ public class ScheduleService {
 
 		//알림 전송 - 부탁받은 대상자만
 		applicationEventPublisher.publishEvent(
-				new ScheduleAssignEvent(receiver.getUsername(), scheduleAssignRequest.getMessage(),
+				new ScheduleAssignEvent(receiver, scheduleAssignRequest.getMessage(),
 						userName, schedule.getTitle()));
 
 		return new MessageResponse("일정의 책임자가 변경되었습니다.");

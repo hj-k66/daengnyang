@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.utils.event;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupInviteEvent {
 
-	private final String receiverName;
+	private final User receiver;
 	private final String title;
 	private final String senderName;
 }
