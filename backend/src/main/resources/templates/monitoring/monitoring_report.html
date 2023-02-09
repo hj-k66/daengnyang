@@ -152,7 +152,7 @@
     </div>
   </div>
   <div class="row">
-    <div id="graph-wrapper" class="container-fluid" >
+    <div id="graph-wrapper" class="container-fluid">
       <div id="weight_chart" class="graph"></div>
       <div id="feed_chart" class="graph"></div>
       <div id="walk_chart" class="graph"></div>
@@ -185,6 +185,7 @@
   $(document).ready(function () {
     get_report();
     get_monitoring_list(send_chart);
+
   });
 
   axios.defaults.withCredentials = true;
@@ -194,7 +195,6 @@
     await axios.get("/api/v1/pets/" + petId + "/monitorings/report" + param, {}, {
       headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let weightAvg = res.data.result.weightAvg;        	//몸무게
         let weightCount = res.data.result.weightCount;
@@ -305,7 +305,6 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         monitorings = res.data.result.monthlyMonitorings;
-        console.log(monitorings);
         callback();
       } else {
         console.log("실패임" + res.resultCode)
@@ -326,9 +325,8 @@
 
   // -----------------------graph-----------------------------
 
-
   function send_chart() {
-    google.charts.load('current', {'packages':['line']});
+    google.charts.load('current', {'packages': ['line']});
     google.charts.setOnLoadCallback(drawChart);
   }
 
@@ -355,10 +353,21 @@
     data.addRows(data_list);
 
     var options = {
+      chart: {
+        title: content,
+      },
+      titleTextStyle: {
+        fontSize: 25,
+        bold: true
+      },
       hAxis: {title: '날짜'},
-      vAxis: {title: content},
-      width: 600,
-      height: 300
+      vAxis: {
+        title: content,
+        viewWindowMode: 'pretty'
+      },
+      curveType: 'function',
+      chartArea: {left: 20, top: 0, width: '50%', height: '80%'},
+      lineWidth: 0
     };
 
     var chart = new google.charts.Line(document.getElementById(chart_id));
@@ -376,7 +385,6 @@
     let rr_list = [];
     let custom_list = [];
     let custom_name = "";
-    console.log(monitorings)
 
     for (let i = 0; i < monitorings.length; i++) {
       let mnt = monitorings[i];
@@ -420,15 +428,15 @@
     }
 
     const lists = {
-      "weight_list" : weight_list,
-      "feed_list" : feed_list,
-      "walk_list" : walk_list,
-      "play_list" : play_list,
-      "uri_list" : uri_list,
-      "def_list" : def_list,
-      "rr_list" : rr_list,
-      "custom_list" : custom_list,
-      "custom_name" : custom_name
+      "weight_list": weight_list,
+      "feed_list": feed_list,
+      "walk_list": walk_list,
+      "play_list": play_list,
+      "uri_list": uri_list,
+      "def_list": def_list,
+      "rr_list": rr_list,
+      "custom_list": custom_list,
+      "custom_name": custom_name
     }
     return lists
   }

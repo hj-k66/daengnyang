@@ -318,7 +318,7 @@ div.boolean-result div{
 }
 
 div.card-body span.card-text {
-  font-size: 40px;
+  font-size: 30px;
   font-weight: bolder;
 }
 
@@ -328,11 +328,14 @@ div.card-body span.val-unit {
 }
 
 #graph-wrapper {
-  width: 70%;
-  margin-top: 100px;
+  width: 90%;
+  margin: 100px auto auto;
+  overflow-x: auto;
 }
 
 div.graph {
-  width: 600px;
-  margin: 50px auto auto;
+  width: 550px;
+  height: 300px;
+  display: inline-block;
+  margin: 50px 0px 0px 100px;
 }
