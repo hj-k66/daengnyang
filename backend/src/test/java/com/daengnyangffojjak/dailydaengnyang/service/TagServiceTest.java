@@ -11,9 +11,9 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
+import com.daengnyangffojjak.dailydaengnyang.fixture.GroupFixture;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
@@ -33,9 +33,7 @@ class TagServiceTest {
 
 	private TagService tagService = new TagService(tagRepository, scheduleRepository,
 			recordRepository, validator);
-	User user = User.builder().id(1L).userName("user").password("password").email("@.")
-			.role(UserRole.ROLE_USER).build();
-	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
+	Group group = GroupFixture.get();
 
 	TagWorkRequest tagWorkRequest = new TagWorkRequest("태그이름");
 	Tag tag = Tag.builder().id(1L).group(group).name("태그이름").build();

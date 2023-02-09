@@ -259,3 +259,49 @@ table {
   color: red;
   border-color: red;
 }
+
+
+
+
+/*********pet_list*********/
+#pet-list {
+  display: inline-block;
+}
+
+div.card {
+  display: grid;
+  grid-template-columns: 150px 300px;
+  padding: 20px;
+  height: 120px;
+  margin-bottom: 20px;
+}
+
+div.card:hover {
+  box-shadow: 5px 5px 10px hsl(0, 0%, 60%);
+}
+
+img.pet-img {
+  width: 80px;
+  border-radius: 50%;
+}
+
+div.info {
+  text-align: right;
+}
+
+h3.name {
+  margin-top: 10px;
+}
+
+#name-inp {
+  width: 80%;
+}
+
+form table.table td {
+  text-align: right;
+}
+
+form table.table input[type=text] {
+  width: 70%;
+  float: right;
+}

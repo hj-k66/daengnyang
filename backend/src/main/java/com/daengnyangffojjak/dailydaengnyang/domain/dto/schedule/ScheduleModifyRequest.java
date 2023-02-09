@@ -21,5 +21,4 @@ public class ScheduleModifyRequest {
 	private LocalDateTime dueDate;
 
 	private boolean completed;
-
 }
