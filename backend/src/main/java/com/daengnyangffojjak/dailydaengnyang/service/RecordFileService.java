@@ -52,6 +52,7 @@ public class RecordFileService {
 		multipartFiles.forEach(file -> {
 			ObjectMetadata objectMetadata = new ObjectMetadata();
 			objectMetadata.setContentType(file.getContentType());
+			// 파일 사이즈 설정
 			objectMetadata.setContentLength(file.getSize());
 
 			String originalFilename = file.getOriginalFilename();
@@ -65,10 +66,10 @@ public class RecordFileService {
 			}
 
 			// 확장자
-			String ext = originalFilename.substring(index + 1);
+			String extension = originalFilename.substring(index + 1);
 
 			// 저장될 파일 이름
-			String storedFileName = UUID.randomUUID() + "." + ext;
+			String storedFileName = UUID.randomUUID() + "." + extension;
 
 			// 저장할 디렉토리 경로 + 파일 이름
 			String key = "records/" + storedFileName;
