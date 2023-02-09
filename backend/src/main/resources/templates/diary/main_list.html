@@ -23,7 +23,9 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <p class="card-text">오늘은 반려동물과 어떤일이 있었나요? 🐶</p>
-                        <a href="#" class="btn btn-primary">글 작성하러가기</a>
+                        <a href="#" class="btn btn-primary" th:href="@{/add}">글 작성하러가기</a>
+<!--                        <a type="button" class="btn btn-danger" th:href="@{/posts/list}">취소</a>-->
+
                     </div>
                 </div>
                 <div class="col-md-12 my-3">
@@ -35,7 +37,7 @@
                                     <h3 class="mb-0">하루에 산책 3번한 날...</h3>
                                     <div class="mb-1 text-muted">Feb 7</div>
                                     <p class="mb-auto">오늘은 산책을 세번이나 했다. 멍뭉이는 아직 멀쩡해보인다. 힘이 어디서 나오는지 모르겠다. 너무 힘들다... 그래도 귀여워서 참는다.</p>
-                                    <a href="#" class="stretched-link">자세히 보러가기</a>
+                                    <a href="#" class="stretched-link" th:href="@{/my}">자세히 보러가기</a>
                                 </div>
                                 <div class="col-4 p-4 d-flex flex-column position-static">
                                     <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg" width="250" height="250" class="img-thumbnail" alt="강아지">
