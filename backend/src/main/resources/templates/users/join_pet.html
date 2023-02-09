@@ -13,7 +13,7 @@
 
   <!-- Datepicker 생일 클릭시 달력 이벤트 -->
   <link rel="stylesheet" th:href="@{//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css}">
-  <link rel="stylesheet" th:href="@{/resources/demos/style.css}">
+<!--  <link rel="stylesheet" th:href="@{/resources/demos/style.css}">-->
   <script th:src="@{https://code.jquery.com/jquery-3.6.0.js}"></script>
   <script th:src="@{https://code.jquery.com/ui/1.13.2/jquery-ui.js}"></script>
   <script>
@@ -155,59 +155,7 @@
         console.log("실패임" + res.resultCode)
       }
     });
-
   }
-  axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
-    const accessToken = localStorage.getItem('accessToken');
-    const cookie = document.cookie;
-    console.log("헤더" + config.headers);
-    console.log("cookie" + cookie);
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  })
-
-  axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers.Authorization = 'Bearer' + ' ' + accessToken
-    } else {
-      console.log("headers" + config.headers);
-    }
-    return config;
-  })
-
-  axios.interceptors.response.use(
-      success => success,
-      async (error) => {
-        console.log("인터셉터 에러" + error);
-        const status = error.response.status
-
-        if (status === 401) {
-          const originRequest = error.config;
-          const cookie = document.cookie;
-          console.log("내가 만든 쿠키" + cookie)
-          await axios.post('/api/v1/users/new-token',
-              {
-                "Content-Type": `application/json`,
-                accessToken: "Bearer " + localStorage.getItem("accessToken"),
-                refreshToken: cookie
-              })
-          .then(response => {
-            console.log("인터셉터 리스폰스 데이터" + response.data);
-            localStorage.setItem("accessToken", response.data);
-          })
-          .catch(error => {
-            console.log('fail');
-            localStorage.removeItem('accessToken')
-          })
-          return Promise.reject(error)
-        }
-      }
-  )
 </script>
 </body>
 </html>

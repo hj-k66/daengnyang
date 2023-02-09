@@ -1,5 +1,3 @@
-
-
 async function logout() {
 
   /** 쿠키 꺼내기 */
@@ -31,6 +29,7 @@ async function logout() {
 
       localStorage.clear();
       sessionStorage.clear();
+      localStorage.removeItem('accessToken')
       deleteCookie('refreshToken');
 
       document.location.href = "/view/users/login";
@@ -45,8 +44,6 @@ axios.interceptors.request.use(function (config) {
   console.log("인터셉터 시작")
   const accessToken = localStorage.getItem('accessToken');
 
-  const cookie3 = document.cookie.valueOf();
-  console.log("valueOf 쿠키" + cookie3);
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
