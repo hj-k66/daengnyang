@@ -77,9 +77,14 @@ public enum ErrorCode {
 	/**
 	 * File
 	 */
-	FILE_NOT_FOUND(HttpStatus.BAD_REQUEST,"파일이 없습니다."),
+	FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "파일을 업로드 하지 않았습니다."),
 	WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "파일의 형식이 잘못되었습니다."),
-	FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+	FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+
+	/**
+	 * RecordFile
+	 */
+	RECORDFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "일기에 해당 파일이 없습니다.");
 
 	private final HttpStatus status;
 	private final String message;

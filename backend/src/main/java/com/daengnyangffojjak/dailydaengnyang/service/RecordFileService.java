@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordFileResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
@@ -35,21 +34,19 @@ public class RecordFileService {
 	private String bucket;
 
 	@Transactional
-	public RecordFileResponse uploadFile(Long petId, Long recordId,
+	public RecordFileResponse uploadRecordFiles(Long petId, Long recordId,
 			List<MultipartFile> multipartFiles,
 			String userName) {
 
 		// 빈 파일이거나 파일을 업로드 안했을 때 예외 발생
-		//validator.validateFile(multipartFiles);
-
-		// 펫이 없는 경우 예외발생
-		Pet pet = validator.getPetById(petId);
+		validator.validateFile(multipartFiles);
 
 		// 일기가 없는 경우 예외발생
 		Record record = validator.getRecordById(recordId);
 
-		// 원본 파일 이름, S3에 저장될 파일 이름 리스트
+		// 원본 파일 이름 리스트
 		List<String> originalFileNameList = new ArrayList<>();
+		/// 저장될 파일 이름 리스트
 		List<String> storedFileNameList = new ArrayList<>();
 
 		multipartFiles.forEach(file -> {
@@ -59,21 +56,22 @@ public class RecordFileService {
 
 			String originalFilename = file.getOriginalFilename();
 
-			int index;
 			// file 형식이 잘못된 경우를 확인
+			int index;
 			try {
 				index = originalFilename.lastIndexOf(".");
 			} catch (StringIndexOutOfBoundsException e) {
 				throw new FileException(ErrorCode.WRONG_FILE_FORMAT);
 			}
 
+			// 확장자
 			String ext = originalFilename.substring(index + 1);
 
 			// 저장될 파일 이름
 			String storedFileName = UUID.randomUUID() + "." + ext;
 
 			// 저장할 디렉토리 경로 + 파일 이름
-			String key = "test/" + storedFileName;
+			String key = "records/" + storedFileName;
 
 			try (InputStream inputStream = file.getInputStream()) {
 				amazonS3Client.putObject(
@@ -84,13 +82,26 @@ public class RecordFileService {
 			}
 
 			String storeFileUrl = amazonS3Client.getUrl(bucket, key).toString();
-			RecordFile recordFile = RecordFile.makeRecordFile(originalFilename, storeFileUrl, record);
+			RecordFile recordFile = RecordFile.makeRecordFile(originalFilename, storeFileUrl,
+					record);
 			recordFileRepository.save(recordFile);
 
 			storedFileNameList.add(storedFileName);
 			originalFileNameList.add(originalFilename);
 		});
 
-		return RecordFileResponse.of(originalFileNameList, storedFileNameList);
+		return RecordFileResponse.ofUpload(originalFileNameList, storedFileNameList);
+	}
+
+	@Transactional
+	public RecordFileResponse deleteRecordFile(Long petId, Long recordId, Long recordFileId,
+			String username) {
+
+		// 일기에 파일이 있는 지 확인
+		RecordFile recordFile = validator.getRecordFileById(recordFileId);
+
+		recordFileRepository.delete(recordFile);
+		return RecordFileResponse.ofDeleted(recordFileId, "파일 삭제 완료");
+
 	}
 }
