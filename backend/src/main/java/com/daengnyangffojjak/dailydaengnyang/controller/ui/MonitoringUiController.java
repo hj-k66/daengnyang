@@ -13,10 +13,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class MonitoringUiController {
 	@GetMapping("/pets/{petId}/monitorings/report")
-	public String petList(@PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate, Model model) {
+	public String showReport(@PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate, Model model) {
 		model.addAttribute("petId", petId);
 		model.addAttribute("fromDate", fromDate);
 		model.addAttribute("toDate", toDate);
 		return "monitoring/monitoring_report";
+	}
+
+	@GetMapping("/pets/{petId}/monitorings")
+	public String showMonitoringList(@PathVariable Long petId, Model model) {
+		model.addAttribute("petId", petId);
+		return "monitoring/monitoring_list";
 	}
 }
