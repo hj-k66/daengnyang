@@ -1,14 +1,19 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
+import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.INVALID_PERMISSION;
+
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordFileResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.FileException;
+import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.io.IOException;
@@ -96,10 +101,24 @@ public class RecordFileService {
 
 	@Transactional
 	public RecordFileResponse deleteRecordFile(Long petId, Long recordId, Long recordFileId,
-			String username) {
+			String userName) {
+
+		//유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(userName);
+
+		//Pet과 userName인 User가 같은 그룹이 아니면 예외 발생
+		validator.getPetWithUsername(petId, user.getUsername());
+
+		// 일기가 없는 경우 예외발생
+		Record record = validator.getRecordById(recordId);
 
 		// 일기에 파일이 있는 지 확인
 		RecordFile recordFile = validator.getRecordFileById(recordFileId);
+
+		// 수정 유저와 로그인 유저가 같지 않을 경우 예외발생
+		if (!record.getUser().getId().equals(user.getId())) {
+			throw new RecordException(INVALID_PERMISSION);
+		}
 
 		recordFileRepository.delete(recordFile);
 		return RecordFileResponse.ofDeleted(recordFileId, "파일 삭제 완료");
