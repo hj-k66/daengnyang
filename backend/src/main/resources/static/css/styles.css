@@ -319,10 +319,20 @@ div.boolean-result div{
 
 div.card-body span.card-text {
   font-size: 40px;
-  font-weight: bold;
+  font-weight: bolder;
 }
 
 div.card-body span.val-unit {
   font-size: 20px;
-  font-weight: bold;
+  font-weight: bolder;
+}
+
+#graph-wrapper {
+  width: 70%;
+  margin-top: 100px;
+}
+
+div.graph {
+  width: 600px;
+  margin: 50px auto auto;
 }

@@ -23,11 +23,10 @@
 <!--header----------------------------->
 <div class="container-fluid">
   <div class="row">
-
     <div class="boolean-result container-fluid">
       <div class="card">
         <div class="card-body">
-          <h4 id="weight-name" class="card-title">몸무게</h4>
+          <h4 id="weight-name" class="card-title">몸무</h4>
           <h6 class="card-subtitle mb-2 text-muted">
             <span id="weight-total">0</span>
           </h6>
@@ -138,36 +137,39 @@
           </h6>
           <p><span id="rr-avg" class="card-text"></span><span class="val-unit">회/분</span></p>
         </div>
-
-        <div id="custom_int" class="card">
-          <div class="card-body">
-            <h4 id="ci-name" class="card-title">사용자 설정</h4>
-            <h6 class="card-subtitle mb-2 text-muted">
-              <span id="ci-total">0</span>
-            </h6>
-            <p><span id="ci-avg" class="card-text"></span><span class="val-unit">회</span></p>
-          </div>
-        </div>
-
-
       </div>
 
-      <div class="row">
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-4">
-
-
-        </div>
-        <div class="col-md-4">
+      <div id="custom_int" class="card">
+        <div class="card-body">
+          <h4 id="ci-name" class="card-title">사용자 설정</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="ci-total">0</span>
+          </h6>
+          <p><span id="ci-avg" class="card-text"></span><span class="val-unit">회</span></p>
         </div>
       </div>
+
+    </div>
+  </div>
+  <div class="row">
+    <div id="graph-wrapper" class="container-fluid" >
+      <div id="weight_chart" class="graph"></div>
+      <div id="feed_chart" class="graph"></div>
+      <div id="walk_chart" class="graph"></div>
+      <div id="play_chart" class="graph"></div>
+      <div id="uri_chart" class="graph"></div>
+      <div id="def_chart" class="graph"></div>
+      <div id="rr_chart" class="graph"></div>
+      <div id="custom_chart" class="graph"></div>
     </div>
   </div>
 </div>
+
 <!--footer---------------------------->
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<!--  google chart-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
@@ -178,9 +180,11 @@
   const petId = [[${petId}]];
   const fromDate = [[${fromDate}]];
   const toDate = [[${toDate}]];
+  let monitorings;
 
   $(document).ready(function () {
     get_report();
+    get_monitoring_list(send_chart);
   });
 
   axios.defaults.withCredentials = true;
@@ -294,6 +298,21 @@
     return number.toFixed(1);
   }
 
+  async function get_monitoring_list(callback) {
+    const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+    await axios.get("/api/v1/pets/" + petId + "/monitorings" + param, {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        monitorings = res.data.result.monthlyMonitorings;
+        console.log(monitorings);
+        callback();
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
@@ -304,6 +323,115 @@
     }
     return config;
   })
+
+  // -----------------------graph-----------------------------
+
+
+  function send_chart() {
+    google.charts.load('current', {'packages':['line']});
+    google.charts.setOnLoadCallback(drawChart);
+  }
+
+  function drawChart() {
+    console.log(monitorings);
+    const lists = parse_data(monitorings);
+
+    make_chart('몸무게', lists['weight_list'], 'weight_chart');
+    make_chart('식이량(g)', lists['feed_list'], 'feed_chart');
+    make_chart('산책 횟수', lists['walk_list'], 'walk_chart');
+    make_chart('놀이 횟수', lists['play_list'], 'play_chart');
+    make_chart('배뇨', lists['uri_list'], 'uri_chart');
+    make_chart('배변', lists['def_list'], 'def_chart');
+    make_chart('호흡수', lists['rr_list'], 'rr_chart');
+    make_chart(lists['custom_name'], lists['custom_list'], 'custom_chart');
+
+  }
+
+  function make_chart(content, data_list, chart_id) {
+    var data = new google.visualization.DataTable();
+    data.addColumn('date', 'Date');
+    data.addColumn('number', content);
+
+    data.addRows(data_list);
+
+    var options = {
+      hAxis: {title: '날짜'},
+      vAxis: {title: content},
+      width: 600,
+      height: 300
+    };
+
+    var chart = new google.charts.Line(document.getElementById(chart_id));
+
+    chart.draw(data, google.charts.Line.convertOptions(options));
+  }
+
+  function parse_data(monitorings) {
+    let weight_list = [];
+    let feed_list = [];
+    let walk_list = [];
+    let play_list = [];
+    let uri_list = [];
+    let def_list = [];
+    let rr_list = [];
+    let custom_list = [];
+    let custom_name = "";
+    console.log(monitorings)
+
+    for (let i = 0; i < monitorings.length; i++) {
+      let mnt = monitorings[i];
+      let date = new Date(mnt['date']);
+      let weight = mnt['weight'];
+      if (weight != null) {
+        weight_list.push([date, weight]);
+      }
+      let feed = mnt['feedToGram'];
+      if (feed != null) {
+        feed_list.push([date, feed]);
+      }
+      let walk = mnt['walkCnt'];
+      if (walk != null) {
+        walk_list.push([date, walk]);
+      }
+      let play = mnt['playCnt'];
+      if (play != null) {
+        play_list.push([date, play]);
+      }
+      let uri = mnt['urination'];
+      if (uri != null) {
+        uri_list.push([date, uri]);
+      }
+      let def = mnt['defecation'];
+      if (def != null) {
+        def_list.push([date, def]);
+      }
+      let rr = mnt['respiratoryRate'];
+      if (rr != null) {
+        rr_list.push([date, rr]);
+      }
+      if (mnt['customIntName'] !== custom_name) {
+        custom_name = mnt['customIntName'];
+        custom_list = [];
+      }
+      let custom = mnt['customInt'];
+      if (custom != null) {
+        custom_list.push([date, custom]);
+      }
+    }
+
+    const lists = {
+      "weight_list" : weight_list,
+      "feed_list" : feed_list,
+      "walk_list" : walk_list,
+      "play_list" : play_list,
+      "uri_list" : uri_list,
+      "def_list" : def_list,
+      "rr_list" : rr_list,
+      "custom_list" : custom_list,
+      "custom_name" : custom_name
+    }
+    return lists
+  }
 
 
 </script>
