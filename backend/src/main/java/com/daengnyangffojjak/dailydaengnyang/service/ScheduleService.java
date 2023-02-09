@@ -11,6 +11,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleAssignEvent;
 import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCreateEvent;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,7 +62,8 @@ public class ScheduleService {
 				.map(userGroup -> userGroup.getUser().getUsername()).collect(
 						Collectors.toList());
 
-		applicationEventPublisher.publishEvent(new ScheduleCreateEvent(userNameList,scheduleCreateRequest.getTitle(),userName));
+		applicationEventPublisher.publishEvent(
+				new ScheduleCreateEvent(userNameList, scheduleCreateRequest.getTitle(), userName));
 
 		return ScheduleCreateResponse.toResponse(message, savedSchedule);
 
@@ -159,8 +161,10 @@ public class ScheduleService {
 		return ScheduleListResponse.toResponse(schedules);
 
 	}
+
 	@Transactional
-	public MessageResponse assign(Long petId, Long scheduleId, ScheduleAssignRequest scheduleAssignRequest, String userName) {
+	public MessageResponse assign(Long petId, Long scheduleId,
+			ScheduleAssignRequest scheduleAssignRequest, String userName) {
 		//1. 로그인 유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
@@ -173,8 +177,8 @@ public class ScheduleService {
 
 		//4. assignrequest receiverId가 userName(pet)과 같은 그룹이 아닐 경우 예외발생
 		//receiver 유저가 없는 경우 예외 발생 같이 처리
-		validator.getUserGroupListByUsername(pet.getGroup(),scheduleAssignRequest.getReceiverName());
-
+		validator.getUserGroupListByUsername(pet.getGroup(),
+				scheduleAssignRequest.getReceiverName());
 
 		//5. 로그인유저 != (일정작성유저 or 이전 일정 책임자)일 경우 예외발생
 		Long loginUserId = user.getId();
@@ -189,6 +193,11 @@ public class ScheduleService {
 		User receiver = validator.getUserByUserName(scheduleAssignRequest.getReceiverName());
 		schedule.changeToAssignee(receiver.getId());
 		scheduleRepository.saveAndFlush(schedule);
+
+		//알림 전송 - 부탁받은 대상자만
+		applicationEventPublisher.publishEvent(
+				new ScheduleAssignEvent(receiver.getUsername(), scheduleAssignRequest.getMessage(),
+						userName, schedule.getTitle()));
 
 		return new MessageResponse("일정의 책임자가 변경되었습니다.");
 

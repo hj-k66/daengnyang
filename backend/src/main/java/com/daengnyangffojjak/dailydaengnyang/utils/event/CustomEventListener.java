@@ -4,7 +4,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.Notificatio
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationOneUserRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.NotificationType;
 import com.daengnyangffojjak.dailydaengnyang.service.NotificationService;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -26,6 +25,29 @@ public class CustomEventListener {
 
 	private final NotificationService notificationService;
 	private final RedisTemplate redisTemplate;
+
+	@EventListener
+	public void handleScheduleAssignEvent(ScheduleAssignEvent scheduleAssignEvent)
+			throws ExecutionException, InterruptedException {
+		String loginUserToken = (String) redisTemplate.opsForValue()
+				.get("fcm:" + scheduleAssignEvent.getReceiverName());
+
+		//receiver가 로그인했으면 알림 보내기
+		if (!ObjectUtils.isEmpty(loginUserToken)) {
+			String message = NotificationType.SCHEDULE_ASSIGN.generateNotificationMessage(
+					scheduleAssignEvent.getScheduleTitle(), scheduleAssignEvent.getSenderName());
+
+			NotificationOneUserRequest notificationOneUserRequest = NotificationOneUserRequest.toRequest(
+					loginUserToken, NotificationType.SCHEDULE_ASSIGN, message + scheduleAssignEvent.getMessage());
+
+			notificationService.sendOneUser(notificationOneUserRequest);
+		}
+		log.info("알람 전송");
+
+		//알림 기록 db에 저장
+		//title, body, user_id, NotificationType 저장
+
+	}
 
 	@EventListener
 	public void handleScheduleCreateEvent(ScheduleCreateEvent scheduleCreateEvent) {
@@ -81,7 +103,6 @@ public class CustomEventListener {
 			String message = NotificationType.GROUP_INVITE.generateNotificationMessage(
 					groupInviteEvent.getTitle(), groupInviteEvent.getSenderName());
 
-			List<String> loginUserTokenList = Arrays.asList(loginUserToken);
 			NotificationOneUserRequest notificationOneUserRequest = NotificationOneUserRequest.toRequest(
 					loginUserToken, NotificationType.GROUP_INVITE, message);
 
