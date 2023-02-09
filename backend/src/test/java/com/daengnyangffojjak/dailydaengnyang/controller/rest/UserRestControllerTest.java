@@ -37,24 +37,8 @@ class UserRestControllerTest extends ControllerTest {
 	UserJoinRequest userJoinRequest = new UserJoinRequest("hoon", "hi", "gg@gmail.com");
 	UserLoginRequest userLoginRequest = new UserLoginRequest("hoon", "hi");
 
-	TokenRequest tokenRequest = new TokenRequest("accesstokenalskdjf", "refreshtokenejfpoen");
+	TokenRequest tokenRequest = new TokenRequest("accesstokenalskdjf", "refreshToken=eyJhbGciOiefJIUzI");
 	long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 10;
-
-
-	@Test
-	@DisplayName("테스트")
-	void test() throws Exception {
-		mockMvc.perform(
-						get("/api/v1/users/test")
-								.with(csrf()))
-				.andExpect(status().isOk())
-				.andDo(
-						restDocs.document(
-								responseFields(
-										fieldWithPath("test").description("ok")
-								))
-				);
-	}
 
 	@Nested
 	@DisplayName("회원가입")
@@ -257,7 +241,6 @@ class UserRestControllerTest extends ControllerTest {
 	@Nested
 	@DisplayName("토큰 재발급")
 	class NewToken {
-
 		@Test
 		@DisplayName("토큰 재발급 성공")
 		void newtoken_success() throws Exception {

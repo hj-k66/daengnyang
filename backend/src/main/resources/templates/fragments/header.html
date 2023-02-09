@@ -4,7 +4,7 @@
 <head th:fragment="head">
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-  <title>개묘한 이야기</title>
+  <title>DAENG NYANG</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
@@ -27,7 +27,7 @@
   <!-- Responsive navbar-->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">개묘한 이야기</a>
+      <a class="navbar-brand" href="#">DAENG NYANG</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
               aria-expanded="false" aria-label="Toggle navigation">
@@ -35,11 +35,11 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link" href="calendar">캘린더</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/view/calendar}">캘린더</a></li>
           <li class="nav-item"><a class="nav-link" href="/">다이어리</a></li>
         </ul>
-
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <!-- 로그인 했을때 -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAuthenticated()">
           <li class="nav-item"><a class="nav-link" aria-current="page" href="/">알람</a></li>
 
           <li class="nav-item"><a class="nav-link" href="/">오늘의 일정</a></li>
@@ -58,8 +58,14 @@
               <li class="dropdown-item" href="#">로그아웃</li>
             </ul>
           </li>
+          </ul>
           <!-- <li class="nav-item"><a class="nav-link" href="/users/login">로그인</a></li> -->
-        </ul>
+
+          <!-- 로그인 안 했을때 -->
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAnonymous()">
+            <li class="nav-item"><a class="nav-link" th:href="@{/view/users/join}">회원가입</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/view/users/login}">로그인</a></li>
+          </ul>
       </div>
     </div>
   </nav>

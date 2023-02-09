@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class CustomAccessDeniedHadler implements AccessDeniedHandler {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,

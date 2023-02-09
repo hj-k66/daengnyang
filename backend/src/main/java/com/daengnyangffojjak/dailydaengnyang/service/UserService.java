@@ -52,11 +52,19 @@ public class UserService {
 					throw new UserException(ErrorCode.DUPLICATED_EMAIL);
 				});
 
-		//비밀 번호 인코딩해서 DB 저장
-		String encodedPassword = encoder.encode(userJoinRequest.getPassword());
-		User saved = userRepository.save(userJoinRequest.toEntity(encodedPassword));
-		return UserJoinResponse.from(saved);
-	}
+        //비밀 번호 인코딩해서 DB 저장
+        User saved = userRepository.save(userJoinRequest.toEntity(encoder.encode(userJoinRequest.getPassword())));
+
+        return UserJoinResponse.from(saved);
+    }
+
+    /* 아이디, 이메일 중복 여부 확인 */
+    public boolean checkUserName(String userName) {
+        return userRepository.existsByUserName(userName);
+    }
+    public boolean checkEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
 	public TokenInfo login(UserLoginRequest userLoginRequest) {
 
@@ -87,7 +95,7 @@ public class UserService {
 	}
 
 	public TokenInfo generateNewToken(TokenRequest tokenRequest) {
-		String refreshToken = tokenRequest.getRefreshToken();
+		String refreshToken = tokenRequest.parseRefreshToken();
 		String accessToken = tokenRequest.getAccessToken();
 
 		//1. accessToken에서 userName 가져오기 >> accessToken 유효성도 검사
