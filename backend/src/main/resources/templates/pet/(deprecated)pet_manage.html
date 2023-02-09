@@ -29,16 +29,16 @@
         <thead>
         <tr>
           <td class="tg-y67q" rowspan="3">사진</td>
-          <td id="name" class="tg-la1s" rowspan="2">이름</td>
-          <td id="species" class="tg-m684">종</td>
-          <td id="breed" class="tg-m684" rowspan="2">품종</td>
+          <td id="name" class="tg-la1s" rowspan="2">name</td>
+          <td id="species" class="tg-m684">species</td>
+          <td id="breed" class="tg-m684" rowspan="2">breed</td>
         </tr>
         <tr>
-          <td id="birthday" class="tg-4dm3">생일</td>
+          <td id="birthday" class="tg-4dm3">birthday</td>
         </tr>
         <tr>
-          <td id="sex" class="tg-9wq8">성별</td>
-          <td id="weight" class="tg-4dm3">몸무게</td>
+          <td id="sex" class="tg-9wq8">sex</td>
+          <td id="weight" class="tg-4dm3">weight</td>
           <td class="tg-4dm3">
             <button class="btn" onclick="location.href='#'">수정</button>
           </td>
@@ -83,7 +83,7 @@
         $('#breed').text(res.data.result.breed);
         $('#sex').text(res.data.result.sex);
         $('#species').text(res.data.result.species);
-        $('#weight').text(res.data.result.weight);
+        $('#weight').text(res.data.result.weight+"kg");
       } else {
         console.log("실패임" + res.resultCode)
       }

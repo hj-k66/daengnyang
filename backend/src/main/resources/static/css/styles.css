@@ -260,9 +260,12 @@ table {
   border-color: red;
 }
 
+
+
+
+/*********pet_list*********/
 #pet-list {
   display: inline-block;
-  margin-left: 250px;
 }
 
 div.card {
@@ -288,4 +291,17 @@ div.info {
 
 h3.name {
   margin-top: 10px;
+}
+
+#name-inp {
+  width: 80%;
+}
+
+form table.table td {
+  text-align: right;
+}
+
+form table.table input[type=text] {
+  width: 70%;
+  float: right;
 }
