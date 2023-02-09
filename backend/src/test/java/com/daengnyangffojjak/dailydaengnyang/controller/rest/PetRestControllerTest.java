@@ -157,6 +157,7 @@ class PetRestControllerTest extends ControllerTest {
 
 		PetShowResponse petShowResponse = new PetShowResponse(1l, "이름", Species.DOG, "종", Sex.MALE,
 				LocalDate.of(2022, 1, 1), // 생일
+				7.7,
 				LocalDateTime.of(2022, 1, 1, 1, 1), // 생성 시간
 				LocalDateTime.of(2022, 1, 1, 1, 1)); // 수정 시간
 
@@ -192,6 +193,8 @@ class PetRestControllerTest extends ControllerTest {
 											fieldWithPath("result.sex").description("성별"),
 											fieldWithPath("result.birthday").description(
 													"생일"),
+											fieldWithPath("result.weight").description(
+													"몸무게"),
 											fieldWithPath("result.createdAt").description(
 													"생성시간"),
 											fieldWithPath(
