@@ -49,4 +49,9 @@ public class Schedule extends BaseEntity {
 
 	}
 
+	//일정 책임자 변경
+	public void changeToAssignee(Long assigneeId){
+		this.assigneeId = assigneeId;
+	}
+
 }

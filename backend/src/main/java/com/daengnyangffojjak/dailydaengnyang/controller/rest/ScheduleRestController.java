@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
@@ -24,6 +25,20 @@ public class ScheduleRestController {
 
 	private final ScheduleService scheduleService;
 
+	//일정 부탁하기
+	@PutMapping(value = "/pets/{petId}/schedules/{scheduleId}/assign")
+	public ResponseEntity<Response<MessageResponse>> assignSchedule(@PathVariable Long petId, @PathVariable Long scheduleId,
+			@RequestBody ScheduleAssignRequest scheduleAssignRequest,
+			@AuthenticationPrincipal UserDetails user) {
+		MessageResponse messageResponse = scheduleService.assign(petId, scheduleId,
+				scheduleAssignRequest, user.getUsername());
+		log.info("일정 부탁하기가 완료되었습니다.");
+		return ResponseEntity.created(
+						URI.create("api/v1/pets/" + petId + "/schedules/" + scheduleId +"/assign"))
+				.body(Response.success(messageResponse));
+
+	}
+
 	//일정 등록
 	@PostMapping(value = "/pets/{petId}/schedules")
 	public ResponseEntity<Response<ScheduleCreateResponse>> createSchedule(@PathVariable Long petId,
@@ -33,8 +48,9 @@ public class ScheduleRestController {
 				scheduleCreateRequest, user.getUsername());
 		ScheduleCreateResponse scheduleCreateResponse = scheduleService.create(petId,
 				scheduleCreateRequest, user.getUsername());
+		log.info("일정 등록이 완료되었습니다.");
 		return ResponseEntity.created(
-						URI.create("api/v1/pets/" + petId + "/schedules" + scheduleCreateResponse.getId()))
+						URI.create("api/v1/pets/" + petId + "/schedules/" + scheduleCreateResponse.getId()))
 				.body(Response.success(scheduleCreateResponse));
 
 	}
