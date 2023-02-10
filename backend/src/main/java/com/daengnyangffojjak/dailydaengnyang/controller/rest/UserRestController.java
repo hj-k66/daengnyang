@@ -37,7 +37,7 @@ public class UserRestController {
 				.body(Response.success(userJoinResponse));
 	}
 
-	@CrossOrigin("*")
+//	@CrossOrigin("*")
 	@PostMapping("/login")  //로그인
 	public Response<UserResponse> login(
 			@RequestBody @Valid UserLoginRequest userLoginRequest,

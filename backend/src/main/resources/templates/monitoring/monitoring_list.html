@@ -32,13 +32,11 @@
             right: 'today prev,next'
           },
           events: function (fetchInfo, successCallback, failureCallback) {
-            console.log(fetchInfo);
             var start = fetchInfo.start;
             var end = fetchInfo.end;
 
             var fromDate = date_to_yyyymmdd(start);
             var toDate = date_to_yyyymmdd(end);
-            console.log(fromDate + toDate);
 
             const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
             axios.get("/api/v1/pets/" + petId + "/monitorings" + param, {}, {
@@ -48,7 +46,6 @@
                 monitorings = res.data.result.monthlyMonitorings;
                 const dates = monitorings.map(mnt => mnt['date']);
                 var events = dates.map(date => to_map(date));
-                console.log(events);
 
                 successCallback(events);
               } else {
@@ -56,14 +53,17 @@
               }
             });
           },
-          dateClick: function (info) {
+          eventClick: function (info) {
             console.log(info);
             rct_date = info.dateStr;
-            $("#calendarModal").modal("show");
+            $("#createModal").modal("show");
+          },
+          dateClick: function (info) {
+            rct_date = info.dateStr;
+            $("#createModal").modal("show");
           }
         });
         calendar.render();
-        console.log("render Ok")
       });
     }
   </script>
@@ -73,7 +73,7 @@
       color: inherit;
     }
 
-    #calendarModal label {
+    #createModal label {
       font-weight: bolder;
     }
   </style>
@@ -95,9 +95,9 @@
 </div>
 
 
-<!--modal-->
+<!--create modal-->
 
-<div class="modal fade" id="calendarModal" tabindex="-1" role="dialog"
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel"
      aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -207,8 +207,8 @@
 
           <label class="col-form-label mt-2">사용자 지정 항목</label>
           <div class="input-group mb-3 mt-1">
-            <input type="text" class="form-control" placeholder="항목 이름">
-            <input type="number" min="0" step="1" class="form-control" style="width: 40%;"
+            <input type="text" id="customIntName" class="form-control" placeholder="항목 이름">
+            <input type="number" id="customInt" min="0" step="1" class="form-control" style="width: 40%;"
                    placeholder="횟수">
           </div>
 
@@ -222,6 +222,31 @@
         <button type="button" class="btn btn-primary" id="addMonitoring"
                 onclick="save_monitoring()">
           추가
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--show modal-->
+
+<div class="modal fade" id="showModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="show-title">2023-01-01</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="modifyMonitoring">
+          수정
         </button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
       </div>
@@ -262,24 +287,24 @@
   // -----------------save monitoring
   async function save_monitoring() {
     let date = rct_date;
-    let weight = $("weight").val();
+    let weight = $("#weight").val();
 
-    let vomit = $("vomit").is(':checked');
-    let amPill = $("amPill").is(':checked');
-    let pmPill = $("pmPill").is(':checked');
-    let customSymptom = $("customSymptom").is(':checked');
-    let customSymptomName = $("customSymptomName").val();
+    let vomit = $("#vomit").is(':checked');
+    let amPill = $("#amPill").is(':checked');
+    let pmPill = $("#pmPill").is(':checked');
+    let customSymptom = $("#customSymptom").is(':checked');
+    let customSymptomName = $("#customSymptomName").val();
 
-    let feedToGram = $("feedToGram").val();
-    let walkCnt = $("walkCnt").val();
-    let playCnt = $("playCnt").val();
-    let urination = $("urination").val();
-    let defecation = $("defecation").val();
-    let respiratoryRate = $("respiratoryRate").val();
-    let customInt = $("customInt").val();
-    let customIntName = $("customIntName").val();
+    let feedToGram = $("#feedToGram").val();
+    let walkCnt = $("#walkCnt").val();
+    let playCnt = $("#playCnt").val();
+    let urination = $("#urination").val();
+    let defecation = $("#defecation").val();
+    let respiratoryRate = $("#respiratoryRate").val();
+    let customInt = $("#customInt").val();
+    let customIntName = $("#customIntName").val();
 
-    let notes = $("notes").val();
+    let notes = $("#notes").val();
 
     let params = {
       "date": date,
@@ -302,7 +327,7 @@
 
       "notes": notes
     };
-    console.log(params)
+    console.log(params.toString());
 
     await axios.post("/api/v1/pets/" + petId + "/monitorings", params, {}
     ).then(res => {
