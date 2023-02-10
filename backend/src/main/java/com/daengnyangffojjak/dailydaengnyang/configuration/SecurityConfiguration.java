@@ -80,7 +80,7 @@ public class SecurityConfiguration {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("http://localhost:3000")
+						.allowedOrigins("https://daengnyang.site")
 						.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 						.allowedHeaders("*")
 						.allowCredentials(true)

@@ -29,6 +29,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
 
 class MonitoringServiceTest {
 
@@ -176,7 +177,8 @@ class MonitoringServiceTest {
 			LocalDate start = LocalDate.of(2023, 1, 1);
 			LocalDate end = LocalDate.of(2023, 1, 31);
 			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
-			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
+			given(monitoringRepository.findAllByDateBetweenAndPetId(
+					Sort.by(Sort.Direction.ASC, "date"), start, end, 1L)).willReturn(saved);
 
 			MntMonthlyResponse response = assertDoesNotThrow(
 					() -> monitoringService.getMonitoringList(1L, "20230101", "20230131", "user"));
@@ -203,7 +205,8 @@ class MonitoringServiceTest {
 			LocalDate start = LocalDate.of(2023, 1, 1);
 			LocalDate end = LocalDate.of(2023, 1, 31);
 			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
-			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
+			given(monitoringRepository.findAllByDateBetweenAndPetId(
+					Sort.by(Sort.Direction.ASC, "date"), start, end, 1L)).willReturn(saved);
 
 			MntReportResponse response = assertDoesNotThrow(
 					() -> monitoringService.getReport(1L, "20230101", "20230131", "user"));

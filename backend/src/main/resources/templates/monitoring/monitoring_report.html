@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+  <!-- CSS -->
+  <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<!--header----------------------------->
+<div class="container-fluid">
+  <div class="row">
+    <div class="boolean-result container-fluid mt-5">
+      <h2><span id="title-fromDate"></span> ~ <span id="title-toDate"></span> 모니터링 레포트</h2>
+      <div class="card mt-5">
+        <div class="card-body">
+          <h4 id="weight-name" class="card-title">몸무</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="weight-total">0</span>
+          </h6>
+          <p><span id="weight-avg" class="card-text"></span><span class="val-unit">kg</span></p>
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="vomit-name" class="card-title">구토</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="vomit-count">5</span> /
+            <span id="vomit-total">12</span>
+          </h6>
+          <p><span id="vomit-percent" class="card-text"></span><span class="val-unit">%</span></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="amPill-name" class="card-title">아침약</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="amPill-count">5</span> /
+            <span id="amPill-total">12</span>
+          </h6>
+          <p><span id="amPill-percent" class="card-text"></span><span class="val-unit">%</span></p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h4 id="pmPill-name" class="card-title">저녁약</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="pmPill-count">5</span> /
+            <span id="pmPill-total">12</span>
+          </h6>
+          <p><span id="pmPill-percent" class="card-text"></span><span class="val-unit">%</span></p>
+        </div>
+      </div>
+      <div id="custom_symptom" class="card">
+        <div class="card-body">
+          <h4 id="cs-name" class="card-title">사용자 설정</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="cs-count">0</span> /
+            <span id="cs-total">0</span>
+          </h6>
+          <p><span id="cs-percent" class="card-text"></span><span class="val-unit">%</span></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="feed-name" class="card-title">식이량</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="feed-total">0</span>
+          </h6>
+          <p><span id="feed-avg" class="card-text"></span><span class="val-unit">g</span></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="walk-name" class="card-title">산책</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="walk-total">0</span>
+          </h6>
+          <p><span id="walk-avg" class="card-text"></span><span class="val-unit">회</span></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="play-name" class="card-title">놀이</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="play-total">0</span>
+          </h6>
+          <p><span id="play-avg" class="card-text"></span><span class="val-unit">회</span></p>
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="uri-name" class="card-title">배뇨</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="uri-total">0</span>
+          </h6>
+          <p><span id="uri-avg" class="card-text"></span><span class="val-unit">회</span></p>
+        </div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="def-name" class="card-title">배변</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="def-total">0</span>
+          </h6>
+          <p><span id="def-avg" class="card-text"></span><span class="val-unit">회</span></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4 id="rr-name" class="card-title">호흡수</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="rr-total">0</span>
+          </h6>
+          <p><span id="rr-avg" class="card-text"></span><span class="val-unit">회/분</span></p>
+        </div>
+      </div>
+
+      <div id="custom_int" class="card">
+        <div class="card-body">
+          <h4 id="ci-name" class="card-title">사용자 설정</h4>
+          <h6 class="card-subtitle mb-2 text-muted">
+            <span id="ci-total">0</span>
+          </h6>
+          <p><span id="ci-avg" class="card-text"></span><span class="val-unit">회</span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="row">
+    <div id="graph-wrapper" class="container-fluid">
+      <div id="weight_chart" class="graph"></div>
+      <div id="feed_chart" class="graph"></div>
+      <div id="walk_chart" class="graph"></div>
+      <div id="play_chart" class="graph"></div>
+      <div id="uri_chart" class="graph"></div>
+      <div id="def_chart" class="graph"></div>
+      <div id="rr_chart" class="graph"></div>
+      <div id="custom_chart" class="graph"></div>
+    </div>
+  </div>
+</div>
+
+<!--footer---------------------------->
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<!--  google chart-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  const petId = [[${petId}]];
+  const fromDate = [[${fromDate}]];
+  const toDate = [[${toDate}]];
+  let monitorings;
+
+  $(document).ready(function () {
+    $('#title-fromDate').text(date_to_yyyymmdd(fromDate));
+    $('#title-toDate').text(date_to_yyyymmdd(toDate));
+
+    get_report();
+    get_monitoring_list(send_chart);
+  });
+
+  function date_to_yyyymmdd(date) {
+    const year = date.substring(0, 4);
+    const month = date.substring(4, 6);
+    const day = date.substring(6, 8);
+    return year + "." + month.padStart(2, '0') + "." + day.padStart(2, '0');
+  }
+
+  axios.defaults.withCredentials = true;
+
+  async function get_report() {
+    const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+    await axios.get("/api/v1/pets/" + petId + "/monitorings/report" + param, {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let weightAvg = res.data.result.weightAvg;        	//몸무게
+        let weightCount = res.data.result.weightCount;
+
+        let vomitTrue = res.data.result.vomitTrue;          //구토
+        let vomitCount = res.data.result.vomitCount;
+        let amPillTrue = res.data.result.amPillTrue;
+        let amPillCount = res.data.result.amPillCount;       //오전 투약
+        let pmPillTrue = res.data.result.pmPillTrue;
+        let pmPillCount = res.data.result.pmPillCount;       //오후 투약
+        let customSymptomTrue = res.data.result.customSymptomTrue;
+        let customSymptomCount = res.data.result.customSymptomCount;      //custom symptom
+        let customSymptomName = res.data.result.customSymptomName;        //custom symptom 이름
+
+        let feedToGramAvg = res.data.result.feedToGramAvg;      //식이량 (g)
+        let feedToGramCount = res.data.result.feedToGramCount;
+        let walkCntAvg = res.data.result.walkCntAvg;         //산책횟수 - 강아지
+        let walkCntCount = res.data.result.walkCntCount;
+        let playCntAvg = res.data.result.playCntAvg;         //놀이횟수 - 고양이
+        let playCntCount = res.data.result.playCntCount;
+        let urinationAvg = res.data.result.urinationAvg;        //배뇨 횟수
+        let urinationCount = res.data.result.urinationCount;
+        let defecationAvg = res.data.result.defecationAvg;       //배변 횟수
+        let defecationCount = res.data.result.defecationCount;
+        let respiratoryRateAvg = res.data.result.respiratoryRateAvg;  //호흡수
+        let respiratoryRateCount = res.data.result.respiratoryRateCount;
+        let customIntAvg = res.data.result.customIntAvg;        //custom 모니터링
+        let customIntCount = res.data.result.customIntCount;
+        let customIntName = res.data.result.customIntName;
+
+        $('#weight-name').text("몸무게");
+        $('#weight-total').text(weightCount);
+        $('#weight-avg').text(weightAvg.toFixed(1));
+
+        $('#vomit-name').text("구토");
+        $('#vomit-count').text(vomitTrue);
+        $('#vomit-total').text(vomitCount);
+        $('#vomit-percent').text(cal_percent(vomitTrue, vomitCount));
+
+        $('#amPill-name').text("아침약");
+        $('#amPill-count').text(amPillTrue);
+        $('#amPill-total').text(amPillCount);
+        $('#amPill-percent').text(cal_percent(amPillTrue, amPillCount));
+
+        $('#pmPill-name').text("저녁약");
+        $('#pmPill-count').text(pmPillTrue);
+        $('#pmPill-total').text(pmPillCount);
+        $('#pmPill-percent').text(cal_percent(pmPillTrue, pmPillCount));
+        if (customSymptomName !== "") {
+          $('#cs-name').text(customSymptomName);
+          $('#cs-count').text(customSymptomTrue);
+          $('#cs-total').text(customSymptomCount);
+          $('#cs-percent').text(cal_percent(customSymptomTrue, customSymptomCount));
+        } else {
+          document.getElementById('custom_symptom').classList.add('visually-hidden');
+        }
+
+        $('#feed-name').text("식이량");
+        $('#feed-total').text(feedToGramCount);
+        $('#feed-avg').text(feedToGramAvg.toFixed(1));
+
+        $('#walk-name').text("산책");
+        $('#walk-total').text(walkCntCount);
+        $('#walk-avg').text(walkCntAvg.toFixed(1));
+
+        $('#play-name').text("놀이");
+        $('#play-total').text(playCntCount);
+        $('#play-avg').text(playCntAvg.toFixed(1));
+
+        $('#uri-name').text("배뇨");
+        $('#uri-total').text(urinationCount);
+        $('#uri-avg').text(urinationAvg.toFixed(1));
+
+        $('#def-name').text("배변");
+        $('#def-total').text(defecationCount);
+        $('#def-avg').text(defecationAvg.toFixed(1));
+
+        $('#rr-name').text("호흡수");
+        $('#rr-total').text(respiratoryRateCount);
+        $('#rr-avg').text(respiratoryRateAvg.toFixed(1));
+
+        if (customIntName !== "") {
+          $('#ci-name').text(customIntName);
+          $('#ci-total').text(customIntCount);
+          $('#ci-avg').text(customIntAvg.toFixed(1));
+        } else {
+          document.getElementById('custom_int').classList.add('visually-hidden');
+        }
+
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  function cal_percent(count, total) {
+    if (count === 0) {
+      return 0;
+    }
+    let number = (count / total) * 100;
+    return number.toFixed(1);
+  }
+
+  async function get_monitoring_list(callback) {
+    const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+    await axios.get("/api/v1/pets/" + petId + "/monitorings" + param, {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        monitorings = res.data.result.monthlyMonitorings;
+        callback();
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+  // -----------------------graph-----------------------------
+
+  function send_chart() {
+    google.charts.load('current', {'packages': ['line']});
+    google.charts.setOnLoadCallback(drawChart);
+  }
+
+  function drawChart() {
+    console.log(monitorings);
+    const lists = parse_data(monitorings);
+
+    make_chart('몸무게', lists['weight_list'], 'weight_chart');
+    make_chart('식이량(g)', lists['feed_list'], 'feed_chart');
+    make_chart('산책 횟수', lists['walk_list'], 'walk_chart');
+    make_chart('놀이 횟수', lists['play_list'], 'play_chart');
+    make_chart('배뇨', lists['uri_list'], 'uri_chart');
+    make_chart('배변', lists['def_list'], 'def_chart');
+    make_chart('호흡수', lists['rr_list'], 'rr_chart');
+    make_chart(lists['custom_name'], lists['custom_list'], 'custom_chart');
+
+  }
+
+  function make_chart(content, data_list, chart_id) {
+    var data = new google.visualization.DataTable();
+    data.addColumn('date', 'Date');
+    data.addColumn('number', content);
+
+    data.addRows(data_list);
+
+    var options = {
+      chart: {
+        title: content,
+      },
+      titleTextStyle: {
+        fontSize: 25,
+        bold: true
+      },
+      lineWidth: 5,
+      hAxis: {title: '날짜'},
+      vAxis: {
+        title: content,
+        viewWindowMode: 'pretty'
+      },
+      curveType: 'function',
+      chartArea: {left: 20, top: 0, width: '50%', height: '80%'},
+      lineWidth: 0
+    };
+
+    var chart = new google.charts.Line(document.getElementById(chart_id));
+
+    chart.draw(data, google.charts.Line.convertOptions(options));
+  }
+
+  function parse_data(monitorings) {
+    let weight_list = [];
+    let feed_list = [];
+    let walk_list = [];
+    let play_list = [];
+    let uri_list = [];
+    let def_list = [];
+    let rr_list = [];
+    let custom_list = [];
+    let custom_name = "";
+
+    for (let i = 0; i < monitorings.length; i++) {
+      let mnt = monitorings[i];
+      let date = new Date(mnt['date']);
+      let weight = mnt['weight'];
+      if (weight != null) {
+        weight_list.push([date, weight]);
+      }
+      let feed = mnt['feedToGram'];
+      if (feed != null) {
+        feed_list.push([date, feed]);
+      }
+      let walk = mnt['walkCnt'];
+      if (walk != null) {
+        walk_list.push([date, walk]);
+      }
+      let play = mnt['playCnt'];
+      if (play != null) {
+        play_list.push([date, play]);
+      }
+      let uri = mnt['urination'];
+      if (uri != null) {
+        uri_list.push([date, uri]);
+      }
+      let def = mnt['defecation'];
+      if (def != null) {
+        def_list.push([date, def]);
+      }
+      let rr = mnt['respiratoryRate'];
+      if (rr != null) {
+        rr_list.push([date, rr]);
+      }
+      if (mnt['customIntName'] !== custom_name) {
+        custom_name = mnt['customIntName'];
+        custom_list = [];
+      }
+      let custom = mnt['customInt'];
+      if (custom != null) {
+        custom_list.push([date, custom]);
+      }
+    }
+
+    const lists = {
+      "weight_list": weight_list,
+      "feed_list": feed_list,
+      "walk_list": walk_list,
+      "play_list": play_list,
+      "uri_list": uri_list,
+      "def_list": def_list,
+      "rr_list": rr_list,
+      "custom_list": custom_list,
+      "custom_name": custom_name
+    }
+    return lists
+  }
+
+
+</script>
+</body>
+</html>
