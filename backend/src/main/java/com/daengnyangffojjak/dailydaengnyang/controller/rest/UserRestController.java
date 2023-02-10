@@ -18,7 +18,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +40,7 @@ public class UserRestController {
 				.body(Response.success(userJoinResponse));
 	}
 
-	@CrossOrigin("*")
+//	@CrossOrigin("*")
 	@PostMapping("/login")  //로그인
 	public Response<UserResponse> login(
 			@RequestBody @Valid UserLoginRequest userLoginRequest,
