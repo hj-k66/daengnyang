@@ -74,7 +74,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 									.content(objectMapper.writeValueAsBytes(scheduleAssignRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
-					.andExpect(jsonPath("$.result.msg").exists())
+					.andExpect(jsonPath("$.result.msg").value("일정의 책임자가 변경되었습니다."))
 					.andDo(
 							restDocs.document(
 									pathParameters(
