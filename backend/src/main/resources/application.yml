@@ -43,7 +43,7 @@ spring:
 #FCM
 fcm:
   key:
-    path: /home/ubuntu/daengnyang/daengnyang-e1df7-firebase-adminsdk-4onpr-c2106835f5.json
+    path: daengnyang-e1df7-firebase-adminsdk-4onpr-c2106835f5.json
 
 #Encoding
 server:
