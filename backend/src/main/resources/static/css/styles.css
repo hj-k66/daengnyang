@@ -268,7 +268,7 @@ table {
   display: inline-block;
 }
 
-div.card {
+#pet-list div.card {
   display: grid;
   grid-template-columns: 150px 300px;
   padding: 20px;
@@ -276,7 +276,7 @@ div.card {
   margin-bottom: 20px;
 }
 
-div.card:hover {
+#pet-list div.card:hover {
   box-shadow: 5px 5px 10px hsl(0, 0%, 60%);
 }
 
@@ -304,4 +304,44 @@ form table.table td {
 form table.table input[type=text] {
   width: 70%;
   float: right;
+}
+
+/*monitoring_report*/
+div.boolean-result {
+  width: 70%;
+  /*white-space: nowrap;*/
+  overflow-x: auto;
+}
+
+div.boolean-result div{
+  display: inline-block;
+  width: 200px;
+}
+
+div.card-body span.card-text {
+  font-size: 30px;
+  font-weight: bolder;
+}
+
+div.card-body span.val-unit {
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+#graph-wrapper {
+  width: 90%;
+  margin: 100px auto auto;
+  overflow-x: auto;
+}
+
+div.graph {
+  width: 550px;
+  height: 300px;
+  display: inline-block;
+  margin: 50px 0px 0px 100px;
+}
+
+/*monitoring list*/
+#calendarModal label {
+  font-weight: bolder;
 }
