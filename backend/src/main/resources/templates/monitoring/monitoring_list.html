@@ -12,6 +12,19 @@
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
+  <!-- Datepicker 생일 클릭시 달력 이벤트 -->
+  <link rel="stylesheet" th:href="@{//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css}">
+  <link rel="stylesheet" th:href="@{/resources/demos/style.css}">
+  <script th:src="@{https://code.jquery.com/jquery-3.6.0.js}"></script>
+  <script th:src="@{https://code.jquery.com/ui/1.13.2/jquery-ui.js}"></script>
+  <script>
+
+    $(function () {
+      $("#toDate-inp").datepicker({dateFormat: 'yymmdd'});
+      $("#fromDate-inp").datepicker({dateFormat: 'yymmdd'});
+    });
+  </script>
+  <!--  달력 만들기-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
@@ -51,8 +64,12 @@
             });
           },
           eventClick: function (event, jsEvent, view) {
-            console.log(event.event.start);
-            rct_date = event;
+            rct_date = date_to_yyyy_mm_dd(event.event.start);
+            let ob = document.getElementsByClassName('table-focus');
+            for (let i = 0; i < ob.length; i++) {
+              ob.item(i).classList.remove('table-focus');
+            }
+            document.getElementById(rct_date).classList.add('table-focus');
           },
           dateClick: function (info) {
             rct_date = info.dateStr;
@@ -74,12 +91,12 @@
     }
 
     #mnt-table {
-      background-color: white;
     }
 
     #mnt-table th, #mnt-table td {
       text-align: center;
-      width: 100px;
+      width: 80px;
+      height: 50px;
     }
 
     #mnt-table .date-col {
@@ -87,13 +104,21 @@
       width: 160px;
     }
 
-    #mnt-table .notes-col,
-    #mnt-table .ci-name-col {
+    #mnt-table .notes-col {
       width: 200px;
     }
 
-    table .hidden {
+    #mnt-table .ci-col,
+    #mnt-table .cs-col {
+      width: 100px;
+    }
+
+    .hidden {
       display: none;
+    }
+
+    .table-focus {
+      border: 2px solid #0d6efd;
     }
   </style>
 
@@ -194,55 +219,92 @@
                    value="notes-col">
             <label class="form-check-label ms-1" for="notes-check">특이 사항</label>
           </div>
-          <button type="button" class="btn btn-primary btn-sm" onclick="select_contents()">확인
+          <button type="button" class="btn btn-primary btn-sm" onclick="make_table()">확인
           </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="select_all()">전체 선택
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="delete_all()">전체 해제
+          </button>
+
         </form>
       </div>
     </div>
-    <div id="table-wrapper" class="col-lg-8"
-         style="overflow-y: scroll; overflow-x: auto; height: 700px; width: 65%">
+    <div class="col-lg-8">
+      <div id="table-wrapper"
+           style="overflow-y: scroll; overflow-x: auto; height: 600px; width: 95%; margin: auto">
+        <table id="mnt-table" class="table table-striped" style="table-layout: fixed;">
+          <thead>
+          <tr style="position: sticky; top: 0; background-color: white">
+            <th scope="col" style="position: sticky; top: 0; background-color: white;" class="date-col"></th>
+            <th class="weight-col" scope="col">몸무게</th>
+            <th class="vomit-col" scope="col">구토</th>
+            <th class="amPill-col" scope="col">아침약</th>
+            <th class="pmPill-col" scope="col">저녁약</th>
+            <th class="cs-col" scope="col">사용자설정</th>
+            <th class="cs-name-col" scope="col">항목 이름</th>
+            <th class="feed-col" scope="col">식이량</th>
+            <th class="walk-col" scope="col">산책</th>
+            <th class="play-col" scope="col">놀이</th>
+            <th class="uri-col" scope="col">배뇨</th>
+            <th class="def-col" scope="col">배변</th>
+            <th class="rr-col" scope="col">호흡수</th>
+            <th class="ci-col" scope="col">사용자설정</th>
+            <th class="ci-name-col" scope="col">항목 이름</th>
+            <th class="notes-col" scope="col">특이사항</th>
+          </tr>
+          </thead>
 
+          <tbody id="mnt-table-body">
+          <tr>
+            <th scope="row" class="date-col" style="position: sticky; left: 0;"></th>
+            <td class="weight-col"></td>
+            <td class="vomit-col"></td>
+            <td class="amPill-col"></td>
+            <td class="pmPill-col"></td>
+            <td class="cs-col"></td>
+            <td class="cs-name-col"></td>
+            <td class="feed-col"></td>
+            <td class="walk-col"></td>
+            <td class="play-col"></td>
+            <td class="uri-col"></td>
+            <td class="def-col"></td>
+            <td class="rr-col"></td>
+            <td class="ci-col"></td>
+            <td class="ci-name-col"></td>
+            <td class="notes-col"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <table id="mnt-table" class="table table-striped table-responsive" style="width: 1600px">
-        <thead>
-        <tr style="position: sticky; top: 0;">
-          <th scope="col" class="date-col"></th>
-          <th class="weight-col" scope="col">몸무게</th>
-          <th class="vomit-col" scope="col">구토</th>
-          <th class="amPill-col" scope="col">아침약</th>
-          <th class="pmPill-col" scope="col">저녁약</th>
-          <th class="cs-col" scope="col">사용자설정</th>
-          <th class="cs-name-col" scope="col">항목 이름</th>
-          <th class="feed-col" scope="col">식이량</th>
-          <th class="walk-col" scope="col">산책</th>
-          <th class="play-col" scope="col">놀이</th>
-          <th class="uri-col" scope="col">배뇨</th>
-          <th class="def-col" scope="col">배변</th>
-          <th class="rr-col" scope="col">호흡수</th>
-          <th class="ci-col" scope="col">사용자설정</th>
-          <th class="ci-name-col" scope="col">항목 이름</th>
-          <th class="notes-col" scope="col">특이사항</th>
-        </tr>
-        </thead>
+      <div class="mt-5" style="width: 95%; margin: auto">
+        <table>
+          <tr style="font-weight: bolder;">
+            <td>
+              <label for="fromDate-inp" class="col-form-label">시작 날짜</label>
+              <input type="text" id="fromDate-inp" class="form-control">
+            </td>
+            <td style="width: 50px; vertical-align: bottom; text-align: center" ;>
+              ~
+            </td>
+            <td>
+              <label for="fromDate-inp" class="col-form-label">종료 날짜</label>
+              <input type="text" id="toDate-inp" class="form-control">
+            </td>
 
-        <tbody id="mnt-table-body">
-        <tr>
-          <th scope="row" class="date-col" style="position: sticky; left: 0;">날짜</th>
-          <td class="weight-col">0</td>
-          <td class="vomit-col">✘</td>
-          <td class="amPill-col">✔</td>
-          <td class="pmPill-col">✔︎</td>
-          <td class="cs-col">✘ <span class="cs-name">사용자설정</span></td>
-          <td class="feed-col">0</td>
-          <td class="walk-col">0</td>
-          <td class="play-col">0</td>
-          <td class="uri-col">0</td>
-          <td class="def-col">0</td>
-          <td class="rr-col">0</td>
-          <td class="ci-col">0</td>
-        </tr>
-        </tbody>
-      </table>
+            <td style="vertical-align: bottom;">
+              <button type="button" class="btn btn-success ms-5" onclick="move_report()">레포트 만들기
+              </button>
+            </td>
+
+            <td style="vertical-align: bottom;">
+              <button type="button" class="btn btn-primary ms-2" onclick="make_new_table()">리스트 불러오기
+              </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+
     </div>
   </div>
 </div>
@@ -420,10 +482,6 @@
   const petId = [[${petId}]];
   let monitorings;
 
-  // $(document).ready(function () {
-  //   make_table();
-  // });
-
   axios.defaults.withCredentials = true;
 
   function date_to_yyyymmdd(date) {
@@ -433,10 +491,17 @@
     return year + month.padStart(2, '0') + day.padStart(2, '0');
   }
 
+  function date_to_yyyy_mm_dd(date) {
+    const year = String(date.getFullYear());
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    return year + "-" + month.padStart(2, '0') + "-" + day.padStart(2, '0');
+  }
+
   function to_map(date) {
     var result =
         {
-          title: '📌',
+          title: ' ',
           start: date
         };
     return result;
@@ -447,19 +512,23 @@
     $('#mnt-table-body').empty();
     for (let i = 0; i < monitorings.length; i++) {
       let vomit = (monitorings[i]['vomit'] == null) ? "-" : monitorings[i]['vomit'] ? "✔" : "✘";
-      let amPill = (monitorings[i]['amPill'] == null) ? "-" : monitorings[i]['amPill'] ? "✔" : "✘";
-      let pmPill = (monitorings[i]['pmPill'] == null) ? "-" : monitorings[i]['pmPill'] ? "✔" : "✘";
+      let amPill = (monitorings[i]['amPill'] == null) ? "-" : monitorings[i]['amPill'] ? "✔"
+          : "✘";
+      let pmPill = (monitorings[i]['pmPill'] == null) ? "-" : monitorings[i]['pmPill'] ? "✔"
+          : "✘";
       let customSymptom = (monitorings[i]['customSymptom'] == null) ? "-"
           : monitorings[i]['customSymptom'] ? "✔" : "✘";
       let customSymptomName = (monitorings[i]['customSymptomName'] == null) ? ""
           : monitorings[i]['customSymptomName'];
       let date = (monitorings[i]['date'] == null) ? "-" : monitorings[i]['date'];
       let weight = (monitorings[i]['weight'] == null) ? "-" : monitorings[i]['weight'];
-      let feedToGram = (monitorings[i]['feedToGram'] == null) ? "-" : monitorings[i]['feedToGram'];
+      let feedToGram = (monitorings[i]['feedToGram'] == null) ? "-"
+          : monitorings[i]['feedToGram'];
       let walkCnt = (monitorings[i]['walkCnt'] == null) ? "-" : monitorings[i]['walkCnt'];
       let playCnt = (monitorings[i]['playCnt'] == null) ? "-" : monitorings[i]['playCnt'];
       let urination = (monitorings[i]['urination'] == null) ? "-" : monitorings[i]['urination'];
-      let defecation = (monitorings[i]['defecation'] == null) ? "-" : monitorings[i]['defecation'];
+      let defecation = (monitorings[i]['defecation'] == null) ? "-"
+          : monitorings[i]['defecation'];
       let respiratoryRate = (monitorings[i]['respiratoryRate'] == null) ? "-"
           : monitorings[i]['respiratoryRate'];
       let customInt = (monitorings[i]['customInt'] == null) ? "-" : monitorings[i]['customInt'];
@@ -468,7 +537,7 @@
       let notes = (monitorings[i]['notes'] == null) ? "-" : monitorings[i]['notes'];
 
       let temp_html = `
-              <tr>
+         <tr id="${date}">
           <th scope="row" class="date-col" style="position: sticky; left: 0;">${date}</th>
           <td class="weight-col">${weight}</td>
           <td class="vomit-col">${vomit}</td>
@@ -490,23 +559,39 @@
       `;
       $('#mnt-table-body').append(temp_html);
     }
+
+    setTimeout(() => {
+      let objs = document.getElementsByClassName("con-check");
+      let del_con = [];
+      for (let i = 0; i < objs.length; i++) {
+        if (objs[i].checked == false) {
+          del_con.push(objs[i].value);
+        }
+      }
+      console.log(del_con);
+      for (let i = 0; i < del_con.length; i++) {
+        let col_name = del_con[i];
+        let tds = document.getElementsByClassName(col_name);
+        console.log(tds);
+        for (let j = 0; j < tds.length; j++) {
+          tds.item(j).classList.add('hidden');
+        }
+      }
+    });
+
   }
 
-  function select_contents() {
-    make_table();
+  function select_all() {
     let objs = document.getElementsByClassName("con-check");
-    let show_con = [];
     for (let i = 0; i < objs.length; i++) {
-      if (objs[i].checked == false) {
-        show_con.push(objs[i].value);
-      }
+      objs[i].checked = true;
     }
-    for (let i = 0; i < show_con.length; i++) {
-      let col_name = show_con[i];
-      let tds = document.getElementsByClassName(col_name);
-      for (let j = 0; j < tds.length; j++) {
-        tds.item(j).classList.add('hidden');
-      }
+  }
+
+  function delete_all() {
+    let objs = document.getElementsByClassName("con-check");
+    for (let i = 0; i < objs.length; i++) {
+      objs[i].checked = false;
     }
   }
 
@@ -566,6 +651,18 @@
     });
   }
 
+  function move_report() {
+    let fromDate = $("#fromDate-inp").val();
+    let toDate = $("#toDate-inp").val();
+
+    let url = "http://daengnyang.site/view/pets/" + petId + "/monitorings/report?fromDate="
+        + fromDate + "&toDate=" + toDate;
+    // let url = "http://localhost:8080/view/pets/" + petId + "/monitorings/report?fromDate="
+    //     + fromDate + "&toDate=" + toDate;
+    console.log(url);
+    window.open(url, "레포트", "top=10, left=10, width=1500, height=800");
+  }
+
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
@@ -576,6 +673,23 @@
     }
     return config;
   })
+
+  function make_new_table() {
+    let fromDate = $("#fromDate-inp").val();
+    let toDate = $("#toDate-inp").val();
+
+    const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+    axios.get("/api/v1/pets/" + petId + "/monitorings" + param, {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        monitorings = res.data.result.monthlyMonitorings;
+        make_table();
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
 
 </script>
 </body>
