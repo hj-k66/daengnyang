@@ -51,6 +51,8 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-actuator" // health check
 
+    implementation 'com.google.firebase:firebase-admin:9.1.1' // fcm 의존성 추가
+
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' // aws s3 의존성 추가
 
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'

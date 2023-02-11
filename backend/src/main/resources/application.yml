@@ -43,6 +43,10 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
+#FCM
+fcm:
+  key:
+    path: daengnyang-e1df7-firebase-adminsdk-4onpr-c2106835f5.json
 
 #Encoding
 server:

@@ -8,6 +8,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserResponse;
+import com.daengnyangffojjak.dailydaengnyang.service.NotificationService;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -15,7 +16,8 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserRestController {
 
 	private final UserService userService;
+	private final NotificationService notificationService;
 
 	@PostMapping(value = "/join")       //회원가입
 	public ResponseEntity<Response<UserJoinResponse>> join(
@@ -37,7 +40,7 @@ public class UserRestController {
 				.body(Response.success(userJoinResponse));
 	}
 
-	@CrossOrigin("*")
+//	@CrossOrigin("*")
 	@PostMapping("/login")  //로그인
 	public Response<UserResponse> login(
 			@RequestBody @Valid UserLoginRequest userLoginRequest,
@@ -51,8 +54,9 @@ public class UserRestController {
 	}
 
 	@PostMapping("/logout") //로그아웃
-	public Response<MessageResponse> logout(@RequestBody @Valid TokenRequest tokenRequest){
+	public Response<MessageResponse> logout(@RequestBody @Valid TokenRequest tokenRequest, @AuthenticationPrincipal UserDetails user){
 		MessageResponse messageResponse = userService.logout(tokenRequest);
+		notificationService.deleteToken(user.getUsername());
 		return Response.success(messageResponse);
 	}
 
