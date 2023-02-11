@@ -74,12 +74,12 @@ class RecordServiceTest {
 			assertEquals("질병", recordResponse.getTag());
 		}
 	}
-/*
+
 	@Nested
 	@DisplayName("일기 등록")
 	class create_record {
 
-		RecordWorkRequest createRecordWorkRequest = new RecordWorkRequest(1L, "제목", "본문", true);
+		RecordWorkRequest createRecordWorkRequest = new RecordWorkRequest(1L, "제목", "본문", false);
 
 		@Test
 		@DisplayName("성공")
@@ -99,7 +99,33 @@ class RecordServiceTest {
 			assertEquals(1L, recordWorkResponse.getId());
 		}
 	}
+/*
+	@Nested
+	@DisplayName("일기 수정")
+	class Modify_Record {
 
+		RecordWorkRequest modifyRecordWorkRequest = new RecordWorkRequest(1L, "바뀐 제목", "바뀐 본문",
+				true);
+		Record modifyRecord = Record.builder().id(1L).user(user).pet(pet).tag(tag).title("바뀐 제목")
+				.body("바뀐 본문").isPublic(true).build();
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(validator.getPetWithUsername(1L, user.getUsername())).willReturn(pet);
+			given(validator.getTagById(1L)).willReturn(tag);
+			given(recordRepository.findById(1L)).willReturn(Optional.of(record));
+			given(recordRepository.saveAndFlush(modifyRecord)).willReturn(modifyRecord);
+
+			RecordWorkResponse modifyRecordResponse = assertDoesNotThrow(
+					() -> recordService.modifyRecord(1L, 1L, modifyRecordWorkRequest, "user"));
+
+			assertEquals("일기 수정 완료", modifyRecordResponse.getMessage());
+			assertEquals(1L, modifyRecordResponse.getId());
+		}
+	}
 
 	@Nested
 	@DisplayName("일기 삭제")
@@ -118,5 +144,5 @@ class RecordServiceTest {
 			assertEquals("일기 삭제 완료", deleteRecordResponse.getMessage());
 		}
 	}
- */
+*/
 }
