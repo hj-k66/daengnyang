@@ -81,13 +81,8 @@ public class RecordRestController {
 			@PathVariable Long recordId,
 			@AuthenticationPrincipal UserDetails user) {
 
-		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(petId, recordId,
+		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(petId,
 				user.getUsername());
 		return ResponseEntity.ok().body(Response.success(recordWorkResponse));
 	}
-
-	// 찜리스트 모아보기
-//	@GetMapping(value = "/records/bookmarks")
-//	public ResponseEntity
-
 }

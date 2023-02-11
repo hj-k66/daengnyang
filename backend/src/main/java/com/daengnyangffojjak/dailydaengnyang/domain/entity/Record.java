@@ -35,10 +35,10 @@ public class Record extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isPublic;
 
-	public void modifyRecord(RecordWorkRequest recordWorkRequest) {
+	public void modifyRecord(RecordWorkRequest recordWorkRequest, Tag tag) {
+		this.tag = tag;
 		this.body = recordWorkRequest.getBody();
 		this.title = recordWorkRequest.getTitle();
-		this.category = recordWorkRequest.getCategory();
 		this.isPublic = recordWorkRequest.getIsPublic();
 	}
 }
