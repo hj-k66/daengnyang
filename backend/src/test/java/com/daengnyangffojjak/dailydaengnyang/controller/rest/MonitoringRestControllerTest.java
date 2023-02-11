@@ -182,7 +182,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("성공")
 		void success() throws Exception {
-			MntGetResponse response = MntGetResponse.builder()
+			MntGetResponse response = MntGetResponse.builder().id(1L)
 					.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 					.amPill(true).pmPill(true).customSymptom(false).customSymptomName(null)
 					.feedToGram(40).urination(3).defecation(2).respiratoryRate(24)
@@ -201,6 +201,7 @@ class MonitoringRestControllerTest extends ControllerTest {
 							),
 							responseFields(
 									fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.id").description("모니터링 등록번호"),
 									fieldWithPath("result.date").description("모니터링 날짜"),
 									fieldWithPath("result.weight").description("몸무게"),
 									fieldWithPath("result.vomit").description("구토"),
@@ -232,12 +233,12 @@ class MonitoringRestControllerTest extends ControllerTest {
 		@Test
 		@DisplayName("성공")
 		void success() throws Exception {
-			MntGetResponse response1 = MntGetResponse.builder()
+			MntGetResponse response1 = MntGetResponse.builder().id(1L)
 					.date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
 					.amPill(true).pmPill(true).customSymptom(false).customSymptomName(null)
 					.feedToGram(40).urination(3).defecation(2).respiratoryRate(24)
 					.customInt(2).customIntName("이뻐해주기").notes("양치").build();
-			MntGetResponse response2 = MntGetResponse.builder()
+			MntGetResponse response2 = MntGetResponse.builder().id(2L)
 					.date(LocalDate.of(2023, 1, 25)).weight(7.6).vomit(false)
 					.amPill(true).pmPill(true).customSymptom(false).customSymptomName(null)
 					.feedToGram(40).urination(3).defecation(2).respiratoryRate(24)
@@ -258,6 +259,8 @@ class MonitoringRestControllerTest extends ControllerTest {
 									fieldWithPath("resultCode").description("결과코드"),
 									fieldWithPath("result.monthlyMonitorings").description(
 											"모니터링 리스트"),
+									fieldWithPath("result.monthlyMonitorings[].id").description(
+											"모니터링 등록번호"),
 
 									fieldWithPath("result.monthlyMonitorings[].date").description(
 											"모니터링 날짜"),

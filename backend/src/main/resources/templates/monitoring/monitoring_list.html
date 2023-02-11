@@ -73,6 +73,8 @@
           },
           dateClick: function (info) {
             rct_date = info.dateStr;
+            document.getElementById('create-title-date').innerText = rct_date;
+
             $("#createModal").modal("show");
           }
         });
@@ -235,7 +237,8 @@
         <table id="mnt-table" class="table table-striped" style="table-layout: fixed;">
           <thead>
           <tr style="position: sticky; top: 0; background-color: white">
-            <th scope="col" style="position: sticky; top: 0; background-color: white;" class="date-col"></th>
+            <th scope="col" style="position: sticky; top: 0; background-color: white;"
+                class="date-col"></th>
             <th class="weight-col" scope="col">몸무게</th>
             <th class="vomit-col" scope="col">구토</th>
             <th class="amPill-col" scope="col">아침약</th>
@@ -319,6 +322,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">모니터링 등록</h5>
+        <h6 class="card-subtitle ms-1 text-muted" id="create-title-date">0000-00-00</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal"
                 aria-label="Close"></button>
       </div>
@@ -445,25 +449,138 @@
   </div>
 </div>
 
-<!--show modal-->
+<!--modify modal-->
 
-<div class="modal fade" id="showModal" tabindex="-1" role="dialog"
+<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel"
      aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="show-title">2023-01-01</h5>
+        <h5 class="modal-title">모니터링 수정</h5>
+        <h6 class="card-subtitle ms-1 text-muted" id="modify-title-date">0000-00-00</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal"
                 aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <div class="form-group">
+          <span id="id-col" style="display: none;"></span>
 
+          <input type="checkbox" class="form-check-input" id="vomit-mod" value="vomit">
+          <label class="form-check-label" for="vomit">구토</label>
+          <input type="checkbox" class="form-check-input" id="amPill-mod" value="amPill"
+                 style="margin-left: 10px">
+          <label class="form-check-label" for="amPill">아침약</label>
+          <input type="checkbox" class="form-check-input" id="pmPill-mod" value="pmPill"
+                 style="margin-left: 10px">
+          <label class="form-check-label" for="pmPill">저녁약</label>
+          <!--          custom-check-->
+          <div class="input-group mb-3 mt-3">
+            <div class="input-group-text">
+              <input class="form-check-input mt-0" type="checkbox" id="customSymptom-mod"
+                     value="customSymptom" aria-label="Checkbox for following text input">
+            </div>
+            <input type="text" id="customSymptomName-mod" class="form-control"
+                   aria-label="Text input with checkbox" placeholder="사용자 지정 항목">
+          </div>
+
+          <div class="row g-3 align-items-center mt-2">
+            <div class="col-3">
+              <label for="weight" class="col-form-label">몸무게</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="weight-mod" class="form-control" min="0" step="0.1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-center mt-1">
+            <div class="col-3">
+              <label for="feedToGram" class="col-form-label">식이량 (g)</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="feedToGram-mod" class="form-control" min="0" step="1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-center mt-1">
+            <div class="col-3">
+              <label for="walkCnt" class="col-form-label">산책 횟수</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="walkCnt-mod" class="form-control" min="0" step="1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-center mt-1">
+            <div class="col-3">
+              <label for="playCnt" class="col-form-label">놀이 횟수</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="playCnt-mod" class="form-control" min="0" step="1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-center mt-1">
+            <div class="col-3">
+              <label for="urination" class="col-form-label">배뇨</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="urination-mod" class="form-control" min="0" step="1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-center mt-1">
+            <div class="col-3">
+              <label for="defecation" class="col-form-label">배변</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="defecation-mod" class="form-control" min="0" step="1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-center mt-1">
+            <div class="col-3">
+              <label for="respiratoryRate" class="col-form-label">호흡수</label>
+            </div>
+            <div class="col-auto">
+              <input type="number" id="respiratoryRate-mod" class="form-control" min="0" step="1">
+            </div>
+            <div class="col-auto">
+            </div>
+          </div>
+
+          <label class="col-form-label mt-2">사용자 지정 항목</label>
+          <div class="input-group mb-3 mt-1">
+            <input type="text" id="customIntName-mod" class="form-control" placeholder="항목 이름">
+            <input type="number" id="customInt-mod" min="0" step="1" class="form-control"
+                   style="width: 40%;"
+                   placeholder="횟수">
+          </div>
+
+          <div class="mb-3">
+            <label for="notes" class="form-label">특이 사항</label>
+            <textarea class="form-control" id="notes-mod" rows="3"></textarea>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="modifyMonitoring">
+        <button type="button" class="btn btn-warning" id="modifyMonitoring"
+                onclick="modify_monitoring()">
           수정
         </button>
+        <button type="button" class="btn btn-danger" onclick="delete_monitoring()">삭제</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
       </div>
     </div>
@@ -511,6 +628,7 @@
   function make_table() {
     $('#mnt-table-body').empty();
     for (let i = 0; i < monitorings.length; i++) {
+      let id = monitorings[i]['id'];
       let vomit = (monitorings[i]['vomit'] == null) ? "-" : monitorings[i]['vomit'] ? "✔" : "✘";
       let amPill = (monitorings[i]['amPill'] == null) ? "-" : monitorings[i]['amPill'] ? "✔"
           : "✘";
@@ -538,7 +656,9 @@
 
       let temp_html = `
          <tr id="${date}">
-          <th scope="row" class="date-col" style="position: sticky; left: 0;">${date}</th>
+          <th scope="row" class="date-col" style="position: sticky; left: 0;" onclick="show_modify_monitoring('${date}')" data-bs-toggle="modal" data-bs-target="#modifyModal">${date}</th>
+
+          <td class="id-col" style="display: none;">${id}</td>
           <td class="weight-col">${weight}</td>
           <td class="vomit-col">${vomit}</td>
           <td class="amPill-col">${amPill}</td>
@@ -650,6 +770,135 @@
       }
     });
   }
+
+  //-------------------- monifiy monitoring (date = "2023-01-01")
+  function show_modify_monitoring(selected_date) {
+    rct_date = selected_date;
+    let ob = document.getElementsByClassName('table-focus');
+    for (let i = 0; i < ob.length; i++) {
+      ob.item(i).classList.remove('table-focus');
+    }
+    document.getElementById(rct_date).classList.add('table-focus');
+
+    let date = selected_date;
+    let monitoring;
+    for (let i = 0; i < monitorings.length; i++) {
+      if (monitorings[i]['date'] == date) {
+        monitoring = monitorings[i];
+      }
+    }
+    let id_value = monitoring.id;
+    let weight_value = monitoring.weight;
+    let vomit_value = monitoring['vomit'];
+    let amPill_value = monitoring['amPill'];
+    let pmPill_value = monitoring['pmPill'];
+    let customSymptom_value = monitoring['customSymptom'];
+    let customSymptomName_value = monitoring.customSymptomName;
+
+    let feedToGram_value = monitoring.feedToGram;
+    let walkCnt_value = monitoring.walkCnt;
+    let playCnt_value = monitoring.playCnt;
+    let urination_value = monitoring.urination;
+    let defecation_value = monitoring.defecation;
+    let respiratoryRate_value = monitoring.respiratoryRate;
+    let customInt_value = monitoring.customInt;
+    let customIntName_value = monitoring.customIntName;
+
+    let notes_value = monitoring.notes;
+
+    document.getElementById('modify-title-date').innerText = rct_date;
+    $('#id-col').text(id_value);
+    $("#weight-mod").val(weight_value);
+    $("#vomit-mod").attr("checked", vomit_value);
+    $("#amPill-mod").attr("checked", amPill_value);
+    $("#pmPill-mod").attr("checked", pmPill_value);
+    $("#customSymptom-mod").checked = customSymptom_value;
+    $("#customSymptomName-mod").val(customSymptomName_value);
+
+    $("#feedToGram-mod").val(feedToGram_value);
+    $("#walkCnt-mod").val(walkCnt_value);
+    $("#playCnt-mod").val(playCnt_value);
+    $("#urination-mod").val(urination_value);
+    $("#defecation-mod").val(defecation_value);
+    $("#respiratoryRate-mod").val(respiratoryRate_value);
+    $("#customInt-mod").val(customInt_value);
+    $("#customIntName-mod").val(customIntName_value);
+
+    $("#notes").val(notes_value);
+  }
+
+  async function modify_monitoring() {
+    let date = rct_date;
+    let id = $('#id-col').text();
+    console.log(id);
+    let weight = $("#weight-mod").val();
+
+    let vomit = $("#vomit-mod").is(':checked');
+    let amPill = $("#amPill-mod").is(':checked');
+    let pmPill = $("#pmPill-mod").is(':checked');
+    let customSymptom = $("#customSymptom-mod").is(':checked');
+    let customSymptomName = $("#customSymptomName-mod").val();
+
+    let feedToGram = $("#feedToGram-mod").val();
+    let walkCnt = $("#walkCnt-mod").val();
+    let playCnt = $("#playCnt-mod").val();
+    let urination = $("#urination-mod").val();
+    let defecation = $("#defecation-mod").val();
+    let respiratoryRate = $("#respiratoryRate-mod").val();
+    let customInt = $("#customInt-mod").val();
+    let customIntName = $("#customIntName-mod").val();
+
+    let notes = $("#notes-mod").val();
+
+
+    let params = {
+      "date": date,
+      "weight": weight,
+
+      "vomit": vomit,
+      "amPill": amPill,
+      "pmPill": pmPill,
+      "customSymptom": customSymptom,
+      "customSymptomName": customSymptomName,
+
+      "feedToGram": feedToGram,
+      "walkCnt": walkCnt,
+      "playCnt": playCnt,
+      "urination": urination,
+      "defecation": defecation,
+      "respiratoryRate": respiratoryRate,
+      "customInt": customInt,
+      "customIntName": customIntName,
+
+      "notes": notes
+    };
+
+    await axios.put("/api/v1/pets/" + petId + "/monitorings/"+id, params, {}
+    ).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/pets/" + petId + "/monitorings";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  // -----------delete monitoring
+  async function delete_monitoring() {
+    let id = $('#id-col').text();
+
+    await axios.delete("/api/v1/pets/" + petId + "/monitorings/"+id, {}, {}
+    ).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        alert(res.data.result.message);
+        window.location.reload();
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
 
   function move_report() {
     let fromDate = $("#fromDate-inp").val();
