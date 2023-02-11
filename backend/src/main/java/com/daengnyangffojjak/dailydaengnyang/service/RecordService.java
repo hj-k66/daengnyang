@@ -6,12 +6,17 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRespons
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.RecordCreateEvent;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +30,8 @@ public class RecordService {
 
 	private final RecordRepository recordRepository;
 	private final Validator validator;
+	private final ApplicationEventPublisher applicationEventPublisher;
+
 
 	// 일기 상세(1개) 조회
 	@Transactional(readOnly = true)
@@ -62,6 +69,16 @@ public class RecordService {
 		Pet pet = validator.getPetById(petId);
 
 		Record savedRecord = recordRepository.save(recordWorkRequest.toEntity(user, pet));
+
+		//알림 전송 - 그룹원 모두에게 전송
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), userName);
+		List<User> userList = userGroupList.stream()
+				.map(UserGroup::getUser).collect(
+						Collectors.toList());
+		//이벤트 발생
+		applicationEventPublisher.publishEvent(
+				new RecordCreateEvent(userList, recordWorkRequest.getTitle(), userName));
 
 		return RecordWorkResponse.builder()
 				.message("일기 작성 완료")
