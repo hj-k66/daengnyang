@@ -624,37 +624,48 @@
     return result;
   }
 
+  async function remove_hidden() {
+    const ob = document.getElementsByClassName('hidden');
+    const len = ob.length;
+    for (let i = 0; i < len; i++) {
+      ob.item(0).classList.remove('hidden');
+    }
+  }
+
   // -----------------make table
   function make_table() {
     $('#mnt-table-body').empty();
-    for (let i = 0; i < monitorings.length; i++) {
-      let id = monitorings[i]['id'];
-      let vomit = (monitorings[i]['vomit'] == null) ? "-" : monitorings[i]['vomit'] ? "✔" : "✘";
-      let amPill = (monitorings[i]['amPill'] == null) ? "-" : monitorings[i]['amPill'] ? "✔"
-          : "✘";
-      let pmPill = (monitorings[i]['pmPill'] == null) ? "-" : monitorings[i]['pmPill'] ? "✔"
-          : "✘";
-      let customSymptom = (monitorings[i]['customSymptom'] == null) ? "-"
-          : monitorings[i]['customSymptom'] ? "✔" : "✘";
-      let customSymptomName = (monitorings[i]['customSymptomName'] == null) ? ""
-          : monitorings[i]['customSymptomName'];
-      let date = (monitorings[i]['date'] == null) ? "-" : monitorings[i]['date'];
-      let weight = (monitorings[i]['weight'] == null) ? "-" : monitorings[i]['weight'];
-      let feedToGram = (monitorings[i]['feedToGram'] == null) ? "-"
-          : monitorings[i]['feedToGram'];
-      let walkCnt = (monitorings[i]['walkCnt'] == null) ? "-" : monitorings[i]['walkCnt'];
-      let playCnt = (monitorings[i]['playCnt'] == null) ? "-" : monitorings[i]['playCnt'];
-      let urination = (monitorings[i]['urination'] == null) ? "-" : monitorings[i]['urination'];
-      let defecation = (monitorings[i]['defecation'] == null) ? "-"
-          : monitorings[i]['defecation'];
-      let respiratoryRate = (monitorings[i]['respiratoryRate'] == null) ? "-"
-          : monitorings[i]['respiratoryRate'];
-      let customInt = (monitorings[i]['customInt'] == null) ? "-" : monitorings[i]['customInt'];
-      let customIntName = (monitorings[i]['customIntName'] == null) ? "-"
-          : monitorings[i]['customIntName'];
-      let notes = (monitorings[i]['notes'] == null) ? "-" : monitorings[i]['notes'];
 
-      let temp_html = `
+    remove_hidden().then(res => {
+
+      for (let i = 0; i < monitorings.length; i++) {
+        let id = monitorings[i]['id'];
+        let vomit = (monitorings[i]['vomit'] == null) ? "-" : monitorings[i]['vomit'] ? "✔" : "✘";
+        let amPill = (monitorings[i]['amPill'] == null) ? "-" : monitorings[i]['amPill'] ? "✔"
+            : "✘";
+        let pmPill = (monitorings[i]['pmPill'] == null) ? "-" : monitorings[i]['pmPill'] ? "✔"
+            : "✘";
+        let customSymptom = (monitorings[i]['customSymptom'] == null) ? "-"
+            : monitorings[i]['customSymptom'] ? "✔" : "✘";
+        let customSymptomName = (monitorings[i]['customSymptomName'] == null) ? ""
+            : monitorings[i]['customSymptomName'];
+        let date = (monitorings[i]['date'] == null) ? "-" : monitorings[i]['date'];
+        let weight = (monitorings[i]['weight'] == null) ? "-" : monitorings[i]['weight'];
+        let feedToGram = (monitorings[i]['feedToGram'] == null) ? "-"
+            : monitorings[i]['feedToGram'];
+        let walkCnt = (monitorings[i]['walkCnt'] == null) ? "-" : monitorings[i]['walkCnt'];
+        let playCnt = (monitorings[i]['playCnt'] == null) ? "-" : monitorings[i]['playCnt'];
+        let urination = (monitorings[i]['urination'] == null) ? "-" : monitorings[i]['urination'];
+        let defecation = (monitorings[i]['defecation'] == null) ? "-"
+            : monitorings[i]['defecation'];
+        let respiratoryRate = (monitorings[i]['respiratoryRate'] == null) ? "-"
+            : monitorings[i]['respiratoryRate'];
+        let customInt = (monitorings[i]['customInt'] == null) ? "-" : monitorings[i]['customInt'];
+        let customIntName = (monitorings[i]['customIntName'] == null) ? "-"
+            : monitorings[i]['customIntName'];
+        let notes = (monitorings[i]['notes'] == null) ? "-" : monitorings[i]['notes'];
+
+        let temp_html = `
          <tr id="${date}">
           <th scope="row" class="date-col" style="position: sticky; left: 0;" onclick="show_modify_monitoring('${date}')" data-bs-toggle="modal" data-bs-target="#modifyModal">${date}</th>
 
@@ -677,28 +688,28 @@
         </tr>
 
       `;
-      $('#mnt-table-body').append(temp_html);
-    }
+        $('#mnt-table-body').append(temp_html);
+      }
 
-    setTimeout(() => {
-      let objs = document.getElementsByClassName("con-check");
-      let del_con = [];
-      for (let i = 0; i < objs.length; i++) {
-        if (objs[i].checked == false) {
-          del_con.push(objs[i].value);
+      setTimeout(() => {
+        let objs = document.getElementsByClassName("con-check");
+        let del_con = [];
+        for (let i = 0; i < objs.length; i++) {
+          if (objs[i].checked == false) {
+            del_con.push(objs[i].value);
+          }
         }
-      }
-      console.log(del_con);
-      for (let i = 0; i < del_con.length; i++) {
-        let col_name = del_con[i];
-        let tds = document.getElementsByClassName(col_name);
-        console.log(tds);
-        for (let j = 0; j < tds.length; j++) {
-          tds.item(j).classList.add('hidden');
+
+        for (let i = 0; i < del_con.length; i++) {
+          let col_name = del_con[i];
+          let tds = document.getElementsByClassName(col_name);
+          for (let j = 0; j < tds.length; j++) {
+            tds.item(j).classList.add('hidden');
+          }
         }
-      }
+      });
+
     });
-
   }
 
   function select_all() {
@@ -850,7 +861,6 @@
 
     let notes = $("#notes-mod").val();
 
-
     let params = {
       "date": date,
       "weight": weight,
@@ -873,7 +883,7 @@
       "notes": notes
     };
 
-    await axios.put("/api/v1/pets/" + petId + "/monitorings/"+id, params, {}
+    await axios.put("/api/v1/pets/" + petId + "/monitorings/" + id, params, {}
     ).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
@@ -888,7 +898,7 @@
   async function delete_monitoring() {
     let id = $('#id-col').text();
 
-    await axios.delete("/api/v1/pets/" + petId + "/monitorings/"+id, {}, {}
+    await axios.delete("/api/v1/pets/" + petId + "/monitorings/" + id, {}, {}
     ).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         alert(res.data.result.message);
@@ -898,7 +908,6 @@
       }
     });
   }
-
 
   function move_report() {
     let fromDate = $("#fromDate-inp").val();
