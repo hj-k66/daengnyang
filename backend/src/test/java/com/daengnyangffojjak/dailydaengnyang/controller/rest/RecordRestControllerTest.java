@@ -209,7 +209,7 @@ class RecordRestControllerTest extends ControllerTest {
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
 					.andExpect(jsonPath("$.result.message").value("일기 작성 완료"))
-					.andExpect(jsonPath("$.result.recordId").value(1L))
+					.andExpect(jsonPath("$.result.id").value(1L))
 					.andDo(
 							restDocs.document(
 									pathParameters(parameterWithName("petId").description("반려동물 번호")
@@ -223,7 +223,7 @@ class RecordRestControllerTest extends ControllerTest {
 									responseFields(
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath("result.message").description("결과메세지"),
-											fieldWithPath("result.recordId").description("일기 번호"))
+											fieldWithPath("result.id").description("일기 번호"))
 							)
 					);
 
@@ -253,7 +253,7 @@ class RecordRestControllerTest extends ControllerTest {
 									.content(objectMapper.writeValueAsBytes(modiftyRecordRequest))
 									.contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isCreated())
-					.andExpect(jsonPath("$.result.recordId").value(1L))
+					.andExpect(jsonPath("$.result.id").value(1L))
 					.andExpect(jsonPath("$.result.message").value("일기 수정 완료"))
 					.andDo(
 							restDocs.document(
@@ -270,7 +270,7 @@ class RecordRestControllerTest extends ControllerTest {
 									responseFields(
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath("result.message").description("결과메세지"),
-											fieldWithPath("result.recordId").description("일기 번호"))
+											fieldWithPath("result.id").description("일기 번호"))
 							)
 					);
 
@@ -297,7 +297,7 @@ class RecordRestControllerTest extends ControllerTest {
 							RestDocumentationRequestBuilders.delete(
 									"/api/v1/pets/{petId}/records/{recordId}", 1L, 1L))
 					.andExpect(status().isOk())
-					.andExpect(jsonPath("$.result.recordId").value(1L))
+					.andExpect(jsonPath("$.result.id").value(1L))
 					.andExpect(jsonPath("$.result.message").value("일기 삭제 완료"))
 					.andDo(
 							restDocs.document(
@@ -308,7 +308,7 @@ class RecordRestControllerTest extends ControllerTest {
 									responseFields(
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath("result.message").description("결과메세지"),
-											fieldWithPath("result.recordId").description("일기 번호"))
+											fieldWithPath("result.id").description("일기 번호"))
 							)
 					);
 

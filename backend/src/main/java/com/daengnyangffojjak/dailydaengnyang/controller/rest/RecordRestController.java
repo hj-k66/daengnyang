@@ -55,7 +55,7 @@ public class RecordRestController {
 				recordWorkRequest, user.getUsername());
 		return ResponseEntity.created(
 						URI.create("api/v1/pets/" + petId + "/schedules/"
-								+ recordWorkResponse.getRecordId())).
+								+ recordWorkResponse.getId())).
 				body(Response.success(recordWorkResponse));
 	}
 

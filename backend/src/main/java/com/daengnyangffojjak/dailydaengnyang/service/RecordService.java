@@ -86,7 +86,7 @@ public class RecordService {
 
 		return RecordWorkResponse.builder()
 				.message("일기 작성 완료")
-				.recordId(savedRecord.getId())
+				.id(savedRecord.getId())
 				.build();
 	}
 
@@ -117,7 +117,7 @@ public class RecordService {
 
 		return RecordWorkResponse.builder()
 				.message("일기 수정 완료")
-				.recordId(updated.getId())
+				.id(updated.getId())
 				.build();
 	}
 
@@ -139,7 +139,7 @@ public class RecordService {
 		record.deleteSoftly();
 		return RecordWorkResponse.builder()
 				.message("일기 삭제 완료")
-				.recordId(recordId)
+				.id(recordId)
 				.build();
 	}
 

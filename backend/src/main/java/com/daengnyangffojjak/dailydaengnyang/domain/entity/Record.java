@@ -27,8 +27,6 @@ public class Record extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
-	@Enumerated(EnumType.STRING)
-	private Category category;
 	@Column(nullable = false)
 	private String title;
 	private String body;
