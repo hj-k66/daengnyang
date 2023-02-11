@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 class GroupServiceTest {
 
@@ -43,6 +44,9 @@ class GroupServiceTest {
 	private final UserRepository userRepository = mock(UserRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
 	private final Validator validator = mock(Validator.class);
+	private final ApplicationEventPublisher applicationEventPublisher = mock(
+			ApplicationEventPublisher.class);
+
 	User user = UserFixture.get();
 	Group group = GroupFixture.get();
 	UserGroup userGroup = UserGroup.builder().id(1L).user(user).group(group).roleInGroup("엄마")
@@ -55,7 +59,7 @@ class GroupServiceTest {
 	@BeforeEach
 	void setUp() {
 		groupService = new GroupService(groupRepository, userGroupRepository, userRepository,
-				petRepository, validator);
+				petRepository, validator, applicationEventPublisher);
 	}
 
 	@Nested

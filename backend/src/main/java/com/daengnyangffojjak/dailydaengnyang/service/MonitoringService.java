@@ -18,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,7 @@ public class MonitoringService {
 	@Transactional(readOnly = true)
 	public MntMonthlyResponse getMonitoringList(Long petId, String fromDate, String toDate, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		List<Monitoring> monitorings = getMonitoringListFromDate(fromDate, toDate);
+		List<Monitoring> monitorings = getMonitoringListFromDate(fromDate, toDate, petId);
 
 		return MntMonthlyResponse.from(monitorings);
 	}
@@ -55,7 +56,7 @@ public class MonitoringService {
 	@Transactional(readOnly = true)
 	public MntReportResponse getReport(Long petId, String fromDate, String toDate, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		List<Monitoring> monitorings = getMonitoringListFromDate(fromDate, toDate);
+		List<Monitoring> monitorings = getMonitoringListFromDate(fromDate, toDate, petId);
 
 		return makeReport(monitorings);
 	}
@@ -110,7 +111,7 @@ public class MonitoringService {
 		return LocalDate.of(year, month, day);
 	}
 
-	private List<Monitoring> getMonitoringListFromDate (String fromDate, String toDate) {
+	private List<Monitoring> getMonitoringListFromDate (String fromDate, String toDate, Long petId) {
 		LocalDate start = getLocalDateFromString(fromDate);
 		LocalDate end = getLocalDateFromString(toDate);
 
@@ -118,7 +119,8 @@ public class MonitoringService {
 		if (days < 7 || days > 93) {
 			throw new MonitoringException(ErrorCode.INVALID_REQUEST, "레포트 작성은 7일 이상, 3달 이하의 기간만 가능합니다.");
 		}
-		return monitoringRepository.findAllByDateBetween(start, end);
+		return monitoringRepository.findAllByDateBetweenAndPetId(
+				Sort.by(Sort.Direction.ASC, "date"), start, end, petId);
 	}
 
 	// ^^;;; 좋은 방법이 있으면 알려주세요.
