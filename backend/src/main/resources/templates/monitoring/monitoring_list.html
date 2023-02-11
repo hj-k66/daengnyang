@@ -26,11 +26,7 @@
         const calendarEl = document.getElementById('calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
-          header: {
-            left: '',
-            center: 'title',
-            right: 'today prev,next'
-          },
+          contentHeight: 450,
           events: function (fetchInfo, successCallback, failureCallback) {
             var start = fetchInfo.start;
             var end = fetchInfo.end;
@@ -48,15 +44,15 @@
                 var events = dates.map(date => to_map(date));
 
                 successCallback(events);
+                make_table();
               } else {
                 console.log("실패임" + res.resultCode)
               }
             });
           },
-          eventClick: function (info) {
-            console.log(info);
-            rct_date = info.dateStr;
-            $("#createModal").modal("show");
+          eventClick: function (event, jsEvent, view) {
+            console.log(event.event.start);
+            rct_date = event;
           },
           dateClick: function (info) {
             rct_date = info.dateStr;
@@ -76,6 +72,29 @@
     #createModal label {
       font-weight: bolder;
     }
+
+    #mnt-table {
+      background-color: white;
+    }
+
+    #mnt-table th, #mnt-table td {
+      text-align: center;
+      width: 100px;
+    }
+
+    #mnt-table .date-col {
+      background-color: white;
+      width: 160px;
+    }
+
+    #mnt-table .notes-col,
+    #mnt-table .ci-name-col {
+      width: 200px;
+    }
+
+    table .hidden {
+      display: none;
+    }
   </style>
 
 </head>
@@ -88,9 +107,143 @@
 
 <!--calendar-->
 
-<div class="container-fluid">
+<div class="container-fluid mt-5">
   <div class="row">
-    <div id="calendar" style="width: 80%; margin: auto;"></div>
+    <div class="col-lg-4">
+      <div id="calendar" style="width: 400px; margin: auto;"></div>
+      <div class="mt-3" style="width: 400px; margin: auto;">
+        <form id="mnt-checking" style="width: 400px; margin: auto;">
+          <legend>항목 설정</legend>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="weight-check" checked
+                   value="weight-col">
+            <label class="form-check-label ms-1" for="weight-check">몸무게</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="vomit-check" checked
+                   value="vomit-col">
+            <label class="form-check-label ms-1" for="vomit-check">구토</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="amPill-check" checked
+                   value="amPill-col">
+            <label class="form-check-label ms-1" for="amPill-check">아침약</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="pmPill-check" checked
+                   value="pmPill-col">
+            <label class="form-check-label ms-1" for="pmPill-check">저녁약</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="cs-check" checked
+                   value="cs-col">
+            <label class="form-check-label ms-1" for="cs-check"><span
+                class="cs-name">사용자설정 (체크)</span></label>
+          </div>
+
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="cs-name-check" checked
+                   value="cs-name-col">
+            <label class="form-check-label ms-1" for="cs-name-check">항목 이름</label>
+          </div>
+
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="feed-check" checked
+                   value="feed-col">
+            <label class="form-check-label ms-1" for="feed-check">식이량</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="walk-check" checked
+                   value="walk-col">
+            <label class="form-check-label ms-1" for="walk-check">산책</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="play-check" checked
+                   value="play-col">
+            <label class="form-check-label ms-1" for="play-check">놀이</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="uri-check" checked
+                   value="uri-col">
+            <label class="form-check-label ms-1" for="uri-check">배뇨</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="def-check" checked
+                   value="def-col">
+            <label class="form-check-label ms-1" for="def-check">배변</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="rr-check" checked
+                   value="rr-col">
+            <label class="form-check-label ms-1" for="rr-check">호흡수</label>
+          </div>
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="ci-check" checked
+                   value="ci-col">
+            <label class="form-check-label ms-1" for="ci-check">사용자 설정 (값)</label>
+          </div>
+
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="ci-name-check" checked
+                   value="ci-name-col">
+            <label class="form-check-label ms-1" for="ci-name-check">항목 이름</label>
+          </div>
+
+          <div class="mb-3 form-check form-check-inline">
+            <input type="checkbox" class="form-check-input con-check" id="notes-check" checked
+                   value="notes-col">
+            <label class="form-check-label ms-1" for="notes-check">특이 사항</label>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="select_contents()">확인
+          </button>
+        </form>
+      </div>
+    </div>
+    <div id="table-wrapper" class="col-lg-8"
+         style="overflow-y: scroll; overflow-x: auto; height: 700px; width: 65%">
+
+
+      <table id="mnt-table" class="table table-striped table-responsive" style="width: 1600px">
+        <thead>
+        <tr style="position: sticky; top: 0;">
+          <th scope="col" class="date-col"></th>
+          <th class="weight-col" scope="col">몸무게</th>
+          <th class="vomit-col" scope="col">구토</th>
+          <th class="amPill-col" scope="col">아침약</th>
+          <th class="pmPill-col" scope="col">저녁약</th>
+          <th class="cs-col" scope="col">사용자설정</th>
+          <th class="cs-name-col" scope="col">항목 이름</th>
+          <th class="feed-col" scope="col">식이량</th>
+          <th class="walk-col" scope="col">산책</th>
+          <th class="play-col" scope="col">놀이</th>
+          <th class="uri-col" scope="col">배뇨</th>
+          <th class="def-col" scope="col">배변</th>
+          <th class="rr-col" scope="col">호흡수</th>
+          <th class="ci-col" scope="col">사용자설정</th>
+          <th class="ci-name-col" scope="col">항목 이름</th>
+          <th class="notes-col" scope="col">특이사항</th>
+        </tr>
+        </thead>
+
+        <tbody id="mnt-table-body">
+        <tr>
+          <th scope="row" class="date-col" style="position: sticky; left: 0;">날짜</th>
+          <td class="weight-col">0</td>
+          <td class="vomit-col">✘</td>
+          <td class="amPill-col">✔</td>
+          <td class="pmPill-col">✔︎</td>
+          <td class="cs-col">✘ <span class="cs-name">사용자설정</span></td>
+          <td class="feed-col">0</td>
+          <td class="walk-col">0</td>
+          <td class="play-col">0</td>
+          <td class="uri-col">0</td>
+          <td class="def-col">0</td>
+          <td class="rr-col">0</td>
+          <td class="ci-col">0</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -208,7 +361,8 @@
           <label class="col-form-label mt-2">사용자 지정 항목</label>
           <div class="input-group mb-3 mt-1">
             <input type="text" id="customIntName" class="form-control" placeholder="항목 이름">
-            <input type="number" id="customInt" min="0" step="1" class="form-control" style="width: 40%;"
+            <input type="number" id="customInt" min="0" step="1" class="form-control"
+                   style="width: 40%;"
                    placeholder="횟수">
           </div>
 
@@ -266,6 +420,10 @@
   const petId = [[${petId}]];
   let monitorings;
 
+  // $(document).ready(function () {
+  //   make_table();
+  // });
+
   axios.defaults.withCredentials = true;
 
   function date_to_yyyymmdd(date) {
@@ -278,10 +436,78 @@
   function to_map(date) {
     var result =
         {
-          title: '작성 완료',
+          title: '📌',
           start: date
         };
     return result;
+  }
+
+  // -----------------make table
+  function make_table() {
+    $('#mnt-table-body').empty();
+    for (let i = 0; i < monitorings.length; i++) {
+      let vomit = (monitorings[i]['vomit'] == null) ? "-" : monitorings[i]['vomit'] ? "✔" : "✘";
+      let amPill = (monitorings[i]['amPill'] == null) ? "-" : monitorings[i]['amPill'] ? "✔" : "✘";
+      let pmPill = (monitorings[i]['pmPill'] == null) ? "-" : monitorings[i]['pmPill'] ? "✔" : "✘";
+      let customSymptom = (monitorings[i]['customSymptom'] == null) ? "-"
+          : monitorings[i]['customSymptom'] ? "✔" : "✘";
+      let customSymptomName = (monitorings[i]['customSymptomName'] == null) ? ""
+          : monitorings[i]['customSymptomName'];
+      let date = (monitorings[i]['date'] == null) ? "-" : monitorings[i]['date'];
+      let weight = (monitorings[i]['weight'] == null) ? "-" : monitorings[i]['weight'];
+      let feedToGram = (monitorings[i]['feedToGram'] == null) ? "-" : monitorings[i]['feedToGram'];
+      let walkCnt = (monitorings[i]['walkCnt'] == null) ? "-" : monitorings[i]['walkCnt'];
+      let playCnt = (monitorings[i]['playCnt'] == null) ? "-" : monitorings[i]['playCnt'];
+      let urination = (monitorings[i]['urination'] == null) ? "-" : monitorings[i]['urination'];
+      let defecation = (monitorings[i]['defecation'] == null) ? "-" : monitorings[i]['defecation'];
+      let respiratoryRate = (monitorings[i]['respiratoryRate'] == null) ? "-"
+          : monitorings[i]['respiratoryRate'];
+      let customInt = (monitorings[i]['customInt'] == null) ? "-" : monitorings[i]['customInt'];
+      let customIntName = (monitorings[i]['customIntName'] == null) ? "-"
+          : monitorings[i]['customIntName'];
+      let notes = (monitorings[i]['notes'] == null) ? "-" : monitorings[i]['notes'];
+
+      let temp_html = `
+              <tr>
+          <th scope="row" class="date-col" style="position: sticky; left: 0;">${date}</th>
+          <td class="weight-col">${weight}</td>
+          <td class="vomit-col">${vomit}</td>
+          <td class="amPill-col">${amPill}</td>
+          <td class="pmPill-col">${pmPill}</td>
+          <td class="cs-col">${customSymptom}</td>
+          <td class="cs-name-col">${customSymptomName}</td>
+          <td class="feed-col">${feedToGram}</td>
+          <td class="walk-col">${walkCnt}</td>
+          <td class="play-col">${playCnt}</td>
+          <td class="uri-col">${urination}</td>
+          <td class="def-col">${defecation}</td>
+          <td class="rr-col">${respiratoryRate}</td>
+          <td class="ci-col">${customInt}</td>
+          <td class="ci-name-col">${customIntName}</td>
+          <td class="notes-col">${notes}</td>
+        </tr>
+
+      `;
+      $('#mnt-table-body').append(temp_html);
+    }
+  }
+
+  function select_contents() {
+    make_table();
+    let objs = document.getElementsByClassName("con-check");
+    let show_con = [];
+    for (let i = 0; i < objs.length; i++) {
+      if (objs[i].checked == false) {
+        show_con.push(objs[i].value);
+      }
+    }
+    for (let i = 0; i < show_con.length; i++) {
+      let col_name = show_con[i];
+      let tds = document.getElementsByClassName(col_name);
+      for (let j = 0; j < tds.length; j++) {
+        tds.item(j).classList.add('hidden');
+      }
+    }
   }
 
   // -----------------save monitoring
