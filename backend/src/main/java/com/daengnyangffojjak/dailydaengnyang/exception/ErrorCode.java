@@ -68,6 +68,7 @@ public enum ErrorCode {
 	 * Tag
 	 **/
 	TAG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 태그가 존재하지 않습니다."),
+	DUPLICATED_TAG_NAME(HttpStatus.CONFLICT, "이미 존재하는 태그 입니다."),
 
 	/**
 	 * Disease
