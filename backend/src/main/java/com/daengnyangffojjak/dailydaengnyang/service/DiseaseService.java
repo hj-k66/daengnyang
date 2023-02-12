@@ -10,9 +10,12 @@ import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,11 +62,11 @@ public class DiseaseService {
 		return DizGetResponse.from(disease);
 	}
 
-	@Transactional(readOnly = true)
-	public Page<DizGetResponse> getDiseaseList(Long petId, Pageable pageable, String username) {
+	@Transactional(readOnly = true)		//질병 목록 최신순으로 받아오기
+	public List<DizGetResponse> getDiseaseList(Long petId, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
-		return diseaseRepository.findAllByPetId(petId, pageable)
-				.map(DizGetResponse::from);
+		return diseaseRepository.findAllByPetId(Sort.by(Direction.DESC, "startedAt"), petId).stream()
+				.map(DizGetResponse::from).toList();
 	}
 
 	private Disease validateDiseaseWithPetId(Long petId, Long diseaseId) {
