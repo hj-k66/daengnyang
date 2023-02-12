@@ -80,6 +80,7 @@ public enum ErrorCode {
 	FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "파일을 업로드 하지 않았습니다."),
 	WRONG_FILE_FORMAT(HttpStatus.BAD_REQUEST, "파일의 형식이 잘못되었습니다."),
 	FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
+	FILE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "업로드 가능한 파일의 개수를 초과했습니다"),
 
 	/**
 	 * RecordFile

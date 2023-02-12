@@ -35,6 +35,8 @@ public class RecordFileService {
 	private final Validator validator;
 	private final RecordFileRepository recordFileRepository;
 
+	private static final int FILE_UPLOAD_LIMIT = 10;
+
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
@@ -48,6 +50,11 @@ public class RecordFileService {
 
 		// 일기가 없는 경우 예외발생
 		Record record = validator.getRecordById(recordId);
+
+		// 파일 갯수 제한 ( 10개 까지 )
+		if (multipartFiles.size() > FILE_UPLOAD_LIMIT) {
+			throw new FileException(ErrorCode.FILE_LIMIT_EXCEEDED);
+		}
 
 		// 원본 파일 이름 리스트
 		List<String> originalFileNameList = new ArrayList<>();
