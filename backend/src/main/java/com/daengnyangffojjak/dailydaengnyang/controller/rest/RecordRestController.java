@@ -78,7 +78,7 @@ public class RecordRestController {
 			@PathVariable Long recordId,
 			@AuthenticationPrincipal UserDetails user) {
 
-		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(petId, recordId,
+		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(recordId,
 				user.getUsername());
 		return ResponseEntity.ok().body(Response.success(recordWorkResponse));
 	}

@@ -207,7 +207,7 @@ class RecordRestControllerTest extends ControllerTest {
 							RestDocumentationRequestBuilders.post("/api/v1/pets/{petId}/records", 1L)
 									.content(objectMapper.writeValueAsBytes(recordWorkRequest))
 									.contentType(MediaType.APPLICATION_JSON))
-					.andExpect(status().isCreated())
+					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.result.message").value("일기 작성 완료"))
 					.andExpect(jsonPath("$.result.id").value(1L))
 					.andDo(
