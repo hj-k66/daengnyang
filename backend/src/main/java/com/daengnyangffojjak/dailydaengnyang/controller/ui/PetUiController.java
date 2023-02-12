@@ -1,11 +1,8 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetShowResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.PetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,5 +37,11 @@ public class PetUiController {
 	public String petList(@PathVariable Long groupId, Model model) {
 		model.addAttribute("groupId", groupId);
 		return "pet/pet_list";
+	}
+
+	@GetMapping("/pets/{petId}/diseases")
+	public String getDiseaseList(@PathVariable Long petId, Model model) {
+		model.addAttribute("petId", petId);
+		return "disease/disease";
 	}
 }
