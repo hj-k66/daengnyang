@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.utils;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Comment;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -8,6 +9,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
+import com.daengnyangffojjak.dailydaengnyang.exception.CommentException;
 import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
@@ -16,6 +18,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.repository.CommentRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
@@ -40,6 +43,8 @@ public class Validator {
 	private final RecordRepository recordRepository;
 	private final TagRepository tagRepository;
 	private final DiseaseRepository diseaseRepository;
+
+	private final CommentRepository commentRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -101,5 +106,10 @@ public class Validator {
 			throw new GroupException(ErrorCode.INVALID_PERMISSION);
 		}
 		return userGroupList;
+	}
+
+	public Comment getCommentById(Long commentId) {
+		return  commentRepository.findById(commentId)
+				.orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 	}
 }
