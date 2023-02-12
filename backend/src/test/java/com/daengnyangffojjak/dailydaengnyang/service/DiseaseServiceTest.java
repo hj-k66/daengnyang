@@ -67,6 +67,21 @@ class DiseaseServiceTest {
 			assertEquals("반려동물", response.getPetName());
 			assertEquals("질병이름", response.getName());
 		}
+
+		@Test
+		@DisplayName("실패 - 같은 이름이 존재하는 경우")
+		void fail_같은이름() {
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(diseaseRepository.save(request.toEntity(pet))).willReturn(
+					saved);
+			given(diseaseRepository.existsByPetIdAndName(1L, "질병이름")).willReturn(
+					true);
+
+			DiseaseException e = assertThrows(DiseaseException.class,
+					() -> diseaseService.create(1L, request, "user"));
+			assertEquals(ErrorCode.DUPLICATED_DISEASE_NAME, e.getErrorCode());
+
+		}
 	}
 
 	@Nested

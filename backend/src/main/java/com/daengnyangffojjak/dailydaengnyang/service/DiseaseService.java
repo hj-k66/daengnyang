@@ -26,6 +26,8 @@ public class DiseaseService {
 	@Transactional
 	public DizWriteResponse create(Long petId, DizWriteRequest dizWriteRequest, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
+		validateDiseaseName(petId, dizWriteRequest.getName());
+
 		Disease saved = diseaseRepository.save(dizWriteRequest.toEntity(pet));
 		return DizWriteResponse.from(saved);
 	}
@@ -35,6 +37,7 @@ public class DiseaseService {
 			String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
+		validateDiseaseName(petId, dizWriteRequest.getName());
 
 		disease.modify(dizWriteRequest);
 		Disease modified = diseaseRepository.saveAndFlush(disease);
@@ -69,5 +72,11 @@ public class DiseaseService {
 			throw new DiseaseException(ErrorCode.INVALID_REQUEST);
 		}
 		return disease;
+	}
+
+	private void validateDiseaseName(Long petId, String name) {
+		if(diseaseRepository.existsByPetIdAndName(petId, name)) {
+			throw new DiseaseException(ErrorCode.DUPLICATED_DISEASE_NAME);
+		}
 	}
 }
