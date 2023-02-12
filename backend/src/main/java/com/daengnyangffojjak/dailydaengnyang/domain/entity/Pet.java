@@ -20,6 +20,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @EqualsAndHashCode(callSuper = false)
+@Where(clause = "deleted_at is NULL")
 public class Pet extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

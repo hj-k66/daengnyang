@@ -7,5 +7,7 @@ public enum DiseaseCategory {
 	DERMATOLOGY,		//피부과
 	GENERAL_SURGERY,	//일반외과
 	UROLOGY,			//비뇨기과
-	OPHTHALMOLOGY		//안과
+	OPHTHALMOLOGY,		//안과과
+	DENTAL,
+	ETC
 }

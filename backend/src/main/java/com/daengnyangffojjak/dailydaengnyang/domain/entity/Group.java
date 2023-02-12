@@ -11,6 +11,7 @@ import org.hibernate.annotations.Where;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "\"Group\"")
+@Where(clause = "deleted_at is NULL")
 public class Group extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

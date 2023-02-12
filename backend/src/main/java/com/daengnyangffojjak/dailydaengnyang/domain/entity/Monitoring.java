@@ -23,6 +23,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
+@Where(clause = "deleted_at is NULL")
 public class Monitoring extends BaseEntity {
 
 	@Id
