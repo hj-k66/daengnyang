@@ -85,6 +85,8 @@ class RecordFileRestControllerTest extends ControllerTest {
 									"/api/v1/pets/{petId}/records/{recordId}/recordFiles/{recordFileId}",
 									1L, 1L, 1L))
 					.andExpect(status().isOk())
+//					.andExpect((ResultMatcher) jsonPath("$result.id").value(1L))
+//					.andExpect((ResultMatcher) jsonPath("$result.message").value("파일 삭제 완료"))
 					.andDo(
 							restDocs.document(
 									pathParameters(
@@ -100,6 +102,8 @@ class RecordFileRestControllerTest extends ControllerTest {
 											fieldWithPath("result.s3StoredFileName").description("S3에 저장되는 파일 이름"))
 							)
 					);
+
+			verify(recordFileService).deleteRecordFile(1L, 1L, 1L, "user");
 		}
 	}
 }
