@@ -55,6 +55,19 @@ class TagServiceTest {
 			assertEquals(1L, response.getId());
 			assertEquals("태그이름", response.getName());
 		}
+
+		@Test
+		@DisplayName("실패 - 이미 존재하는 이름")
+		void fail_이름중복() {
+			given(validator.getGroupById(1L)).willReturn(group);
+			given(validator.getUserGroupListByUsername(group, "user")).willReturn(new ArrayList<>());
+			given(tagRepository.save(tagWorkRequest.toEntity(group))).willReturn(tag);
+			given(tagRepository.existsByGroupIdAndName(1L, "태그이름")).willReturn(true);
+
+			TagException e = assertThrows(TagException.class,
+					() -> tagService.create(1L, tagWorkRequest, "user"));
+			assertEquals(ErrorCode.DUPLICATED_TAG_NAME, e.getErrorCode());
+		}
 	}
 	@Nested
 	@DisplayName("태그 수정")

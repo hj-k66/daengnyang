@@ -6,16 +6,19 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.CommentException;
 import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.FileException;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
+import com.daengnyangffojjak.dailydaengnyang.exception.RecordFileException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
 import com.daengnyangffojjak.dailydaengnyang.repository.CommentRepository;
@@ -23,6 +26,7 @@ import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
@@ -30,6 +34,7 @@ import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -43,6 +48,7 @@ public class Validator {
 	private final RecordRepository recordRepository;
 	private final TagRepository tagRepository;
 	private final DiseaseRepository diseaseRepository;
+	private final RecordFileRepository recordFileRepository;
 
 	private final CommentRepository commentRepository;
 
@@ -80,6 +86,11 @@ public class Validator {
 				.orElseThrow(() -> new DiseaseException(ErrorCode.DISEASE_NOT_FOUND));
 	}
 
+	public RecordFile getRecordFileById(Long recordFileId) {
+		return recordFileRepository.findById(recordFileId)
+				.orElseThrow(() -> new RecordFileException(ErrorCode.RECORDFILE_NOT_FOUND));
+	}
+
 	//Pet과 username인 User가 같은 그룹이면 Pet을 반환
 	public Pet getPetWithUsername(Long petId, String username) {
 		Pet pet = getPetById(petId);
@@ -111,5 +122,14 @@ public class Validator {
 	public Comment getCommentById(Long commentId) {
 		return  commentRepository.findById(commentId)
 				.orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+	}
+
+	// 빈 파일을 업로드 하거나 파일을 업로드 안했을 때
+	public void validateFile(List<MultipartFile> multipartFiles) {
+		for(MultipartFile multipartFile : multipartFiles) {
+			if (multipartFile.isEmpty()) {
+				throw new FileException(ErrorCode.FILE_NOT_FOUND);
+			}
+		}
 	}
 }

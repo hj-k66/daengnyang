@@ -25,7 +25,7 @@ public class UserGroup extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;      //그룹 멤버
 	@ManyToOne(fetch = FetchType.LAZY)

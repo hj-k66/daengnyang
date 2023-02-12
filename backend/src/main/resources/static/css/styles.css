@@ -345,3 +345,8 @@ div.graph {
 #calendarModal label {
   font-weight: bolder;
 }
+
+#cards-wrapper div.card {
+  width: 500px;
+  margin: auto;
+}

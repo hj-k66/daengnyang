@@ -41,10 +41,10 @@ public class SecurityConfiguration {
 				.cors().and().authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/**").permitAll()
 						.requestMatchers("/view/**").permitAll()
+						.requestMatchers("/api/v1/notification/**").permitAll()
 						.requestMatchers("/utils/profile").permitAll()
 						.requestMatchers("/actuator/health").permitAll()
 						.requestMatchers("/api/v1/users/**").permitAll()
-						.requestMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
 						.requestMatchers("/docs/index.html").permitAll()
 						.requestMatchers("/oauth2/authorization/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/**").authenticated()
@@ -81,6 +81,7 @@ public class SecurityConfiguration {
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
 						.allowedOrigins("https://daengnyang.site")
+						.allowedOrigins("https://localhost:3000")
 						.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 						.allowedHeaders("*")
 						.allowCredentials(true)

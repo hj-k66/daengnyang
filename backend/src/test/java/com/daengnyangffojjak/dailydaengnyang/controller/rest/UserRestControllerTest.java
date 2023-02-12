@@ -9,6 +9,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.SecurityCustomException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.service.NotificationService;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,6 +34,9 @@ class UserRestControllerTest extends ControllerTest {
 
 	@MockBean
 	UserService userService;
+	@MockBean
+	NotificationService notificationService;
+
 
 	UserJoinRequest userJoinRequest = new UserJoinRequest("hoon", "hi", "gg@gmail.com");
 	UserLoginRequest userLoginRequest = new UserLoginRequest("hoon", "hi");

@@ -32,6 +32,7 @@ import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
@@ -55,6 +56,7 @@ class ValidatorTest {
 	private final TagRepository tagRepository = mock(TagRepository.class);
 	private final DiseaseRepository diseaseRepository = mock(DiseaseRepository.class);
 	private final CommentRepository commentRepository = mock(CommentRepository.class);
+	private final RecordFileRepository recordFileRepository = mock(RecordFileRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
@@ -68,7 +70,7 @@ class ValidatorTest {
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository, commentRepository);
+				petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository, commentRepository, recordFileRepository);
 	}
 
 	@Nested

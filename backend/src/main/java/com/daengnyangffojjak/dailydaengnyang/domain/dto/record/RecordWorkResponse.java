@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class RecordWorkResponse {
 
 	private String message;
-	private Long recordId;
+	private Long id;
 }
