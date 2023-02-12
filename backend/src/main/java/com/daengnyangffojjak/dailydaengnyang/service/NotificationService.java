@@ -1,11 +1,15 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
+
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationMultiUserRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationOneUserRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
+import com.daengnyangffojjak.dailydaengnyang.exception.NotificationException;
 import com.daengnyangffojjak.dailydaengnyang.repository.NotificationRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.NotificationUserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
@@ -166,4 +170,30 @@ public class NotificationService {
 		return notificationRepository.findByIdLessThanAndNotificationUserListInOrderByIdDesc(lastNotificationId,selectedNotificationUser,
 				pageRequest); // lastNotificationId보다 작은 값의 id의 알람 조회
 	}
+
+	@Transactional
+	public NotificationDeleteResponse delete(Long notificationId, String username) {
+
+		//유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(username);
+
+		//알람이 없는 경우 예외발생
+		Notification notification = notificationRepository.findById(notificationId)
+				.orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+		//로그인유저 != 알람 유저일 경우 예외발생
+		Long loginUserId = user.getId();
+		NotificationUser notificationUser = notificationUserRepository.findByNotificationIdAndUserId(
+				notificationId, loginUserId)
+				.orElseThrow(() -> new NotificationException(ErrorCode.INVALID_PERMISSION));
+
+		//알람 삭제
+		notificationUser.deleteSoftly();
+		notification.deleteSoftly();
+		String message = "알람이 삭제되었습니다.";
+
+		return new NotificationDeleteResponse(message,notificationId);
+
+	}
+
 }
