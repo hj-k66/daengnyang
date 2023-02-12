@@ -35,8 +35,6 @@ class RecordServiceTest {
 	private RecordService recordService = new RecordService(recordRepository, validator,
 			applicationEventPublisher);
 
-	LocalDateTime localDateTime = LocalDateTime.of(2023, 2, 22, 22, 22);
-
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 
