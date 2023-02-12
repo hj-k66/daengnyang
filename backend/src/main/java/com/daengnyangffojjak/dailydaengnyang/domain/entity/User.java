@@ -22,7 +22,6 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Where(clause = "deleted_at is NULL")
 public class User extends BaseEntity implements OAuth2User, UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

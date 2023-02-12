@@ -19,7 +19,6 @@ import org.hibernate.annotations.Where;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Where(clause = "deleted_at is NULL")
 public class UserGroup extends BaseEntity {
 
 	@Id

@@ -10,7 +10,6 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Where(clause = "deleted_at is NULL")
 @Table(name = "\"Group\"")
 public class Group extends BaseEntity {
     @Id
