@@ -72,7 +72,13 @@ public enum ErrorCode {
 	/**
 	 * Disease
 	 **/
-	DISEASE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질병 정보가 존재하지 않습니다.");
+	DISEASE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질병 정보가 존재하지 않습니다."),
+
+	/**
+	 * Notification
+	 **/
+	NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 알람이 존재하지 않습니다.");
+
 
 	private final HttpStatus status;
 	private final String message;
