@@ -25,6 +25,20 @@ public class ScheduleRestController {
 
 	private final ScheduleService scheduleService;
 
+	//일정 완료하기
+	@PutMapping(value = "/pets/{petId}/schedules/{scheduleId}/completed")
+	public ResponseEntity<Response<ScheduleCompleteResponse>> completeSchedule(@PathVariable Long petId, @PathVariable Long scheduleId,
+			@RequestBody ScheduleCompleteRequest scheduleCompleteRequest,
+			@AuthenticationPrincipal UserDetails user) {
+		 ScheduleCompleteResponse scheduleCompleteResponse = scheduleService.complete(petId, scheduleId,
+				scheduleCompleteRequest, user.getUsername());
+		log.info("일정 완료하기가 완료되었습니다.");
+		return ResponseEntity.created(
+						URI.create("api/v1/pets/" + petId + "/schedules/" + scheduleId +"/completed"))
+				.body(Response.success(scheduleCompleteResponse));
+
+	}
+
 	//일정 부탁하기
 	@PutMapping(value = "/pets/{petId}/schedules/{scheduleId}/assign")
 	public ResponseEntity<Response<MessageResponse>> assignSchedule(@PathVariable Long petId, @PathVariable Long scheduleId,
