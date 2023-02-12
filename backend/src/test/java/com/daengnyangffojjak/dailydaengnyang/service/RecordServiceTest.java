@@ -97,7 +97,7 @@ class RecordServiceTest {
 			assertEquals(1L, recordWorkResponse.getId());
 		}
 	}
-/*
+
 	@Nested
 	@DisplayName("일기 수정")
 	class Modify_Record {
@@ -114,8 +114,8 @@ class RecordServiceTest {
 			given(validator.getUserByUserName("user")).willReturn(user);
 			given(validator.getPetWithUsername(1L, user.getUsername())).willReturn(pet);
 			given(validator.getTagById(1L)).willReturn(tag);
-			given(recordRepository.findById(1L)).willReturn(Optional.of(record));
-			given(recordRepository.saveAndFlush(modifyRecord)).willReturn(modifyRecord);
+			given(validator.getRecordById(1L)).willReturn(record);
+			given(recordRepository.saveAndFlush(record)).willReturn(modifyRecord);
 
 			RecordWorkResponse modifyRecordResponse = assertDoesNotThrow(
 					() -> recordService.modifyRecord(1L, 1L, modifyRecordWorkRequest, "user"));
@@ -134,7 +134,7 @@ class RecordServiceTest {
 		void success() {
 
 			given(validator.getUserByUserName("user")).willReturn(user);
-			given(recordRepository.findById(1L)).willReturn(Optional.of(record));
+			given(validator.getRecordById(1L)).willReturn(record);
 
 			RecordWorkResponse deleteRecordResponse = assertDoesNotThrow(
 					() -> recordService.deleteRecord(1L, "user"));
@@ -142,5 +142,5 @@ class RecordServiceTest {
 			assertEquals("일기 삭제 완료", deleteRecordResponse.getMessage());
 		}
 	}
-*/
+
 }
