@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleAssignRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCompleteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCompleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleDeleteResponse;
@@ -23,7 +25,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
-import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleAssignEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,6 +60,31 @@ class ScheduleServiceTest {
 
 	Schedule schedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 1L, "멋사동물병원", dateTime,
 			false);
+
+	@Nested
+	@DisplayName("일정 완료하기")
+	class ScheduleComplete{
+		ScheduleCompleteRequest scheduleCompleteRequest = new ScheduleCompleteRequest(true);
+		Schedule completeSchedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 2L, "멋사동물병원",
+				dateTime,
+				true);
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(validator.getPetWithUsername(pet.getId(), "user")).willReturn(pet);
+			given(scheduleRepository.findById(1L)).willReturn(Optional.of(schedule));
+			given(scheduleRepository.saveAndFlush(completeSchedule)).willReturn(completeSchedule);
+
+			ScheduleCompleteResponse response = assertDoesNotThrow(
+					() -> scheduleService.complete(pet.getId(), schedule.getId(),
+							scheduleCompleteRequest, "user"));
+
+			assertEquals("일정이 완료되었습니다.", response.getMessage());
+			assertEquals(1L, response.getId());
+		}
+	}
 
 	@Nested
 	@DisplayName("일정 부탁하기")
