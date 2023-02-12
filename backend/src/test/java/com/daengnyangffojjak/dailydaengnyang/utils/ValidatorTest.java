@@ -31,6 +31,7 @@ import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
@@ -66,8 +67,7 @@ class ValidatorTest {
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository, recordRepository, tagRepository,
-				diseaseRepository);
+				petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository, recordFileRepository);
 	}
 
 	@Nested
@@ -237,7 +237,7 @@ class ValidatorTest {
 		@DisplayName("성공")
 		void success() {
 			Disease disease = new Disease(1L, pet, "질병", DiseaseCategory.DERMATOLOGY,
-					LocalDate.of(2000, 1, 1), LocalDate.of(2000, 12, 31));
+					LocalDate.of(2000, 1, 1), LocalDate.of(2000, 12,31));
 			given(diseaseRepository.findById(1L)).willReturn(Optional.of(disease));
 
 			Disease response = assertDoesNotThrow(

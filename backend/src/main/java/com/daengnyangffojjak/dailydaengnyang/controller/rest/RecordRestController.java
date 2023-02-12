@@ -53,10 +53,7 @@ public class RecordRestController {
 
 		RecordWorkResponse recordWorkResponse = recordService.createRecord(petId,
 				recordWorkRequest, user.getUsername());
-		return ResponseEntity.created(
-						URI.create("api/v1/pets/" + petId + "/schedules/"
-								+ recordWorkResponse.getRecordId())).
-				body(Response.success(recordWorkResponse));
+		return ResponseEntity.ok().body(Response.success(recordWorkResponse));
 	}
 
 	// 일기 수정
@@ -81,7 +78,7 @@ public class RecordRestController {
 			@PathVariable Long recordId,
 			@AuthenticationPrincipal UserDetails user) {
 
-		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(petId, recordId,
+		RecordWorkResponse recordWorkResponse = recordService.deleteRecord(recordId,
 				user.getUsername());
 		return ResponseEntity.ok().body(Response.success(recordWorkResponse));
 	}
