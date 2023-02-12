@@ -67,6 +67,19 @@ class MonitoringServiceTest {
 			assertEquals("hoon", response.getPetName());
 			assertEquals(LocalDate.of(2023, 1, 30), response.getDate());
 		}
+
+		@Test
+		@DisplayName("실패 - 해당 날짜 모니터링 존재")
+		void fail_날짜중복() {
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(monitoringRepository.save(request.toEntity(pet))).willReturn(
+					saved);
+			given(monitoringRepository.existsByDateAndPetId(LocalDate.of(2023, 1, 30), 1L)).willReturn(true);
+
+			MonitoringException e = assertThrows(MonitoringException.class,
+					() -> monitoringService.create(1L, request, "user"));
+			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
+		}
 	}
 
 	@Nested
@@ -184,6 +197,18 @@ class MonitoringServiceTest {
 					() -> monitoringService.getMonitoringList(1L, "20230101", "20230131", "user"));
 			assertEquals(2, response.getMonthlyMonitorings().size());
 		}
+
+		@Test
+		@DisplayName("실패 - 일주일 이하의 기간일 때")
+		void fail_날짜오류() {
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+
+			MonitoringException e = assertThrows(MonitoringException.class,
+					() -> monitoringService.getMonitoringList(1L, "20230101", "20230103", "user"));
+			assertEquals(ErrorCode.INVALID_REQUEST, e.getErrorCode());
+		}
+
+
 	}
 
 	@Nested
@@ -192,11 +217,11 @@ class MonitoringServiceTest {
 
 		List<Monitoring> saved = List.of(
 				Monitoring.builder()
-						.id(1L).pet(pet).date(LocalDate.of(2023, 1, 25)).weight(7.7).vomit(false)
-						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build(),
+						.id(1L).pet(pet).date(LocalDate.of(2023, 1, 25)).weight(7.7).vomit(true)
+						.amPill(true).pmPill(true).customSymptom(true).customSymptomName("증상").walkCnt(2).customIntName("양치").customInt(1).urination(3).defecation(2).notes("양치").build(),
 				Monitoring.builder()
 						.id(2L).pet(pet).date(LocalDate.of(2023, 1, 30)).weight(7.7).vomit(false)
-						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").build()
+						.amPill(true).pmPill(true).urination(3).defecation(2).notes("양치").customSymptom(true).customSymptomName("증상").walkCnt(2).customIntName("양치").customInt(1).build()
 		);
 
 		@Test
