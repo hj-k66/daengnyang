@@ -3,12 +3,14 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.notification;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class NotificationListResponse {
 	private List<NotificationResponse> notifications;
 
