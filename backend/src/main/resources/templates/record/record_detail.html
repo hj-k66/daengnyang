@@ -62,50 +62,20 @@
 
           <div id="body-box" class="mb-auto">-</div>
 
-          <div id="carouselExample" class="carousel slide mx-3 my-5"
-               style="width: 400px; height: 300px;">
-            <div class="carousel-inner">
-              <div class="carousel-item">
-                <img
-                    src="https://image.oliveyoung.co.kr/uploads/images/goods/550/10/0000/0014/B00000014213905ko.jpg?l=ko"
-                    class="d-block w-100" alt="...">
-              </div>
-              <div class="carousel-item active">
-                <img
-                    src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
-                    class="d-block w-100" alt="...">
-              </div>
-              <div class="carousel-item">
-                <img src="https://img.catpre.com/mobile/catpre/product/24/23345_detail_9071.png"
-                     class="d-block w-100" alt="...">
-              </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="visually-hidden">Next</span>
-            </button>
+
+          <div id="photo-wrapper">
           </div>
 
-          <!--          <div id="image-box" class="col-auto d-none d-lg-block mt-5">-->
-          <!--            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
-          <!--                 width="250" height="250" class="img-thumbnail" alt="강아지">-->
-          <!--            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
-          <!--                 width="250" height="250" class="img-thumbnail" alt="강아지">-->
-          <!--            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
-          <!--                 width="250" height="250" class="img-thumbnail" alt="강아지">-->
-          <!--          </div>-->
+
+          <div id="video-wrapper">
+          </div>
         </div>
       </div>
     </div>
     <div class="d-grid gap-2 d-md-flex justify-content-md-end my-3">
-      <button id="btn-modify" class="btn btn-warning">수정</button>
-      <button id="btn-delete" class="btn btn-danger mx-2">삭제</button>
+      <button id="btn-modify" class="btn btn-warning"  data-bs-toggle="modal"
+              data-bs-target="#modifyModal" onclick="show_record_modify()">수정</button>
+      <button id="btn-delete" class="btn btn-danger mx-2" onclick="delete_record()">삭제</button>
       <button onclick="history.back()" class="btn btn-primary">돌아가기</button>
     </div>
     <div class="card">
@@ -142,6 +112,63 @@
 </div>
 </div>
 
+
+<!--modify Modal-->
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form role="form">
+        <div class="modal-header">
+          <h5>일기 수정</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form role="form">
+            <div id="tag-box">
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                      data-bs-target="#exampleModal">
+                +
+              </button>
+              <input type="radio" class="btn-check mx-1" name="tag" id="tagName1" value="건강"
+                     autocomplete="off">
+              <label class="btn btn-outline-primary" for="tagName1">건강</label>
+              <input type="radio" class="btn-check mx-1" name="tag" id="tagName2" value="산책"
+                     autocomplete="off">
+              <label class="btn btn-outline-primary" for="tagName2">산책</label>
+            </div>
+
+            <div class="col-md-12 my-3">
+              <div class="form-group mb-3 mt-3">
+                <label for="title-inp" class="form-label">제목</label>
+                <input type="text" class="form-control" id="title-inp" placeholder="제목을 입력해주세요.">
+              </div>
+              <div class="mb-3">
+                <label for="body-inp" class="form-label">내용</label>
+                <textarea class="form-control" id="body-inp" rows="5"
+                          placeholder="내용을 입력해주세요."></textarea>
+              </div>
+            </div>
+            <div class="form-check mt-3">
+              <label></label>
+              <label><input type="radio" name="isPublic" value="true"> 공개</label>
+              <label><input type="radio" name="isPublic" value="false" checked> 비공개</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          <button type="button" class="btn btn-primary" onclick="modify_record_info()">
+            수정 완료
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -159,9 +186,11 @@
   const petId = [[${petId}]];
   const recordId = [[${recordId}]];
   let author;
+  let recordData;
 
   $(document).ready(function () {
-    get_record_detail();
+    $('#carouselInner').empty();
+    setTimeout(() => get_record_detail())
   });
 
   async function get_record_detail() {
@@ -171,6 +200,7 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let data = res.data.result;
+        recordData = data;
         author = data.userName;
 
         let id = data.id;
@@ -182,7 +212,8 @@
         let userName = data.userName;
         let isPublic = data.isPublic;
         let tag = data.tag;
-        // let recordFiles = data.recordFiles;
+        let recordFiles = data.recordFiles;
+        console.log(recordFiles);
         // let recordFile = data.recordFile;
         let createdAt = data.createdAt;
         let lastModifiedAt = data.lastModifiedAt;
@@ -198,6 +229,25 @@
         $('#tag').text(tag);
         $('#createdAt').text(createdAt);
         $('#lastModifiedAt').text(lastModifiedAt);
+
+        for (let i = 0; i < recordFiles.length; i++) {
+          let storedFileUrl = recordFiles[i]['storedFileUrl'];
+          let uploadFilename = recordFiles[i]['uploadFilename'];
+          let extention = getExtensionOfFilename(uploadFilename);
+
+          if (extention === '.mp4') {
+            let temp_html = `
+            <video style="width:300px; height:200px" autoplay loop muted>
+              <source src="${storedFileUrl}" type="video/mp4">
+            </video>`;
+            $('#video-wrapper').append(temp_html);
+          } else {
+            let pic_html = `
+            <img src="${storedFileUrl}" alt="" width="100px" height="100px">
+          `;
+            $('#photo-wrapper').append(pic_html);
+          }
+        }
       } else {
         console.log("실패임" + res.resultCode)
       }
@@ -211,6 +261,25 @@
       })
     });
   }
+
+  function getExtensionOfFilename(filename) {
+
+    var _fileLen = filename.length;
+
+    /**
+     * lastIndexOf('.')
+     * 뒤에서부터 '.'의 위치를 찾기위한 함수
+     * 검색 문자의 위치를 반환한다.
+     * 파일 이름에 '.'이 포함되는 경우가 있기 때문에 lastIndexOf() 사용
+     */
+    var _lastDot = filename.lastIndexOf('.');
+
+    // 확장자 명만 추출한 후 소문자로 변경
+    var _fileExt = filename.substring(_lastDot, _fileLen).toLowerCase();
+
+    return _fileExt;
+  }
+
 
   async function get_my_name(callback) {
     let user;
@@ -226,6 +295,103 @@
     });
     callback(user);
   }
+
+  async function delete_record() {
+    await axios.delete("/api/v1/pets/" + petId + "/records/" + recordId, {}
+        , {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/records/feed";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  async function modify_record_info() {
+    let title = $("#title-inp").val();
+    if (title == null) {
+      alert("제목을 입력해주세요");
+      return;
+    }
+    let body = $("#body-inp").val();
+    let tagId = $("input:radio[name=tag]:checked").val();
+    if (tagId == null) {
+      alert("태그를 선택해 주십시오. 없다면 태그를 만들어 보세요 👍");
+      return;
+    }
+    let isPublic = $("input:radio[name=isPublic]:checked").val();
+    console.log(name)
+
+    await axios.put("/api/v1/pets/" + petId + "/records/" + recordId,
+        {
+          "title": title,
+          "body": body,
+          "tagId": tagId,
+          "isPublic": isPublic
+        }
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/pets/" + petId + "/records/"+recordId;
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  async function get_group_tag() {
+    const groupId = sessionStorage.getItem("groupId");
+    await axios.get("/api/v1/groups/" + groupId + "/tags", {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        $('#tag-box').empty();
+        let plus_html = `
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
+        `;
+        $('#tag-box').append(plus_html);
+
+        const tags = res.data.result;
+        for (let i = 0; i < tags.length; i++) {
+          let id = tags[i]['id'];
+          let name = tags[i]['name'];
+
+          let temp_html = `
+            <input type="radio" class="btn-check mx-1" name="tag" id="tag-${name}" value="${id}" autocomplete="off">
+            <label class="btn btn-outline-primary" for="tag-${name}">${name}</label>
+          `
+          $('#tag-box').append(temp_html);
+        }
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  function show_record_modify() {
+    get_group_tag();
+
+    document.querySelector('#title-inp').value = recordData.title;
+    document.querySelector('#body-inp').value = recordData.body;
+    document.querySelector("form input[name=tag][value=tag-"+recordData.tag+"]").checked = true;
+    document.querySelector("form input[name=isPublic][value="+recordData.isPublic+"]").checked = true;
+
+  }
+
+
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
