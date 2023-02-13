@@ -68,7 +68,17 @@ public class RecordService {
 					RecordFile recordFile = null;
 					if (!recordFiles.isEmpty()) {
 						recordFile = recordFiles.get(0);
+						int idx = recordFile.getStoredFileUrl().lastIndexOf(".");
+						String extension = recordFile.getStoredFileUrl().substring(idx + 1);
+						if (extension.equalsIgnoreCase("mp4")) {
+							recordFile = null;
+						}
 					}
+					if (recordFile == null) {
+						recordFile = new RecordFile();
+						recordFile.changeToDefaultImage("https://daengnyang-bucket.s3.ap-northeast-2.amazonaws.com/defaultImage.png");
+					}
+
 					return RecordResponse.from(record, recordFile);
 				});
 	}
