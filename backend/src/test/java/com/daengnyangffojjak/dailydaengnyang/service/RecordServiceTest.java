@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 class RecordServiceTest {
 
 	private final RecordRepository recordRepository = mock(RecordRepository.class);
-	private final RecordFileRepository recordFileRepository = mock(RecordFileRepository.class)
+	private final RecordFileRepository recordFileRepository = mock(RecordFileRepository.class);
 	private final Validator validator = mock(Validator.class);
 	private final ApplicationEventPublisher applicationEventPublisher = mock(
 			ApplicationEventPublisher.class);

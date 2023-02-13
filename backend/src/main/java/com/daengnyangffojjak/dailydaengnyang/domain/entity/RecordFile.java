@@ -43,4 +43,8 @@ public class RecordFile extends BaseEntity {
 				.record(record)
 				.build();
 	}
+
+	public void changeToDefaultImage(String storedFileUrl){
+		this.storedFileUrl = storedFileUrl;
+	}
 }
