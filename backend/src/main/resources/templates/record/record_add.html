@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: head}">
+  <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
+  <!-- Required meta tags -->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+        crossorigin="anonymous"/>
+  <title>글 작성</title>
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="row">
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-6 mt-5">
+    <form role="form" method="POST" th:object="${recordWorkRequest}">
+      <a href="#" class="btn btn-primary" th:href="@{/태그 만드는곳 주소}">+</a>
+      <!--태그 만들고 매핑하기-->
+      <select class="form-select mt-3" aria-label="Default select example" th:for="category">
+        <option value="" selected>카테고리를 선택하세요.</option>
+        <option name="category" th:each="recordWorkRequest : ${recordWorkRequest}"
+                th:value="${recordWorkRequest.category}"
+                th:text="${recordWorkRequest.category}">일상
+        </option>
+      </select>
+      <div class="col-md-12 my-3">
+        <div class="form-group mb-3 mt-3">
+          <label for="title" class="form-label" th:for="title">제목</label>
+          <input type="text" class="form-control" id="title" placeholder="제목을 입력해주세요."
+                 th:field="*{title}">
+        </div>
+        <div class="mb-3">
+          <label for="body" class="form-label" th:for="body">내용</label>
+          <textarea class="form-control" id="body" rows="5" placeholder="내용을 입력해주세요."
+                    th:field="*{body}"></textarea>
+        </div>
+      </div>
+      <div class="clearfix">
+        <img alt="" src="https://cdn.pixabay.com/photo/2018/05/26/18/06/dog-3431913_1280.jpg"
+             width="200" height="200" class="rounded float-start"/>
+      </div>
+      <hr/>
+      <div class="form-check mt-3">
+        <label th:for="isPublic"></label>
+        <label><input type="radio" name="isPublic" th:field="*{isPublic}" value="true"> 공개</label>
+        <label><input type="radio" name="isPublic" th:field="*{isPublic}" value="false"> 비공개</label>
+      </div>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-primary" type="button" onclick="일기작성함수()">작성하기</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-3 my-3 mt-5">
+    <div class="card my-3" style="width: 18rem;">
+      <div class="card-header">
+        🏘️️ 그룹명
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">아빠</li>
+        <li class="list-group-item">엄마</li>
+        <li class="list-group-item">멍뭉이</li>
+      </ul>
+    </div>
+    <div class="card my-3 mt-5" style="width: 18rem;">
+      <div class="card-header">
+        ✅️ 오늘의 일정
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">6시에 약먹기</li>
+        <li class="list-group-item">퇴근후 산책시키기</li>
+        <li class="list-group-item">메인피드 UI만들기</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+
+</html>
