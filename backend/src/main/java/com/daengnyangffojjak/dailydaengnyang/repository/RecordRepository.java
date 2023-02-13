@@ -10,5 +10,8 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 	Page<Record> findAllByIsPublicTrue(Pageable pageable);
 
 	boolean existsByTagId(Long tagId);
+
+	Page<Record> findByTitleContainingOrBodyContaining(String title, String body, Pageable pageable);
+
 }
 
