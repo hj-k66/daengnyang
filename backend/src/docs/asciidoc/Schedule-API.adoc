@@ -19,3 +19,6 @@ operation::schedule-list/list_success[snippets='http-request,path-parameters,htt
 [[Schedule-일정부탁하기]]
 === Schedule 일정 부탁하기
 operation::schedule-assign/assign_success[snippets='http-request,path-parameters,http-response,response-fields']
+[[Schedule-일정완료하기]]
+=== Schedule 일정 완료하기
+operation::schedule-complete/complete_success[snippets='http-request,path-parameters,http-response,response-fields']

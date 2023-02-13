@@ -12,6 +12,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleAssignEvent;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCompleteEvent;
 import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCreateEvent;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -201,5 +202,46 @@ public class ScheduleService {
 
 		return new MessageResponse("일정의 책임자가 변경되었습니다.");
 
+	}
+
+	@Transactional
+	public ScheduleCompleteResponse complete(Long petId, Long scheduleId, ScheduleCompleteRequest scheduleCompleteRequest, String username) {
+		//1. 로그인 유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(username);
+
+		//2. 일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+		//3. Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
+
+
+		//4. 로그인유저 != (일정작성유저 or 일정 책임자)일 경우 예외발생
+		Long loginUserId = user.getId();
+		Long scheduleWriteUserId = schedule.getUser().getId();
+		Long assigneeId = schedule.getAssigneeId();
+
+		if (!loginUserId.equals(scheduleWriteUserId) && !loginUserId.equals(assigneeId)) {
+			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+		}
+
+		//수정된 일정 저장
+		schedule.changeToCompleted(scheduleCompleteRequest.isCompleted());
+		scheduleRepository.saveAndFlush(schedule);
+
+		//알림 전송 - 그룹원 모두에게
+		//알림 전송 - 그룹원 모두에게 전송
+		//해당 그룹(pet의 그룹) 내 멤버 이름 불러오기
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), username);
+		List<User> userList = userGroupList.stream()
+				.map(UserGroup::getUser).collect(
+						Collectors.toList());
+
+		applicationEventPublisher.publishEvent(
+				new ScheduleCompleteEvent(userList, schedule.getTitle(), username));
+
+		return new ScheduleCompleteResponse("일정이 완료되었습니다.", scheduleId);
 	}
 }
