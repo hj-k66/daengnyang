@@ -97,46 +97,46 @@ class CommentRestControllerTest extends ControllerTest{
 			verify(commentService).createComment(1L, commentRequest, "user");
 		}
 
-//		@Test
-//		@DisplayName("댓글 등록 실패 - 유저가 없는 경우")
-//		void fail_유저없음() throws Exception {
-//
-//			// 댓글 작성
-//			given(commentService.createComment(1L, commentRequest, "user"))
-//					.willThrow(new CommentException(ErrorCode.USERNAME_NOT_FOUND));
-//
-//			mockMvc.perform(
-//							post("/api/v1/records/{recordsId}/comments", 1L)
-//									.content(objectMapper.registerModule(javaTimeModule)
-//											.writeValueAsBytes(commentRequest))
-//									.contentType(MediaType.APPLICATION_JSON))
-//					.andExpect(status().isNotFound())
-//					.andExpect(jsonPath("$.result.errorCode").value("USERNAME_NOT_FOUND"))
-//					.andExpect(jsonPath("$.result.message").value("Not founded"))
-//					.andDo(print());
-//
-//			verify(commentService).createComment(1L, commentRequest, "user");
-//		}
-//
-//		@Test
-//		@DisplayName("댓글 등록 실패 - 일기가 없는 경우")
-//		void fail_일기없음() throws Exception {
-//
-//			given(commentService.createComment(1L, commentRequest, "user"))
-//					.willThrow(new CommentException(ErrorCode.RECORD_NOT_FOUND));
-//
-//			mockMvc.perform(
-//							post("/api/v1/records/{recordsId}/comments", 1L)
-//									.content(objectMapper.registerModule(javaTimeModule)
-//											.writeValueAsBytes(commentRequest))
-//									.contentType(MediaType.APPLICATION_JSON))
-//					.andExpect(status().isNotFound())
-//					.andExpect(jsonPath("$.result.errorCode").value("RECORD_NOT_FOUND"))
-//					.andExpect(jsonPath("$.result.message").value("등록된 일기가 없습니다."))
-//					.andDo(print());
-//
-//			verify(commentService).createComment(1L, commentRequest, "user");
-//		}
+		@Test
+		@DisplayName("댓글 등록 실패 - 유저가 없는 경우")
+		void fail_유저없음() throws Exception {
+
+			// 댓글 작성
+			given(commentService.createComment(1L, commentRequest, "user"))
+					.willThrow(new CommentException(ErrorCode.USERNAME_NOT_FOUND));
+
+			mockMvc.perform(
+							post("/api/v1/records/{recordsId}/comments", 1L)
+									.content(objectMapper.registerModule(javaTimeModule)
+											.writeValueAsBytes(commentRequest))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isNotFound())
+					.andExpect(jsonPath("$.result.errorCode").value("USERNAME_NOT_FOUND"))
+					.andExpect(jsonPath("$.result.message").value("Not founded"))
+					.andDo(print());
+
+			verify(commentService).createComment(1L, commentRequest, "user");
+		}
+
+		@Test
+		@DisplayName("댓글 등록 실패 - 일기가 없는 경우")
+		void fail_일기없음() throws Exception {
+
+			given(commentService.createComment(1L, commentRequest, "user"))
+					.willThrow(new CommentException(ErrorCode.RECORD_NOT_FOUND));
+
+			mockMvc.perform(
+							post("/api/v1/records/{recordsId}/comments", 1L)
+									.content(objectMapper.registerModule(javaTimeModule)
+											.writeValueAsBytes(commentRequest))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isNotFound())
+					.andExpect(jsonPath("$.result.errorCode").value("RECORD_NOT_FOUND"))
+					.andExpect(jsonPath("$.result.message").value("등록된 일기가 없습니다."))
+					.andDo(print());
+
+			verify(commentService).createComment(1L, commentRequest, "user");
+		}
 	}
 
 	@Nested
