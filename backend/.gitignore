@@ -39,3 +39,4 @@ out/
 ### personal
 **/TestContoller
 **/src/main/**/resources/static/docs/*.html
+**/resources/*.json
