@@ -51,10 +51,5 @@ public class NotificationRestController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/test")
-	public String test() {
-		notificationService.init();
-		return "test";
-	}
 
 }
