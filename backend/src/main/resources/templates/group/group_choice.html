@@ -27,8 +27,7 @@
     </div>
     <div class="col-md-4">
       <section id="pet-list">
-<!--        class="card visually-hidden"-->
-        <div class="card " style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <div class="card visually-hidden" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
           <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/8719/8719385.png">
           <div class="info">
             <h1 class="name card-title">훈이네</h1>
@@ -64,7 +63,7 @@
   axios.defaults.withCredentials = true;
 
   async function get_group_list() {
-    await axios.get("/api/v1/groups/choice", {
+    await axios.get("/api/v1/groups/mygroups", {
       headers: {
         "Content-Type": `application/json`
       },
