@@ -26,3 +26,5 @@ include::Disease-API.adoc[]
 include::Record-API.adoc[]
 
 include::Comment-API.adoc[]
+
+include::Notification-API.adoc[]

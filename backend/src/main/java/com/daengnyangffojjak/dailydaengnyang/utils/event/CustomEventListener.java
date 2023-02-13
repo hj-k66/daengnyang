@@ -33,6 +33,39 @@ public class CustomEventListener {
 	private final NotificationUserRepository notificationUserRepository;
 	private final RedisTemplate redisTemplate;
 
+	@EventListener
+	public void handleScheduleCompleteEvent(ScheduleCompleteEvent scheduleCompleteEvent) {
+		List<String> loginUserTokenList = getLoginUserFcmToken(
+				scheduleCompleteEvent.getUserList());
+
+		//receiver가 로그아웃했으면 알림 보내기 X
+		if (loginUserTokenList.size() == 0) {
+			return;
+		}
+
+		//로그인한 유저에게 알림 보내기
+		String message = NotificationType.SCHEDULE_COMPLETE.generateNotificationMessage(
+				scheduleCompleteEvent.getTitle(), scheduleCompleteEvent.getUserName());
+
+		NotificationMultiUserRequest notificationMultiUserRequest = NotificationMultiUserRequest.toRequest(
+				loginUserTokenList, NotificationType.SCHEDULE_COMPLETE, message);
+
+		notificationService.sendByUserTokenList(notificationMultiUserRequest);
+
+		log.info("알람 전송");
+
+		//알림 기록 db에 저장
+		Notification savedNotification = notificationRepository.saveAndFlush(
+				Notification.from(NotificationType.SCHEDULE_COMPLETE.name(),
+						message, NotificationType.SCHEDULE_COMPLETE, false));
+		//알람받을 유저 저장
+		scheduleCompleteEvent.getUserList().forEach(
+				user -> notificationUserRepository.save(NotificationUser.from(savedNotification,
+						user)));
+		log.info("알람 저장");
+
+	}
+
 
 	@EventListener
 	public void handleScheduleAssignEvent(ScheduleAssignEvent scheduleAssignEvent)
