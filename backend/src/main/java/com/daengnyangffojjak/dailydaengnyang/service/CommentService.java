@@ -1,6 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentModifyResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentResponse;
@@ -10,10 +10,10 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.exception.CommentException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.repository.CommentRepository;
-import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 	private final CommentRepository commentRepository;
 	private final Validator validator;
+
+
 
 	// 댓글 등록
 	@Transactional
@@ -67,7 +69,7 @@ public class CommentService {
 
 	// 댓글 삭제
 	@Transactional
-	public MessageResponse deleteComment(Long recordsId, Long id, String userName) {
+	public CommentDeleteResponse deleteComment(Long recordsId, Long id, String userName) {
 
 		// 유저가 없는 경우 예외 발생
 		User user = validator.getUserByUserName(userName);
@@ -85,7 +87,7 @@ public class CommentService {
 
 		comment.deleteSoftly();
 
-		return new MessageResponse("댓글이 삭제 되었습니다");
+		return new CommentDeleteResponse("댓글이 삭제 되었습니다");
 	}
 
 

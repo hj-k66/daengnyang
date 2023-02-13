@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentModifyResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.comment.CommentResponse;
@@ -52,10 +53,8 @@ public class CommentRestController {
 			@PathVariable Long recordsId,
 			@RequestBody CommentRequest commentRequest,
 			@AuthenticationPrincipal UserDetails user) {
-		System.out.println("????????");
 		CommentResponse commentResponse = commentService.createComment(recordsId, commentRequest, user.getUsername());
 
-		System.out.println("?????" + commentResponse.getId());
 		return ResponseEntity.created(URI.create("/api/v1/records/" + recordsId + "comments" +
 				commentResponse.getId())).body(Response.success(commentResponse));
 	}
@@ -77,13 +76,13 @@ public class CommentRestController {
 
 	// 댓글 삭제
 	@DeleteMapping ("/{recordsId}/comments/{id}")
-	public Response<MessageResponse> deleteComment(
+	public Response<CommentDeleteResponse> deleteComment(
 			@PathVariable Long recordsId,
 			@PathVariable Long id,
 			@AuthenticationPrincipal UserDetails user) {
 
-		MessageResponse messageResponse = commentService.deleteComment(recordsId, id, user.getUsername());
-		return Response.success(messageResponse);
+		CommentDeleteResponse commentDeleteResponse = commentService.deleteComment(recordsId, id, user.getUsername());
+		return Response.success(commentDeleteResponse);
 	}
 
 	// 조회
@@ -93,13 +92,13 @@ public class CommentRestController {
 	// 한 페이지당 피드 갯수는 20개, 총 페이지 갯수 표시, 작성날짜 기준으로 sort
 	// 로그인된 유저만의 피드목록을 필터링하는 기능 pageable 사용
 	@GetMapping("/comments/my")
-	public ResponseEntity<Response<Page<CommentResponse>>> myComments(
+	public Response<Page<CommentResponse>> myComments(
 			@AuthenticationPrincipal UserDetails user,
-			@PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+			@PageableDefault(size = 20, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
 
 		Page<CommentResponse> commentResponses = commentService.getMyComments(user.getUsername(), pageable);
 
-		return ResponseEntity.ok().body(Response.success(commentResponses));
+		return Response.success(commentResponses);
 	}
 
 

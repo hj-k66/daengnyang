@@ -70,7 +70,8 @@ class ValidatorTest {
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-				petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository, commentRepository, recordFileRepository);
+						petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository,
+						recordFileRepository, commentRepository);
 	}
 
 	@Nested

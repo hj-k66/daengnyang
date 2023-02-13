@@ -24,3 +24,5 @@ include::Tag-API.adoc[]
 include::Disease-API.adoc[]
 
 include::Record-API.adoc[]
+
+include::Comment-API.adoc[]
