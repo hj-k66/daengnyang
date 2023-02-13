@@ -12,8 +12,6 @@ import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -40,7 +38,6 @@ public class DiseaseService {
 			String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
-		validateDiseaseName(petId, dizWriteRequest.getName());
 
 		disease.modify(dizWriteRequest);
 		Disease modified = diseaseRepository.saveAndFlush(disease);

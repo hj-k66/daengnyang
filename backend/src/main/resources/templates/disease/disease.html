@@ -82,6 +82,10 @@
       width: calc(100% - 250px);
     }
 
+    #modifyModal th {
+      width: 100px;
+    }
+
 
   </style>
 
@@ -157,61 +161,74 @@
 </div>
 
 <!--modify-->
-<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">Toggle bottom offcanvas
-</button>
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>질병 정보 수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form role="form" style="width: 80%; margin: auto;">
 
-<div class="offcanvas offcanvas-top" data-bs-scroll="true" tabindex="-1" id="offcanvasBottom"
-     aria-labelledby="offcanvasBottomLabel" style="height: 320px">
-  <div class="offcanvas-header" style="width: 60%; margin: auto;">
-    <h5 class="offcanvas-title" id="offcanvasBottomLabel">질병 수정</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body small">
-    <form role="form" style="width: 60%; margin: auto;">
-      <table class="table">
-        <tbody>
-        <tr>
-          <th scope="row">질병 이름</th>
-          <td colspan="3">
-            <input id="disease-name-inp" type="text" class="form-control"/>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">카테고리</th>
-          <td colspan="3">
+          <table class="table">
+            <tbody>
+            <tr>
+              <th scope="row">질병 이름</th>
+              <td colspan="3">
+                <input id="disease-name-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">카테고리</th>
+              <td colspan="3">
 
-            <input type="radio" name="category" value="INTERNAL_MEDICINE"> 내과
-            <input type="radio" name="category" value="ORTHOPEDICS"> 정형외과
-            <input type="radio" name="category" value="NEUROLOGY"> 신경과
-            <input type="radio" name="category" value="DERMATOLOGY"> 파부과
-            <input type="radio" name="category" value="GENERAL_SURGERY"> 일반외과
-            <input type="radio" name="category" value="UROLOGY"> 비뇨기과
-            <input type="radio" name="category" value="OPHTHALMOLOGY"> 안과
-            <input type="radio" name="category" value="DENTAL"> 치과
-            <input type="radio" name="category" value="ETC"> 기타
+                <input type="radio" name="category" value="INTERNAL_MEDICINE"> 내과 <br>
+                <input type="radio" name="category" value="ORTHOPEDICS"> 정형외과 <br>
+                <input type="radio" name="category" value="NEUROLOGY"> 신경과 <br>
+                <input type="radio" name="category" value="DERMATOLOGY"> 피부과 <br>
+                <input type="radio" name="category" value="GENERAL_SURGERY"> 일반외과 <br>
+                <input type="radio" name="category" value="UROLOGY"> 비뇨기과 <br>
+                <input type="radio" name="category" value="OPHTHALMOLOGY"> 안과 <br>
+                <input type="radio" name="category" value="DENTAL"> 치과 <br>
+                <input type="radio" name="category" value="ETC"> 기타 <br>
 
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">진달일</th>
-          <td>
-            <input id="start-inp" type="text" class="form-control"/>
-          </td>
-          <th scope="row">치료 종료일</th>
-          <td>
-            <input id="end-inp" type="text" class="form-control"/>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-      <button type="button" class="btn btn-primary" onclick="modify_pet_info()">
-        수정 완료
-      </button>
-    </form>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">진달일</th>
+              <td>
+                <input id="start-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">치료 종료일</th>
+              <td>
+                <input id="end-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary" onclick="modify_diz_info()">
+          수정 완료
+        </button>
+      </div>
+    </div>
   </div>
 </div>
+
+
+<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal"
+        aria-controls="offcanvasTop">Toggle bottom offcanvas
+</button>
+
 
 <!--footer---------------------------->
 
@@ -298,8 +315,7 @@
               let endedAt = diz_info.endedAt;
 
               let li_html = `
-                  <li id="li-${name}" class="list-group-item" onclick="show_modify_diz('${name}')"  data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
+                  <li id="li-${name}" class="list-group-item" onclick="show_modify_diz('${name}')" data-bs-toggle="modal" data-bs-target="#modifyModal" aria-controls="offcanvasTop">
                     <div class="id-box" style="display: none;">${id}</div>
                     <div class="category-box" style="display: none;">${category_enum}</div>
                     <span>${name}</span>
@@ -354,8 +370,7 @@
                   <div class="accordion-collapse collapse show">
                     <div class="accordion-body p-1">
                       <ul class="list-group list-group-flush">
-                        <li id="li-${name}" class="list-group-item" onclick="show_modify_diz('${name}')"  data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">
+                        <li id="li-${name}" class="list-group-item" onclick="show_modify_diz('${name}')" data-bs-toggle="modal" data-bs-target="#modifyModal" aria-controls="offcanvasTop">
                           <div class="id-box" style="display: none;">${id}</div>
                           <div class="category-box" style="display: none;">${category_enum}</div>
                           <span>${name}</span>
@@ -405,18 +420,18 @@
     }
   }
 
-  // show-midify-form
+  // show-modify-form
   function show_modify_diz(name) {
     rct_disease_name = name;
-    let diz_li = document.getElementById("li-"+name);
+    let diz_li = document.getElementById("li-" + name);
     let id = diz_li.getElementsByClassName('id-box').item(0).innerText;
     let category = diz_li.getElementsByClassName('category-box').item(0).innerText;
     let startedAt = diz_li.getElementsByClassName('startedAt-box').item(0).innerText;
     let endedAt = diz_li.getElementsByClassName('endedAt-box').item(0).innerText;
-    rct_id = id;
+    rct_disease_id = id;
 
     document.querySelector("#disease-name-inp").value = name;
-    document.querySelector("table td input[name=category][value="+category+"]").checked = true;
+    document.querySelector("table td input[name=category][value=" + category + "]").checked = true;
     document.querySelector("#start-inp").value = startedAt;
     document.querySelector("#end-inp").value = endedAt;
   }
@@ -426,13 +441,14 @@
     let category = $('input:radio[name=category]:checked').val();
     let start = $('#start-inp').val();
     let end = $('#end-inp').val();
+    console.log(rct_disease_id);
 
     await axios.put("/api/v1/pets/" + petId + "/diseases/" + rct_disease_id,
         {
-          "name" : name,
-          "category" : category,
-          "startedAt" : started,
-          "endedAt" : end
+          "name": name,
+          "category": category,
+          "startedAt": start,
+          "endedAt": end
         }
         , {
           headers: {
@@ -443,13 +459,12 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
-        document.location.href = "/view/groups/"+groupId+"/pets";
+        document.location.href = "/view/pets/" + petId + "/diseases";
       } else {
         console.log("실패임" + res.resultCode)
       }
     });
   }
-
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
