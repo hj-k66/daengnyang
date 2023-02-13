@@ -27,7 +27,7 @@
       <h2><span id="title-fromDate"></span> ~ <span id="title-toDate"></span> 모니터링 레포트</h2>
       <div class="card mt-5">
         <div class="card-body">
-          <h4 id="weight-name" class="card-title">몸무</h4>
+          <h4 id="weight-name" class="card-title">몸무게</h4>
           <h6 class="card-subtitle mb-2 text-muted">
             <span id="weight-total">0</span>
           </h6>
@@ -40,8 +40,8 @@
         <div class="card-body">
           <h4 id="vomit-name" class="card-title">구토</h4>
           <h6 class="card-subtitle mb-2 text-muted">
-            <span id="vomit-count">5</span> /
-            <span id="vomit-total">12</span>
+            <span id="vomit-count">0</span> /
+            <span id="vomit-total">0</span>
           </h6>
           <p><span id="vomit-percent" class="card-text"></span><span class="val-unit">%</span></p>
         </div>
@@ -51,8 +51,8 @@
         <div class="card-body">
           <h4 id="amPill-name" class="card-title">아침약</h4>
           <h6 class="card-subtitle mb-2 text-muted">
-            <span id="amPill-count">5</span> /
-            <span id="amPill-total">12</span>
+            <span id="amPill-count">0</span> /
+            <span id="amPill-total">0</span>
           </h6>
           <p><span id="amPill-percent" class="card-text"></span><span class="val-unit">%</span></p>
         </div>
@@ -61,8 +61,8 @@
         <div class="card-body">
           <h4 id="pmPill-name" class="card-title">저녁약</h4>
           <h6 class="card-subtitle mb-2 text-muted">
-            <span id="pmPill-count">5</span> /
-            <span id="pmPill-total">12</span>
+            <span id="pmPill-count">0</span> /
+            <span id="pmPill-total">0</span>
           </h6>
           <p><span id="pmPill-percent" class="card-text"></span><span class="val-unit">%</span></p>
         </div>
@@ -371,11 +371,14 @@
       hAxis: {title: '날짜'},
       vAxis: {
         title: content,
-        viewWindowMode: 'pretty'
+        viewWindowMode: 'pretty',
+        gridlines: {
+          interval: 2
+        }
+
       },
       curveType: 'function',
-      chartArea: {left: 20, top: 0, width: '50%', height: '80%'},
-      lineWidth: 0
+      chartArea: {left: 20, top: 0, width: '50%', height: '80%'}
     };
 
     var chart = new google.charts.Line(document.getElementById(chart_id));
@@ -402,7 +405,7 @@
         weight_list.push([date, weight]);
       }
       let feed = mnt['feedToGram'];
-      if (feed != null) {
+      if (feed != null && feed !== 0) {
         feed_list.push([date, feed]);
       }
       let walk = mnt['walkCnt'];

@@ -31,6 +31,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 class DiseaseServiceTest {
 
@@ -66,6 +67,21 @@ class DiseaseServiceTest {
 			assertEquals(1L, response.getId());
 			assertEquals("반려동물", response.getPetName());
 			assertEquals("질병이름", response.getName());
+		}
+
+		@Test
+		@DisplayName("실패 - 같은 이름이 존재하는 경우")
+		void fail_같은이름() {
+			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
+			given(diseaseRepository.save(request.toEntity(pet))).willReturn(
+					saved);
+			given(diseaseRepository.existsByPetIdAndName(1L, "질병이름")).willReturn(
+					true);
+
+			DiseaseException e = assertThrows(DiseaseException.class,
+					() -> diseaseService.create(1L, request, "user"));
+			assertEquals(ErrorCode.DUPLICATED_DISEASE_NAME, e.getErrorCode());
+
 		}
 	}
 
@@ -167,17 +183,14 @@ class DiseaseServiceTest {
 		@DisplayName("성공")
 		void success() {
 
-			Pageable pageable = PageRequest.of(0, 5, Sort.Direction.DESC, "createdAt");
-			Page<Disease> dizList = new PageImpl<>(List.of(saved));
-
 			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
-			given(diseaseRepository.findAllByPetId(1L, pageable)).willReturn(dizList);
+			given(diseaseRepository.findAllByPetId(Sort.by(Direction.DESC, "startedAt"), 1L)).willReturn(List.of(saved));
 
-			Page<DizGetResponse> response = assertDoesNotThrow(
-					() -> diseaseService.getDiseaseList(1L, pageable, "user"));
-			assertEquals(1, response.getContent().size());
-			assertEquals("질병", response.getContent().get(0).getName());
-			assertEquals(LocalDate.of(2000, 1, 1), response.getContent().get(0).getStartedAt());
+			List<DizGetResponse> response = assertDoesNotThrow(
+					() -> diseaseService.getDiseaseList(1L, "user"));
+			assertEquals(1, response.size());
+			assertEquals("질병", response.get(0).getName());
+			assertEquals(LocalDate.of(2000, 1, 1), response.get(0).getStartedAt());
 		}
 	}
 }

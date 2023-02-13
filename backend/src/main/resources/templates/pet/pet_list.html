@@ -27,7 +27,7 @@
     </div>
     <div class="col-md-4">
       <section id="pet-list">
-        <div class="card visually-hidden" style="width: 500px;">
+        <div class="card visually-hidden" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
 
           <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
           <div class="info">
@@ -75,7 +75,7 @@
             <td id="sex"></td>
           </tr>
           <tr>
-            <th scope="row">생일</th>가
+            <th scope="row">생일</th>
             <td id="birthday"></td>
           </tr>
           <tr>
@@ -87,9 +87,23 @@
 
       </div>
       <div class="modal-footer">
+        <div class="p-2">
+        <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          삭제
+        </button>
+        </div>
+        <div class="p-2 flex-grow-1"></div>
+        <div class="p-2">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                 data-bs-target="#modifyModal" onclick="show_pet_modify()">수정</button>
+        </div>
+        <div class="collapse" id="collapseExample" style="width: 100%">
+          <div class="card card-body" style="flex-direction: row;">
+            <div>정말 삭제하시겠습니까?</div>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal" onclick="delete_pet()">삭제</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -224,6 +238,12 @@
           `
           $('#pet-list').append(temp_html);
         }
+        let add_html = `
+        <div class="card" style="width: 500px; display: flex; align-items: center;height: 80px;" onclick="add_pet()">
+          <h3 style="text-align: center; margin: auto;">+</h3>
+        </div>
+        `;
+        $('#pet-list').append(add_html);
       } else {
         console.log("실패임" + res.resultCode)
       }
@@ -302,6 +322,24 @@
     });
   }
 
+  async function delete_pet() {
+    await axios.delete("/api/v1/groups/" + groupId + "/pets/" + rct_id, {}
+    , {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+          console.log(res.data.result);
+          document.location.href = "/view/groups/"+groupId+"/pets";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
   function convert_sex_enum(sex_enum) {
     switch (sex_enum) {
       case "FEMALE":
@@ -315,6 +353,10 @@
       default:
         return "?"
     }
+  }
+
+  function add_pet() {
+    document.location.href = "/view/pets"
   }
 
 

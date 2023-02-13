@@ -30,10 +30,12 @@ public class TagService {
 	public TagWorkResponse create(Long groupId, TagWorkRequest tagWorkRequest, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);
+		validateTagName(groupId, tagWorkRequest.getName());		//이미 존재하는 이름이면 예외 발생
 
 		Tag saved = tagRepository.save(tagWorkRequest.toEntity(group));
 		return TagWorkResponse.from(saved);
 	}
+
 	@Transactional
 	public TagWorkResponse modify(Long groupId, Long tagId, TagWorkRequest tagWorkRequest,
 			String username) {
@@ -45,6 +47,7 @@ public class TagService {
 		Tag modified = tagRepository.saveAndFlush(tag);
 		return TagWorkResponse.from(modified);
 	}
+
 	@Transactional
 	public MessageResponse delete(Long groupId, Long tagId, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
@@ -58,6 +61,7 @@ public class TagService {
 		tagRepository.delete(tag);
 		return new MessageResponse("태그가 삭제되었습니다.");
 	}
+
 	@Transactional(readOnly = true)
 	public TagListResponse getList(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
@@ -65,5 +69,11 @@ public class TagService {
 
 		List<Tag> tags = tagRepository.findAllByGroupId(group.getId());
 		return TagListResponse.from(tags);
+	}
+
+	private void validateTagName(Long groupId, String name) {
+		if (tagRepository.existsByGroupIdAndName(groupId, name)) {
+			throw new TagException(ErrorCode.DUPLICATED_TAG_NAME);
+		}
 	}
 }

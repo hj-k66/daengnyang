@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MntGetResponse {
+	private Long id;
 	private LocalDate date;          //오늘 이전 날짜
 
 	private Double weight;        //몸무게
@@ -35,6 +36,7 @@ public class MntGetResponse {
 
 	public static MntGetResponse from(Monitoring monitoring) {
 		return MntGetResponse.builder()
+				.id(monitoring.getId())
 				.date(monitoring.getDate())
 				.weight(monitoring.getWeight())
 				.vomit(monitoring.getVomit())
