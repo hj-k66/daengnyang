@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
+@Where(clause = "deleted_at is NULL")
 public class Bookmark extends BaseEntity {
 
 	@Id

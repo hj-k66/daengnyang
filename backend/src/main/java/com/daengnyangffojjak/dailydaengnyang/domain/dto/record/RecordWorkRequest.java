@@ -4,7 +4,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
