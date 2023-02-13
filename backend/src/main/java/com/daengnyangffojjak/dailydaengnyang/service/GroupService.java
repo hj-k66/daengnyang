@@ -147,6 +147,7 @@ public class GroupService {
 		User user = validator.getUserByUserName(username);
 		List<UserGroup> userGroupList = userGroupRepository.findAllByUser(user);
 
+
 		return userGroupList.stream().map(GroupListResponse::from).toList();
 
 	}

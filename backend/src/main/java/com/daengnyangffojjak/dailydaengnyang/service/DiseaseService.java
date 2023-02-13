@@ -10,6 +10,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,10 @@ public class DiseaseService {
 	public DizWriteResponse create(Long petId, DizWriteRequest dizWriteRequest, String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		validateDiseaseName(petId, dizWriteRequest.getName());
+		LocalDate ended = dizWriteRequest.getEndedAt();
+		if (ended != null && ended.isBefore(dizWriteRequest.getStartedAt())) { //종료일이 시작일보다 전이면 에러 발생
+			throw new DiseaseException(ErrorCode.INVALID_REQUEST, "시작일이 종료일보다 이전이어야 합니다.");
+		}
 
 		Disease saved = diseaseRepository.save(dizWriteRequest.toEntity(pet));
 		return DizWriteResponse.from(saved);
@@ -38,6 +43,11 @@ public class DiseaseService {
 			String username) {
 		Pet pet = validator.getPetWithUsername(petId, username);
 		Disease disease = validateDiseaseWithPetId(petId, diseaseId);
+
+		LocalDate ended = dizWriteRequest.getEndedAt();
+		if (ended != null && ended.isBefore(dizWriteRequest.getStartedAt())) { //종료일이 시작일보다 전이면 에러 발생
+			throw new DiseaseException(ErrorCode.INVALID_REQUEST, "시작일이 종료일보다 이전이어야 합니다.");
+		}
 
 		disease.modify(dizWriteRequest);
 		Disease modified = diseaseRepository.saveAndFlush(disease);
