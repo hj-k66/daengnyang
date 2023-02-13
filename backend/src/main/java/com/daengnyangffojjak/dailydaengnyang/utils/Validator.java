@@ -24,7 +24,9 @@ import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -101,5 +103,17 @@ public class Validator {
 			throw new GroupException(ErrorCode.INVALID_PERMISSION);
 		}
 		return userGroupList;
+	}
+
+	//유저아이디 : 그룹 내 역할 -> 맵 반환
+	public Map<Long, String> makeMapWithRoleAndId (List<UserGroup> userGroupList) {
+		Map<Long, String> roleIdMap = new HashMap<>();
+		for (UserGroup userGroup : userGroupList) {
+			Long userId = userGroup.getUser().getId();
+			String role = userGroup.getRoleInGroup();
+
+			roleIdMap.put(userId, role);
+		}
+		return roleIdMap;
 	}
 }
