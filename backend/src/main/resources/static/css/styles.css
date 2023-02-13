@@ -282,7 +282,7 @@ table {
 
 img.pet-img {
   width: 80px;
-  border-radius: 50%;
+  /*border-radius: 50%;*/
 }
 
 div.info {
