@@ -13,12 +13,14 @@ import lombok.NoArgsConstructor;
 public class GroupUserResponse {
 
 	private Long id;
+	private String groupName;
 	private String userName;
 	private String roleInGroup;
 
 	public static GroupUserResponse from(UserGroup userGroup) {
 		return GroupUserResponse.builder()
 				.id(userGroup.getId())
+				.groupName(userGroup.getGroup().getName())
 				.userName(userGroup.getUser().getUsername())
 				.roleInGroup(userGroup.getRoleInGroup())
 				.build();
