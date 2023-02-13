@@ -7,6 +7,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +31,9 @@ public class Notification extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	private NotificationType notificationType;
 	private boolean checked; //알림 확인 여부
+	@OneToMany(mappedBy = "notification")
+	private List<NotificationUser> notificationUserList = new ArrayList<NotificationUser>();
+
 
 	public static Notification from(String title, String body, NotificationType notificationType, boolean checked){
 		return Notification.builder()

@@ -55,6 +55,50 @@ class ScheduleRestControllerTest extends ControllerTest {
 	//일정 부탁하기
 	ScheduleAssignRequest scheduleAssignRequest = new ScheduleAssignRequest("희정", "내일까지 부탁해!");
 
+	//일정 완료하기
+	ScheduleCompleteRequest scheduleCompleteRequest = new ScheduleCompleteRequest(true);
+
+	//------------------------------------------------------------------------------------------
+	@Nested
+	@DisplayName("일정 완료하기 ")
+	class ScheduleComplete {
+
+		@Test
+		@DisplayName("일정 완료하기 성공")
+		void complete_success() throws Exception {
+			ScheduleCompleteResponse scheduleCompleteResponse = new ScheduleCompleteResponse(
+					"일정이 완료되었습니다.", 1L);
+			given(scheduleService.complete(1L, 1L, scheduleCompleteRequest, "user"))
+					.willReturn(scheduleCompleteResponse);
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.put(
+											"/api/v1/pets/{petId}/schedules/{scheduleId}/completed", 1L, 1L)
+									.with(csrf())
+									.content(objectMapper.writeValueAsBytes(scheduleCompleteRequest))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isCreated())
+					.andExpect(jsonPath("$.result.message").value("일정이 완료되었습니다."))
+					.andExpect(jsonPath("$.result.id").value(1L))
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("petId").description("반려동물 번호"),
+											parameterWithName("scheduleId").description("일정 번호")
+
+									),
+									requestFields(
+											fieldWithPath("completed").description("완료 여부")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath("result.message").description("결과메세지"),
+											fieldWithPath("result.id").description("일정 id")
+									)
+							));
+			verify(scheduleService).complete(1L, 1L, scheduleCompleteRequest, "user");
+		}
+	}
+
 	//------------------------------------------------------------------------------------------
 	@Nested
 	@DisplayName("일정부탁하기")
