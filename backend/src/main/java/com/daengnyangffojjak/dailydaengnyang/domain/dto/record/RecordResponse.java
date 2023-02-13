@@ -34,6 +34,7 @@ public class RecordResponse {
 	private Boolean isPublic;
 	private String tag;
 	private List<RecordFile> recordFiles;
+	private RecordFile recordFile;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime createdAt;
@@ -56,10 +57,11 @@ public class RecordResponse {
 				.build();
 	}
 
-	public static RecordResponse from(Record record) {
+	public static RecordResponse from(Record record, RecordFile firstRecordFile) {
 		return RecordResponse.builder()
 				.title(record.getTitle())
 				.body(record.getBody())
+				.recordFile(firstRecordFile)
 				.userName(record.getUser().getUsername())
 				.tag(record.getTag().getName())
 				.build();

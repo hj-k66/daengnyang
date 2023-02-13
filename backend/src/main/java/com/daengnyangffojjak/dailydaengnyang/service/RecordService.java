@@ -60,7 +60,14 @@ public class RecordService {
 	public Page<RecordResponse> getAllRecords(Pageable pageable) {
 
 		return recordRepository.findAllByIsPublicTrue(pageable)
-				.map(RecordResponse::from);
+				.map(record -> {
+					List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(record.getId());
+					RecordFile recordFile = null;
+					if (!recordFiles.isEmpty()) {
+						recordFile = recordFiles.get(0);
+					}
+					return RecordResponse.from(record, recordFile);
+				});
 	}
 
 	// 일기 작성
