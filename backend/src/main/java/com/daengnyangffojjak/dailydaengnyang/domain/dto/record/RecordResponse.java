@@ -41,7 +41,8 @@ public class RecordResponse {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime lastModifiedAt;
 
-	public static RecordResponse of(User user, Pet pet, Record record, List<RecordFile> recordFiles) {
+	public static RecordResponse of(User user, Pet pet, Record record,
+			List<RecordFile> recordFiles) {
 		return RecordResponse.builder()
 				.id(record.getId())
 				.userId(user.getId())

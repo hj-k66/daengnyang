@@ -15,6 +15,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
@@ -28,11 +29,13 @@ import org.springframework.context.ApplicationEventPublisher;
 class RecordServiceTest {
 
 	private final RecordRepository recordRepository = mock(RecordRepository.class);
+	private final RecordFileRepository recordFileRepository = mock(RecordFileRepository.class)
 	private final Validator validator = mock(Validator.class);
 	private final ApplicationEventPublisher applicationEventPublisher = mock(
 			ApplicationEventPublisher.class);
 
-	private RecordService recordService = new RecordService(recordRepository, validator,
+	private RecordService recordService = new RecordService(recordRepository, recordFileRepository,
+			validator,
 			applicationEventPublisher);
 
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")

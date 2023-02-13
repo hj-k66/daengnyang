@@ -50,6 +50,7 @@ public class RecordService {
 		// 일기가 없는 경우 예외발생
 		Record record = validator.getRecordById(recordId);
 
+		// 같은 recordId에 해당하는 recordFiles
 		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(recordId);
 
 		return RecordResponse.of(user, pet, record, recordFiles);
@@ -59,9 +60,11 @@ public class RecordService {
 	@Transactional(readOnly = true)
 	public Page<RecordResponse> getAllRecords(Pageable pageable) {
 
+		// 일기 파일 중 첫 파일만 올라가게 하는 로직
 		return recordRepository.findAllByIsPublicTrue(pageable)
 				.map(record -> {
-					List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(record.getId());
+					List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(
+							record.getId());
 					RecordFile recordFile = null;
 					if (!recordFiles.isEmpty()) {
 						recordFile = recordFiles.get(0);
