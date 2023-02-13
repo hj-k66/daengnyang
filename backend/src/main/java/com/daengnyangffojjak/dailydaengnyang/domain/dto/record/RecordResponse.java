@@ -4,9 +4,11 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,6 +28,7 @@ public class RecordResponse {
 	private Long id;
 	private Long userId;
 	private Long petId;
+	private String petName;
 	private String title;
 	private String body;
 	private String userName;
@@ -39,8 +42,7 @@ public class RecordResponse {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime lastModifiedAt;
 
-	public static RecordResponse of(Record record,
-			List<RecordFile> recordFiles) {
+	public static RecordResponse of(Record record, List<RecordFile> recordFiles) {
 		return RecordResponse.builder()
 				.id(record.getId())
 				.userId(record.getUser().getId())
@@ -49,6 +51,7 @@ public class RecordResponse {
 				.title(record.getTitle())
 				.body(record.getBody())
 				.recordFiles(recordFiles)
+				.recordFile(selectThumbNail(recordFiles))
 				.userName(record.getUser().getUsername())
 				.isPublic(record.getIsPublic())
 				.tag(record.getTag().getName())
@@ -56,13 +59,20 @@ public class RecordResponse {
 				.lastModifiedAt(record.getLastModifiedAt())
 				.build();
 	}
-
-//	public static RecordResponse from(Record record) {
-//		return RecordResponse.builder()
-//				.title(record.getTitle())
-//				.body(record.getBody())
-//				.userName(record.getUser().getUsername())
-//				.tag(record.getTag().getName())
-//				.build();
-//	}
+	public static RecordFile selectThumbNail (List<RecordFile> recordFiles) {
+		RecordFile recordFile = null;
+		if (!recordFiles.isEmpty()) {
+			recordFile = recordFiles.get(0);
+			int idx = recordFile.getStoredFileUrl().lastIndexOf(".");
+			String extension = recordFile.getStoredFileUrl().substring(idx + 1);
+			if (extension.equalsIgnoreCase("mp4")) {
+				recordFile = null;
+			}
+		}
+		if (recordFile == null) {
+			recordFile = new RecordFile();
+			recordFile.changeToDefaultImage("https://daengnyang-bucket.s3.ap-northeast-2.amazonaws.com/defaultImage.png");
+		}
+		return recordFile;
+	}
 }

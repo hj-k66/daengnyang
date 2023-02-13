@@ -55,8 +55,8 @@ class RecordRestControllerTest extends ControllerTest {
 		void success_get_one_record() throws Exception {
 
 			// 일기 상세(1개) 조회
-			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user", true,
-					"산책", createdAt, lastmodifiedAt);
+			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "훈이", "제목", "본문", "user", true,
+					"산책", List.of(), new RecordFile(), createdAt, lastmodifiedAt);
 
 			given(recordService.getOneRecord(1L, 1L, "user"))
 					.willReturn(recordResponse);
@@ -86,6 +86,7 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath("result.id").description("일기 번호"),
 											fieldWithPath("result.userId").description("작성자 번호"),
 											fieldWithPath("result.petId").description("반려동물 번호"),
+											fieldWithPath("result.petName").description("반려동물 이름"),
 											fieldWithPath("result.title").description("제목"),
 											fieldWithPath("result.body").description("본문"),
 											fieldWithPath("result.userName").description("작성자"),
@@ -98,11 +99,28 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath("result.recordFiles").description(
 													"일기에 업로드 된 파일"),
 											fieldWithPath("result.recordFile").description(
-													"일기에 업로드 된 파일")
-									)
-							)
-					);
-
+													"일기에 업로드 된 파일"),
+											fieldWithPath(
+													"result.recordFiles").description(
+													"사진 파일 목록"),
+											fieldWithPath(
+													"result.recordFile.createdAt").description(
+													"생성 일자"),
+											fieldWithPath(
+													"result.recordFile.lastModifiedAt").description(
+													"수정 일자"),
+											fieldWithPath(
+													"result.recordFile.id").description(
+													"파일 등록 번호"),
+											fieldWithPath(
+													"result.recordFile.storedFileUrl").description(
+													"저장 경로"),
+											fieldWithPath(
+													"result.recordFile.uploadFilename").description(
+													"파일이름"),
+											fieldWithPath(
+													"result.recordFile.deleted").description(
+													"삭제여부"))));
 			verify(recordService).getOneRecord(1L, 1L, "user");
 		}
 	}
@@ -147,6 +165,8 @@ class RecordRestControllerTest extends ControllerTest {
 													"유저 번호"),
 											fieldWithPath("result.content[].petId").description(
 													"반려동물 번호"),
+											fieldWithPath("result.content[].petName").description(
+													"반려동물 이름"),
 											fieldWithPath("result.content[].createdAt").description(
 													"작성 날짜"),
 											fieldWithPath(
@@ -258,10 +278,28 @@ class RecordRestControllerTest extends ControllerTest {
 													"user"),
 											fieldWithPath(
 													"result[].tag").description(
-													"태그")
-									)
-							)
-					);
+													"태그"),
+											fieldWithPath(
+													"result[].recordFiles").description(
+													"사진 파일 목록"),
+											fieldWithPath(
+													"result[].recordFile.createdAt").description(
+													"생성 일자"),
+											fieldWithPath(
+													"result[].recordFile.lastModifiedAt").description(
+													"수정 일자"),
+											fieldWithPath(
+													"result[].recordFile.id").description(
+													"파일 등록 번호"),
+											fieldWithPath(
+													"result[].recordFile.storedFileUrl").description(
+													"저장 경로"),
+											fieldWithPath(
+													"result[].recordFile.uploadFilename").description(
+													"파일이름"),
+											fieldWithPath(
+													"result[].recordFile.deleted").description(
+													"삭제여부"))));
 		}
 	}
 

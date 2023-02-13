@@ -35,10 +35,9 @@ public class RecordController {
 		return "record/record_detail";
 	}
 
-	@GetMapping("/add")
-	public String add(Model model) {
-		model.addAttribute("recordWorkRequest", new RecordWorkRequest());
-
+	@GetMapping("/pets/{petId}/records")
+	public String add(Model model, @PathVariable Long petId) {
+		model.addAttribute("petId", petId);
 		return "record/record_add";
 	}
 

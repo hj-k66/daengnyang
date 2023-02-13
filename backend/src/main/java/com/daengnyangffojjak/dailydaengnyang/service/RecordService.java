@@ -48,9 +48,6 @@ public class RecordService {
 		// 유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
-		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
-		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
-
 		// 일기가 없는 경우 예외발생
 		Record record = validator.getRecordById(recordId);
 
@@ -60,38 +57,23 @@ public class RecordService {
 			validator.getUserGroupListByUsername(pet.getGroup(), userName);
 		}
 
-		return RecordResponse.of(record);
 		// 같은 recordId에 해당하는 recordFiles
 		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(recordId);
 
-		return RecordResponse.of(user, pet, record, recordFiles);
+		return RecordResponse.of(record, recordFiles);
 	}
 
 	// 전체 피드 조회
 	@Transactional(readOnly = true)
 	public Page<RecordResponse> getAllRecords(Pageable pageable) {
 
-		// 일기 파일 중 첫 파일만 올라가게 하는 로직
-		return recordRepository.findAllByIsPublicTrue(pageable)
-				.map(record -> {
-					List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(
-							record.getId());
-					RecordFile recordFile = null;
-					if (!recordFiles.isEmpty()) {
-						recordFile = recordFiles.get(0);
-						int idx = recordFile.getStoredFileUrl().lastIndexOf(".");
-						String extension = recordFile.getStoredFileUrl().substring(idx + 1);
-						if (extension.equalsIgnoreCase("mp4")) {
-							recordFile = null;
-						}
-					}
-					if (recordFile == null) {
-						recordFile = new RecordFile();
-						recordFile.changeToDefaultImage("https://daengnyang-bucket.s3.ap-northeast-2.amazonaws.com/defaultImage.png");
-					}
+		Page<Record> records = recordRepository.findAllByIsPublicTrue(pageable);
+		return records.map(this::toResponse);
+	}
 
-					return RecordResponse.from(record, recordFile);
-				});
+	private RecordResponse toResponse (Record record) {
+		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(record.getId());
+		return RecordResponse.of(record, recordFiles);
 	}
 
 	// 일기 작성
@@ -193,7 +175,7 @@ public class RecordService {
 		List<Record> records = recordRepository.findAllByCreatedAtBetweenAndPetId(
 				Sort.by(Direction.DESC, "createdAt"), start, end, petId);
 
-		return 	records.stream().map(RecordResponse::of).toList();
+		return 	records.stream().map(this::toResponse).toList();
 	}
 
 	private LocalDateTime getLocalDateFromString (String date) {

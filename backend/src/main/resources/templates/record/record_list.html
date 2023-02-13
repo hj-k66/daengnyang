@@ -133,9 +133,8 @@
           let title = records[i]['title'];
           let body = records[i]['body'];
           let tag = records[i]['tag'];
-          let storedFileUrl = "https://cdn-icons-png.flaticon.com/512/2138/2138245.png";
-          // let storedFileUrl = records[i]['recordFile']['storedFileUrl'];
-          // let uploadFilename = records[i]['recordFile']['uploadFilename'];
+          let storedFileUrl = records[i]['recordFile']['storedFileUrl'];
+          let uploadFilename = records[i]['recordFile']['uploadFilename'];
 
           let temp_html = `
                     <div id="record-${id}"
