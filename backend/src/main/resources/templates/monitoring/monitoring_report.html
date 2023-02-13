@@ -371,11 +371,14 @@
       hAxis: {title: '날짜'},
       vAxis: {
         title: content,
-        viewWindowMode: 'pretty'
+        viewWindowMode: 'pretty',
+        gridlines: {
+          interval: 2
+        }
+
       },
       curveType: 'function',
-      chartArea: {left: 20, top: 0, width: '50%', height: '80%'},
-      lineWidth: 0
+      chartArea: {left: 20, top: 0, width: '50%', height: '80%'}
     };
 
     var chart = new google.charts.Line(document.getElementById(chart_id));
@@ -402,7 +405,7 @@
         weight_list.push([date, weight]);
       }
       let feed = mnt['feedToGram'];
-      if (feed != null) {
+      if (feed != null && feed !== 0) {
         feed_list.push([date, feed]);
       }
       let walk = mnt['walkCnt'];
