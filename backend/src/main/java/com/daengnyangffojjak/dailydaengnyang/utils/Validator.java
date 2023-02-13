@@ -78,6 +78,7 @@ public class Validator {
 		return tagRepository.findById(tagId)
 				.orElseThrow(() -> new TagException(ErrorCode.TAG_NOT_FOUND));
 	}
+
 	public Disease getDiseaseById(Long diseaseId) {
 		return diseaseRepository.findById(diseaseId)
 				.orElseThrow(() -> new DiseaseException(ErrorCode.DISEASE_NOT_FOUND));
@@ -118,7 +119,7 @@ public class Validator {
 
 	// 빈 파일을 업로드 하거나 파일을 업로드 안했을 때
 	public void validateFile(List<MultipartFile> multipartFiles) {
-		for(MultipartFile multipartFile : multipartFiles) {
+		for (MultipartFile multipartFile : multipartFiles) {
 			if (multipartFile.isEmpty()) {
 				throw new FileException(ErrorCode.FILE_NOT_FOUND);
 			}
@@ -126,7 +127,7 @@ public class Validator {
 	}
 
 	//유저아이디 : 그룹 내 역할 -> 맵 반환
-	public Map<Long, String> makeMapWithRoleAndId (List<UserGroup> userGroupList) {
+	public Map<Long, String> makeMapWithRoleAndId(List<UserGroup> userGroupList) {
 		Map<Long, String> roleIdMap = new HashMap<>();
 		for (UserGroup userGroup : userGroupList) {
 			Long userId = userGroup.getUser().getId();
