@@ -238,6 +238,12 @@
           `
           $('#pet-list').append(temp_html);
         }
+        let add_html = `
+        <div class="card" style="width: 500px; display: flex; align-items: center;height: 80px;" onclick="add_pet()">
+          <h3 style="text-align: center; margin: auto;">+</h3>
+        </div>
+        `;
+        $('#pet-list').append(add_html);
       } else {
         console.log("실패임" + res.resultCode)
       }
@@ -347,6 +353,10 @@
       default:
         return "?"
     }
+  }
+
+  function add_pet() {
+    document.location.href = "/view/pets"
   }
 
 
