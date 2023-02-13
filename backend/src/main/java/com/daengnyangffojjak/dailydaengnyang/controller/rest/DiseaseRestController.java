@@ -8,11 +8,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse
 import com.daengnyangffojjak.dailydaengnyang.service.DiseaseService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -74,11 +71,9 @@ public class DiseaseRestController {
 	}
 
 	@GetMapping(value = "/pets/{petId}/diseases")
-	public Response<Page<DizGetResponse>> getDiseaseList(
-			@PageableDefault(size=5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-			@AuthenticationPrincipal UserDetails user, @PathVariable Long petId) {
-		Page<DizGetResponse> dizGetResponses = diseaseService.getDiseaseList(petId, pageable,
-				user.getUsername());
+	public Response<List<DizGetResponse>> getDiseaseList(
+						@AuthenticationPrincipal UserDetails user, @PathVariable Long petId) {
+		List<DizGetResponse> dizGetResponses = diseaseService.getDiseaseList(petId, user.getUsername());
 		return Response.success(dizGetResponses);
 	}
 }

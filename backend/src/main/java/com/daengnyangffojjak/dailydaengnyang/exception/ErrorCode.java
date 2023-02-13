@@ -73,6 +73,7 @@ public enum ErrorCode {
 	 * Disease
 	 **/
 	DISEASE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질병 정보가 존재하지 않습니다."),
+	DUPLICATED_DISEASE_NAME(HttpStatus.CONFLICT, "이미 존재하는 질병이름 입니다."),
 
 	/**
 	 * Notification
