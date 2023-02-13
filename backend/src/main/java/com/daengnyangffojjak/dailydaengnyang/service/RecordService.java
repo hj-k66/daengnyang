@@ -161,7 +161,10 @@ public class RecordService {
 			throw new RecordException(INVALID_PERMISSION);
 		}
 
+		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(recordId);
+		recordFileRepository.deleteAll(recordFiles);
 		record.deleteSoftly();
+
 		return RecordWorkResponse.builder()
 				.message("일기 삭제 완료")
 				.id(recordId)
