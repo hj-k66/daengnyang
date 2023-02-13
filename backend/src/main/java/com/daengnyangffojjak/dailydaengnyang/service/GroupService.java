@@ -7,6 +7,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
@@ -50,7 +51,7 @@ public class GroupService {
 		return GroupMakeResponse.from(savedGroup);
 	}
 
-	@Transactional(readOnly = true)		//그룹 내 유저 조회
+	@Transactional(readOnly = true)        //그룹 내 유저 조회
 	public GroupUserListResponse getGroupUsers(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(group, username);
@@ -88,8 +89,8 @@ public class GroupService {
 				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup()));   //그룹 멤버로 저장
 
 		//알림 전송 - 초대받은 대상자에게만 전송
-		applicationEventPublisher.publishEvent(new GroupInviteEvent(invited,group.getName(),username));
-
+		applicationEventPublisher.publishEvent(
+				new GroupInviteEvent(invited, group.getName(), username));
 
 		return new MessageResponse(invited.getUsername() + "이(가) 그룹에 등록되었습니다.");
 	}
@@ -147,8 +148,23 @@ public class GroupService {
 		User user = validator.getUserByUserName(username);
 		List<UserGroup> userGroupList = userGroupRepository.findAllByUser(user);
 
-
 		return userGroupList.stream().map(GroupListResponse::from).toList();
+
+	}
+
+	@Transactional
+	public GroupUserResponse modifyInfoinGroup(Long groupId, String username,
+			GroupInviteRequest request) {
+		Group group = validator.getGroupById(groupId);
+		List<UserGroup> userGroups = validator.getUserGroupListByUsername(group, username);
+
+		UserGroup userGroup = userGroups.stream()
+				.filter(ug -> (ug.getUser().getUsername().equals(username))).findFirst()
+				.orElseThrow(() -> new GroupException(ErrorCode.INVALID_REQUEST));
+
+		userGroup.modifyRole(request.getRoleInGroup());
+		UserGroup saved = userGroupRepository.saveAndFlush(userGroup);
+		return GroupUserResponse.from(saved);
 
 	}
 }
