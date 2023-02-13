@@ -64,7 +64,7 @@ public class NotificationRestControllerTest extends ControllerTest {
 
 		@Test
 		@DisplayName("알람 리스트 조회 성공")
-		void list_success() throws Exception {
+		void success() throws Exception {
 			NotificationResponse notificationResponse1 = new NotificationResponse(2L, "일정부탁히기",
 					"희정님이 오전산책 일정을 부탁했습니다.  ",
 					NotificationType.SCHEDULE_ASSIGN, false);
