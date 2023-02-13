@@ -12,34 +12,36 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntMonthlyRes
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntReportResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.monitoring.MntWriteResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
+import com.daengnyangffojjak.dailydaengnyang.fixture.GroupFixture;
+import com.daengnyangffojjak.dailydaengnyang.fixture.PetFixture;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
 
 class MonitoringServiceTest {
 
 	private final MonitoringRepository monitoringRepository = mock(MonitoringRepository.class);
+	private final PetRepository petRepository = mock(PetRepository.class);
 	private final Validator validator = mock(Validator.class);
-	User user = User.builder().id(1L).userName("user").password("password").email("@.")
-			.role(UserRole.ROLE_USER).build();
-	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
-	Pet pet = Pet.builder().id(1L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
-			.name("hoon").group(group).sex(Sex.NEUTERED_MALE).build();
+	Group group = GroupFixture.get();
+	Pet pet = PetFixture.get();
+
+
 	private MonitoringService monitoringService
-			= new MonitoringService(monitoringRepository, validator);
+			= new MonitoringService(monitoringRepository, petRepository, validator);
 
 	@Nested
 	@DisplayName("모니터링 등록")
@@ -175,7 +177,8 @@ class MonitoringServiceTest {
 			LocalDate start = LocalDate.of(2023, 1, 1);
 			LocalDate end = LocalDate.of(2023, 1, 31);
 			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
-			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
+			given(monitoringRepository.findAllByDateBetweenAndPetId(
+					Sort.by(Sort.Direction.ASC, "date"), start, end, 1L)).willReturn(saved);
 
 			MntMonthlyResponse response = assertDoesNotThrow(
 					() -> monitoringService.getMonitoringList(1L, "20230101", "20230131", "user"));
@@ -202,7 +205,8 @@ class MonitoringServiceTest {
 			LocalDate start = LocalDate.of(2023, 1, 1);
 			LocalDate end = LocalDate.of(2023, 1, 31);
 			given(validator.getPetWithUsername(1L, "user")).willReturn(pet);
-			given(monitoringRepository.findAllByDateBetween(start, end)).willReturn(saved);
+			given(monitoringRepository.findAllByDateBetweenAndPetId(
+					Sort.by(Sort.Direction.ASC, "date"), start, end, 1L)).willReturn(saved);
 
 			MntReportResponse response = assertDoesNotThrow(
 					() -> monitoringService.getReport(1L, "20230101", "20230131", "user"));

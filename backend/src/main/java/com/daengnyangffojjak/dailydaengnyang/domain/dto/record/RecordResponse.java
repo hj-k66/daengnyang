@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.record;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -29,11 +30,10 @@ public class RecordResponse {
 	private String body;
 	private String userName;
 	private Boolean isPublic;
-	private Category category;
-	@CreatedDate
+	private String tag;
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime createdAt;
-	@LastModifiedDate
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime lastModifiedAt;
 
@@ -46,7 +46,7 @@ public class RecordResponse {
 				.body(record.getBody())
 				.userName(record.getUser().getUsername())
 				.isPublic(record.getIsPublic())
-				.category(record.getCategory())
+				.tag(record.getTag().getName())
 				.createdAt(record.getCreatedAt())
 				.lastModifiedAt(record.getLastModifiedAt())
 				.build();
@@ -54,11 +54,10 @@ public class RecordResponse {
 
 	public static RecordResponse from(Record record) {
 		return RecordResponse.builder()
-				.id(record.getId())
 				.title(record.getTitle())
 				.body(record.getBody())
 				.userName(record.getUser().getUsername())
-				.category(record.getCategory())
+				.tag(record.getTag().getName())
 				.build();
 	}
 }

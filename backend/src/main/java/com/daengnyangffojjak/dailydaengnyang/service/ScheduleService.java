@@ -1,16 +1,23 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleAssignEvent;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCreateEvent;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,11 +32,13 @@ public class ScheduleService {
 
 	private final ScheduleRepository scheduleRepository;
 	private final Validator validator;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	//일정 등록
 	@Transactional
 	public ScheduleCreateResponse create(Long petId, ScheduleCreateRequest scheduleCreateRequest,
 			String userName) {
+		log.info("일정 생성 로직 시작");
 
 		//유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
@@ -45,7 +54,19 @@ public class ScheduleService {
 				scheduleCreateRequest.toEntity(pet, user, tag));
 		String message = "일정 등록 완료";
 
+		//알림 전송 - 그룹원 모두에게 전송
+		//해당 그룹(pet의 그룹) 내 멤버 이름 불러오기
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), userName);
+		List<User> userList = userGroupList.stream()
+				.map(UserGroup::getUser).collect(
+						Collectors.toList());
+
+		applicationEventPublisher.publishEvent(
+				new ScheduleCreateEvent(userList, scheduleCreateRequest.getTitle(), userName));
+
 		return ScheduleCreateResponse.toResponse(message, savedSchedule);
+
 
 	}
 
@@ -138,6 +159,47 @@ public class ScheduleService {
 		Page<Schedule> schedules = scheduleRepository.findAllByPetId(pet.getId(), pageable);
 
 		return ScheduleListResponse.toResponse(schedules);
+
+	}
+
+	@Transactional
+	public MessageResponse assign(Long petId, Long scheduleId,
+			ScheduleAssignRequest scheduleAssignRequest, String userName) {
+		//1. 로그인 유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(userName);
+
+		//2. 일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+		//3. Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
+
+		//4. assignrequest receiverId가 userName(pet)과 같은 그룹이 아닐 경우 예외발생
+		//receiver 유저가 없는 경우 예외 발생 같이 처리
+		validator.getUserGroupListByUsername(pet.getGroup(),
+				scheduleAssignRequest.getReceiverName());
+
+		//5. 로그인유저 != (일정작성유저 or 이전 일정 책임자)일 경우 예외발생
+		Long loginUserId = user.getId();
+		Long scheduleWriteUserId = schedule.getUser().getId();
+		Long assigneeId = schedule.getAssigneeId();
+
+		if (!loginUserId.equals(scheduleWriteUserId) && !loginUserId.equals(assigneeId)) {
+			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+		}
+
+		//수정된 일정 저장
+		User receiver = validator.getUserByUserName(scheduleAssignRequest.getReceiverName());
+		schedule.changeToAssignee(receiver.getId());
+		scheduleRepository.saveAndFlush(schedule);
+
+		//알림 전송 - 부탁받은 대상자만
+		applicationEventPublisher.publishEvent(
+				new ScheduleAssignEvent(receiver, scheduleAssignRequest.getMessage(),
+						userName, schedule.getTitle()));
+
+		return new MessageResponse("일정의 책임자가 변경되었습니다.");
 
 	}
 }

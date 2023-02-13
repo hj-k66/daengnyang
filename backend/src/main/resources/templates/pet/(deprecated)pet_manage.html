@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+  <meta charset="UTF-8">
+  <title>개묘한 이야기</title>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12">
+      <h3> 반려동물 관리 </h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+    </div>
+    <div class="col-md-8">
+      <!-- 데이터 받아서 테이블 생성 -->
+      <table class="tg" style="border: 1px solid black; table-layout: fixed; width: 595px">
+        <colgroup>
+          <col style="width: 156.0px">
+          <col style="width: 156.0px">
+          <col style="width: 156.0px">
+          <col style="width: 156.0px">
+        </colgroup>
+        <thead>
+        <tr>
+          <td class="tg-y67q" rowspan="3">사진</td>
+          <td id="name" class="tg-la1s" rowspan="2">name</td>
+          <td id="species" class="tg-m684">species</td>
+          <td id="breed" class="tg-m684" rowspan="2">breed</td>
+        </tr>
+        <tr>
+          <td id="birthday" class="tg-4dm3">birthday</td>
+        </tr>
+        <tr>
+          <td id="sex" class="tg-9wq8">sex</td>
+          <td id="weight" class="tg-4dm3">weight</td>
+          <td class="tg-4dm3">
+            <button class="btn" onclick="location.href='#'">수정</button>
+          </td>
+        </tr>
+        </thead>
+      </table>
+
+    </div>
+    <div class="col-md-2">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  const groupId = [[${groupId}]];
+  const petId = [[${petId}]];
+  $(document).ready(function () {
+    get_pet_info();
+  });
+
+
+  axios.defaults.withCredentials = true;
+  async function get_pet_info() {
+    await axios.get("/api/v1/groups/"+groupId+"/pets/"+petId, {}, {
+      headers: {
+        "Content-Type": `application/json`,
+        // Authorization: "Bearer " + localStorage.getItem("accessToken")
+        Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InVzZXIiLCJyb2xlIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE2NzU4NDg1MTMsImV4cCI6MTY3NTg1MjExM30.9T3n7rIWsMVuG9-KP1zvns7mSdxWWlrz6im1z7IUR5k"
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        $('#name').text(res.data.result.name);
+        $('#birthday').text(res.data.result.birthday);
+        $('#breed').text(res.data.result.breed);
+        $('#sex').text(res.data.result.sex);
+        $('#species').text(res.data.result.species);
+        $('#weight').text(res.data.result.weight+"kg");
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+
+</body>
+</html>

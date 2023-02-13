@@ -1,0 +1,22 @@
+[[Record-API]]
+== Record API
+
+[[Record-상세조회]]
+=== 일기 상세(1개) 조회
+operation::record-get-one/success_get_one_record[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Record-전체피드조회]]
+=== 일기 전체피드 조회
+operation::record-get-all/success_get_all_records[snippets='http-request,http-response,response-fields']
+
+[[Record-작성]]
+=== 일기 작성
+operation::record-create/success_create_record[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Record-수정]]
+=== 일기 수정
+operation::record-modify/success_modify_record[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Record-삭제]]
+=== 일기 삭제
+operation::record-delete/succes_delete_record[snippets='http-request,path-parameters,http-response,response-fields']

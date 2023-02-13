@@ -18,9 +18,11 @@ import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.GroupInviteEvent;
 import java.util.List;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,8 @@ public class GroupService {
 	private final UserRepository userRepository;
 	private final PetRepository petRepository;
 	private final Validator validator;
+	private final ApplicationEventPublisher applicationEventPublisher;
+
 
 	@Transactional      //그룹 생성
 	public GroupMakeResponse create(GroupMakeRequest groupMakeRequest, String username) {
@@ -81,6 +85,11 @@ public class GroupService {
 		}
 		UserGroup savedUserGroup = userGroupRepository.save(    //그룹에 추가
 				UserGroup.from(invited, group, groupInviteRequest.getRoleInGroup()));   //그룹 멤버로 저장
+
+		//알림 전송 - 초대받은 대상자에게만 전송
+		applicationEventPublisher.publishEvent(new GroupInviteEvent(invited,group.getName(),username));
+
+
 		return new MessageResponse(invited.getUsername() + "이(가) 그룹에 등록되었습니다.");
 	}
 

@@ -21,6 +21,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.fixture.GroupFixture;
+import com.daengnyangffojjak.dailydaengnyang.fixture.UserFixture;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
@@ -33,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 class GroupServiceTest {
 
@@ -41,9 +44,11 @@ class GroupServiceTest {
 	private final UserRepository userRepository = mock(UserRepository.class);
 	private final PetRepository petRepository = mock(PetRepository.class);
 	private final Validator validator = mock(Validator.class);
-	User user = User.builder().id(1L).userName("user").password("password").email("@.")
-			.role(UserRole.ROLE_USER).build();
-	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
+	private final ApplicationEventPublisher applicationEventPublisher = mock(
+			ApplicationEventPublisher.class);
+
+	User user = UserFixture.get();
+	Group group = GroupFixture.get();
 	UserGroup userGroup = UserGroup.builder().id(1L).user(user).group(group).roleInGroup("엄마")
 			.build();
 	List<UserGroup> userGroupList = List.of(
@@ -54,7 +59,7 @@ class GroupServiceTest {
 	@BeforeEach
 	void setUp() {
 		groupService = new GroupService(groupRepository, userGroupRepository, userRepository,
-				petRepository, validator);
+				petRepository, validator, applicationEventPublisher);
 	}
 
 	@Nested

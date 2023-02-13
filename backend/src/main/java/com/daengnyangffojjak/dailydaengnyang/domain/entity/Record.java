@@ -5,6 +5,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class Record extends BaseEntity {
 
 	@Id
@@ -27,18 +29,16 @@ public class Record extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
-	@Enumerated(EnumType.STRING)
-	private Category category;
 	@Column(nullable = false)
 	private String title;
 	private String body;
 	@Column(nullable = false)
 	private Boolean isPublic;
 
-	public void modifyRecord(RecordWorkRequest recordWorkRequest) {
+	public void modifyRecord(RecordWorkRequest recordWorkRequest, Tag tag) {
+		this.tag = tag;
 		this.body = recordWorkRequest.getBody();
 		this.title = recordWorkRequest.getTitle();
-		this.category = recordWorkRequest.getCategory();
 		this.isPublic = recordWorkRequest.getIsPublic();
 	}
 }
