@@ -13,6 +13,13 @@
         integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
         crossorigin="anonymous"/>
   <title>게시판</title>
+
+
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -27,29 +34,79 @@
           class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
           <strong class="d-inline-block mb-2 text-success"
-                  >#산책</strong>
-          <h3 class="mb-0">하루에 산책 3번한 날...</h3>
-          <div class="mb-1 text-muted">Feb 7</div>
-          <p class="mb-auto">오늘은 산책을 세번이나 했다. 멍뭉이는 아직 멀쩡해보인다. 힘이 어디서
-            나오는지 모르겠다. 너무 힘들다... 그래도 귀여워서 참는다.오늘은 산책을 세번이나 했다. 멍뭉이는 아직 멀쩡해보인다. 힘이 어디서 나오는지 모르겠다. 너무
-            힘들다... 그래도 귀여워서 참는다.오늘은 산책을 세번이나 했다. 멍뭉이는 아직 멀쩡해보인다. 힘이 어디서 나오는지 모르겠다. 너무 힘들다... 그래도
-            귀여워서 참는다.</p>
-          <div class="col-auto d-none d-lg-block mt-5">
-            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
-                 width="250" height="250" class="img-thumbnail" alt="강아지">
-            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
-                 width="250" height="250" class="img-thumbnail" alt="강아지">
-            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
-                 width="250" height="250" class="img-thumbnail" alt="강아지">
+          >#<span id="tag">태그</span></strong>
+          <h3 id="title" class="mb-0">제목</h3>
+
+          <table class="table table-sm mt-5 table-borderless">
+            <thead>
+            <tr>
+              <th scope="col" style="text-decoration: underline" colspan="2">애기이름</th>
+              <th scope="col" id="petName" colspan="2" style="width: 40%;">멍멍</th>
+              <th scope="col" class="align-bottom" style="font-size: small">작성일시</th>
+              <td id="createdAt" class="text-muted align-bottom" style="font-size: small">0000-00-00
+                00:00:00
+              </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <th scope="row" style="text-decoration: underline" colspan="2">작성자</th>
+              <th colspan="2" id="userName">이름</th>
+              <th class="align-top" style="font-size: small">수정일시</th>
+              <td id="lastModifiedAt" class="text-muted align-top" style="font-size: small">
+                0000-00-00 00:00:00
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div id="body-box" class="mb-auto">-</div>
+
+          <div id="carouselExample" class="carousel slide mx-3 my-5"
+               style="width: 400px; height: 300px;">
+            <div class="carousel-inner">
+              <div class="carousel-item">
+                <img
+                    src="https://image.oliveyoung.co.kr/uploads/images/goods/550/10/0000/0014/B00000014213905ko.jpg?l=ko"
+                    class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item active">
+                <img
+                    src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
+                    class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item">
+                <img src="https://img.catpre.com/mobile/catpre/product/24/23345_detail_9071.png"
+                     class="d-block w-100" alt="...">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                    data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                    data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
           </div>
+
+          <!--          <div id="image-box" class="col-auto d-none d-lg-block mt-5">-->
+          <!--            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
+          <!--                 width="250" height="250" class="img-thumbnail" alt="강아지">-->
+          <!--            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
+          <!--                 width="250" height="250" class="img-thumbnail" alt="강아지">-->
+          <!--            <img src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
+          <!--                 width="250" height="250" class="img-thumbnail" alt="강아지">-->
+          <!--          </div>-->
         </div>
       </div>
     </div>
     <div class="d-grid gap-2 d-md-flex justify-content-md-end my-3">
-      <a href="#" class="btn btn-primary" th:href="@{/view/list}">돌아가기</a>
-      <a href="#" class="btn btn-primary" th:href="@{/view/modify}">수정</a>
-      <a href="#" class="btn btn-primary" th:href="@{/삭제주소}">삭제</a>
-      <a href="#" class="btn btn-primary" th:href="@{/찜하기등록}">찜하기</a>
+      <button id="btn-modify" class="btn btn-warning">수정</button>
+      <button id="btn-delete" class="btn btn-danger mx-2">삭제</button>
+      <button onclick="history.back()" class="btn btn-primary">돌아가기</button>
     </div>
     <div class="card">
       <div class="card-body"><textarea class="form-control" row="1"></textarea></div>
@@ -104,6 +161,7 @@
 </div>
 </div>
 
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -115,7 +173,90 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
-</body>
-<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  const petId = [[${petId}]];
+  const recordId = [[${recordId}]];
+  let author;
 
+  $(document).ready(function () {
+    get_record_detail();
+  });
+
+  async function get_record_detail() {
+    await axios.get("/api/v1/pets/" + petId + "/records/" + recordId, {}, {
+      headers: {},
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        author = data.userName;
+
+        let id = data.id;
+        let userId = data.userId;
+        let petId = data.petId;
+        let petName = data.petName;
+        let title = data.title;
+        let body = data.body;
+        let userName = data.userName;
+        let isPublic = data.isPublic;
+        let tag = data.tag;
+        // let recordFiles = data.recordFiles;
+        // let recordFile = data.recordFile;
+        let createdAt = data.createdAt;
+        let lastModifiedAt = data.lastModifiedAt;
+
+        $('#id').text(id);
+        $('#userId').text(userId);
+        $('#petId').text(petId);
+        $('#petName').text(petName);
+        $('#title').text(title);
+        $('#body-box').text(body);
+        $('#userName').text(userName);
+        $('#isPublic').text(isPublic);
+        $('#tag').text(tag);
+        $('#createdAt').text(createdAt);
+        $('#lastModifiedAt').text(lastModifiedAt);
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+      setTimeout(async () => {
+        await get_my_name(function (user) {
+          if (user !== author) {
+            document.getElementById('btn-delete').remove();
+            document.getElementById('btn-modify').remove();
+          }
+        });
+      })
+    });
+  }
+
+  async function get_my_name(callback) {
+    let user;
+    await axios.get("/api/v1/users/myname", {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        user = res.data.result;
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+    callback(user);
+  }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+</body>
 </html>
