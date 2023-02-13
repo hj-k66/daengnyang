@@ -55,6 +55,50 @@ class ScheduleRestControllerTest extends ControllerTest {
 	//일정 부탁하기
 	ScheduleAssignRequest scheduleAssignRequest = new ScheduleAssignRequest("희정", "내일까지 부탁해!");
 
+	//일정 완료하기
+	ScheduleCompleteRequest scheduleCompleteRequest = new ScheduleCompleteRequest(true);
+
+	//------------------------------------------------------------------------------------------
+	@Nested
+	@DisplayName("일정 완료하기 ")
+	class ScheduleComplete {
+
+		@Test
+		@DisplayName("일정 완료하기 성공")
+		void complete_success() throws Exception {
+			ScheduleCompleteResponse scheduleCompleteResponse = new ScheduleCompleteResponse(
+					"일정이 완료되었습니다.", 1L);
+			given(scheduleService.complete(1L, 1L, scheduleCompleteRequest, "user"))
+					.willReturn(scheduleCompleteResponse);
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.put(
+											"/api/v1/pets/{petId}/schedules/{scheduleId}/completed", 1L, 1L)
+									.with(csrf())
+									.content(objectMapper.writeValueAsBytes(scheduleCompleteRequest))
+									.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isCreated())
+					.andExpect(jsonPath("$.result.message").value("일정이 완료되었습니다."))
+					.andExpect(jsonPath("$.result.id").value(1L))
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("petId").description("반려동물 번호"),
+											parameterWithName("scheduleId").description("일정 번호")
+
+									),
+									requestFields(
+											fieldWithPath("completed").description("완료 여부")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath("result.message").description("결과메세지"),
+											fieldWithPath("result.id").description("일정 id")
+									)
+							));
+			verify(scheduleService).complete(1L, 1L, scheduleCompleteRequest, "user");
+		}
+	}
+
 	//------------------------------------------------------------------------------------------
 	@Nested
 	@DisplayName("일정부탁하기")
@@ -89,9 +133,9 @@ class ScheduleRestControllerTest extends ControllerTest {
 									responseFields(
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath("result.msg").description("결과메세지")
-							)
-					));
-			verify(scheduleService).assign(1L, 1L,scheduleAssignRequest, "user");
+									)
+							));
+			verify(scheduleService).assign(1L, 1L, scheduleAssignRequest, "user");
 
 		}
 	}
@@ -130,7 +174,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("tagId").description("태그번호"),
 											fieldWithPath("title").description("제목"),
 											fieldWithPath("body").description("내용"),
-											fieldWithPath("assigneeId").description("책임자"),
+											fieldWithPath("assigneeId").description("책임자 userId"),
 											fieldWithPath("place").description("장소"),
 											fieldWithPath("dueDate").description("예정날짜")
 									),
@@ -451,7 +495,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 			//일정상세조회(단건)
 			ScheduleResponse scheduleResponse = new ScheduleResponse(1L, "일상", 1L, "user", 1L,
 					"pet",
-					"병원", "초음파 재검", 1L, "멋사동물병원", dateTime, false, dateTime, dateTime);
+					"병원", "초음파 재검", 1L, "엄마", "멋사동물병원", dateTime, false, dateTime, dateTime);
 
 			given(scheduleService.get(1L, 1L, "user"))
 					.willReturn(scheduleResponse);
@@ -469,6 +513,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.title").value("병원"))
 					.andExpect(jsonPath("$.result.body").value("초음파 재검"))
 					.andExpect(jsonPath("$.result.assigneeId").value(1L))
+					.andExpect(jsonPath("$.result.roleInGroup").value("엄마"))
 					.andExpect(jsonPath("$.result.place").value("멋사동물병원"))
 					.andExpect(jsonPath("$.result.dueDate").value("2023-01-25 10:26:00"))
 					.andExpect(jsonPath("$.result.completed").value(false))
@@ -492,7 +537,10 @@ class ScheduleRestControllerTest extends ControllerTest {
 											fieldWithPath("result.petName").description("반려동물 이름"),
 											fieldWithPath("result.title").description("제목"),
 											fieldWithPath("result.body").description("내용"),
-											fieldWithPath("result.assigneeId").description("책임자"),
+											fieldWithPath("result.assigneeId").description(
+													"책임자 userId"),
+											fieldWithPath("result.roleInGroup").description(
+													"책임자 그룹내 역할 이름"),
 											fieldWithPath("result.place").description("장소"),
 											fieldWithPath("result.dueDate").description("예정날짜"),
 											fieldWithPath("result.completed").description(
@@ -550,7 +598,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 			Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "dueDate");
 
 			Page<ScheduleListResponse> scheduleListResponsePage = new PageImpl<>(
-					Arrays.asList(new ScheduleListResponse("일상", "title", "body", 1L,
+					Arrays.asList(new ScheduleListResponse("일상", "title", "body", 1L, "엄마",
 							"멋사 동물병원", dateTime, false)));
 
 			given(scheduleService.list(1L, "user", pageable)).willReturn(scheduleListResponsePage);
@@ -563,6 +611,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$['result']['content'][0]['title']").value("title"))
 					.andExpect(jsonPath("$['result']['content'][0]['body']").value("body"))
 					.andExpect(jsonPath("$['result']['content'][0]['assigneeId']").value(1L))
+					.andExpect(jsonPath("$['result']['content'][0]['roleInGroup']").value("엄마"))
 					.andExpect(jsonPath("$['result']['content'][0]['place']").value("멋사 동물병원"))
 					.andExpect(jsonPath("$['result']['content'][0]['dueDate']").value(
 							"2023-01-25 10:26:00"))
@@ -585,7 +634,10 @@ class ScheduleRestControllerTest extends ControllerTest {
 													"내용"),
 											fieldWithPath(
 													"['result']['content'][0].['assigneeId']").description(
-													"책임자"),
+													"책임자 userId"),
+											fieldWithPath(
+													"['result']['content'][0].['roleInGroup']").description(
+													"책임자 그룹내 역할"),
 											fieldWithPath(
 													"['result']['content'][0].['place']").description(
 													"장소"),

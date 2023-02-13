@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.service;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupInviteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
@@ -139,5 +140,14 @@ public class GroupService {
 
 		memberToDelete.deleteSoftly();
 		return new MessageResponse("그룹에서 내보내기를 성공하였습니다.");
+	}
+
+	@Transactional(readOnly = true)
+	public List<GroupListResponse> getGroupList(String username) {
+		User user = validator.getUserByUserName(username);
+		List<UserGroup> userGroupList = userGroupRepository.findAllByUser(user);
+
+		return userGroupList.stream().map(GroupListResponse::from).toList();
+
 	}
 }

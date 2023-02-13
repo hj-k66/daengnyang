@@ -25,6 +25,7 @@ public class ScheduleResponse {
 	private String title;
 	private String body;
 	private Long assigneeId;
+	private String roleInGroup;
 	private String place;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -37,7 +38,7 @@ public class ScheduleResponse {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime lastModifiedAt;
 
-	public static ScheduleResponse toResponse(User user, Pet pet, Schedule schedule) {
+	public static ScheduleResponse toResponse(User user, Pet pet, Schedule schedule, String roleInGroup) {
 		return ScheduleResponse.builder()
 				.id(schedule.getId())
 				.tag(schedule.getTag().getName())
@@ -48,6 +49,7 @@ public class ScheduleResponse {
 				.title(schedule.getTitle())
 				.body(schedule.getBody())
 				.assigneeId(schedule.getAssigneeId())
+				.roleInGroup(roleInGroup)
 				.place(schedule.getPlace())
 				.dueDate(schedule.getDueDate())
 				.isCompleted(schedule.isCompleted())

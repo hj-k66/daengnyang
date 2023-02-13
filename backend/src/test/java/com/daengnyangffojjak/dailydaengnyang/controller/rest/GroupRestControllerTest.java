@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupInviteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
@@ -97,6 +98,34 @@ class GroupRestControllerTest extends ControllerTest {
 									fieldWithPath("result.users[].roleInGroup").description("그룹 내 역할"),
 									fieldWithPath("result.count").description("그룹 내 유저 수"))));
 			verify(groupService).getGroupUsers(1L, "user");
+		}
+	}
+
+	@Nested
+	@DisplayName("나의 그룹 리스트")
+	class MyGroupList {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			List<GroupListResponse> groups = List.of(
+					new GroupListResponse(1L, "그룹1", "동생"),
+					new GroupListResponse(2L, "그룹2", "친구")
+			);
+
+			given(groupService.getGroupList("user")).willReturn(groups);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/groups/mygroups"))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result").exists()).andDo(restDocs.document(
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result").description("나의 그룹 리스트"),
+									fieldWithPath("result[].id").description("그룹 번호"),
+									fieldWithPath("result[].name").description("그룹 이름"),
+									fieldWithPath("result[].roleInGroup").description("나의 그룹 내 역할"))));
+			verify(groupService).getGroupList("user");
 		}
 	}
 

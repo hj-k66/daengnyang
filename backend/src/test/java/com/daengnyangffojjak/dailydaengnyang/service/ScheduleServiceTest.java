@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleAssignRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCompleteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCompleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleDeleteResponse;
@@ -23,7 +25,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Species;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
-import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleAssignEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +40,7 @@ class ScheduleServiceTest {
 	private final ScheduleRepository scheduleRepository = mock(ScheduleRepository.class);
 
 	private final Validator validator = mock(Validator.class);
+
 	private final ApplicationEventPublisher applicationEventPublisher = mock(
 			ApplicationEventPublisher.class);
 
@@ -57,22 +59,47 @@ class ScheduleServiceTest {
 
 	Tag tag = new Tag(1L, group, "질병");
 
-	Schedule schedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 1L, "멋사동물병원", dateTime,
+	Schedule schedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 1L, "멋사동물병원",
+			dateTime,
 			false);
+
+	@Nested
+	@DisplayName("일정 완료하기")
+	class ScheduleComplete{
+		ScheduleCompleteRequest scheduleCompleteRequest = new ScheduleCompleteRequest(true);
+		Schedule completeSchedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 2L, "멋사동물병원",
+				dateTime,
+				true);
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(validator.getPetWithUsername(pet.getId(), "user")).willReturn(pet);
+			given(scheduleRepository.findById(1L)).willReturn(Optional.of(schedule));
+			given(scheduleRepository.saveAndFlush(completeSchedule)).willReturn(completeSchedule);
+
+			ScheduleCompleteResponse response = assertDoesNotThrow(
+					() -> scheduleService.complete(pet.getId(), schedule.getId(),
+							scheduleCompleteRequest, "user"));
+
+			assertEquals("일정이 완료되었습니다.", response.getMessage());
+			assertEquals(1L, response.getId());
+		}
+	}
 
 	@Nested
 	@DisplayName("일정 부탁하기")
 	class ScheduleAssign {
 
-		ScheduleAssignRequest scheduleAssignRequest = new ScheduleAssignRequest("희정", "내일까지 부탁해!");
 		List<UserGroup> userGroupList = List.of(
 				new UserGroup(1L, User.builder().userName("user").build(), group, "mom"),
 				new UserGroup(2L, User.builder().userName("희정").build(), group, "dad"));
+		ScheduleAssignRequest scheduleAssignRequest = new ScheduleAssignRequest("희정", "내일까지 부탁해!");
 		User receiver = User.builder().id(2L).userName("희정").password("password").email("@.")
 				.role(UserRole.ROLE_USER).build();
-		Schedule modifiedSchedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 2L, "멋사동물병원",
-				dateTime,
-				false);
+		Schedule modifiedSchedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 2L,
+				"멋사동물병원", dateTime, false);
 
 		@Test
 		@DisplayName("성공")
@@ -99,6 +126,8 @@ class ScheduleServiceTest {
 
 		ScheduleCreateRequest scheduleCreateRequest = new ScheduleCreateRequest(1L,
 				"병원", "초음파 재검", 1L, "멋사동물병원", dateTime);
+		Schedule schedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 1L, "멋사동물병원",
+				dateTime, false);
 
 		@Test
 		@DisplayName("성공")
@@ -106,7 +135,6 @@ class ScheduleServiceTest {
 			given(validator.getUserByUserName("user")).willReturn(user);
 			given(validator.getPetWithUsername(1L, user.getUsername())).willReturn(pet);
 			given(validator.getTagById(1L)).willReturn(tag);
-
 			given(scheduleRepository.save(
 					scheduleCreateRequest.toEntity(pet, user, tag))).willReturn(schedule);
 
@@ -126,9 +154,8 @@ class ScheduleServiceTest {
 
 		ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(1L,
 				"수정 병원", "수정 초음파 재검", 2L, "수정 멋사동물병원", dateTime, true);
-		Schedule modifySchedule = Schedule.builder().id(1L).user(user).pet(pet)
-				.tag(tag).title("수정 병원").body("수정 초음파 재검").assigneeId(2L)
-				.place("수정 멋사동물병원").isCompleted(true).dueDate(dateTime).build();
+		Schedule modifySchedule = new Schedule(1L, user, pet, tag, "수정 병원", "수정 초음파 재검",
+				2L, "수정 멋사동물병원", dateTime, true);
 
 		@Test
 		@DisplayName("성공")
@@ -196,6 +223,6 @@ class ScheduleServiceTest {
 
 		}
 
-	}
 
+	}
 }

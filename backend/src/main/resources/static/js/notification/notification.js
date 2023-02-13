@@ -3,7 +3,7 @@ const firebaseModule = (function () {
   async function init() {
     // Your web app's Firebase configuration
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
+      window.addEventListener('load', function () {
         navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
           const firebaseConfig = {
@@ -18,27 +18,34 @@ const firebaseModule = (function () {
           // Initialize Firebase
           firebase.initializeApp(firebaseConfig);
 
-
           // Show Notificaiton Dialog
           const messaging = firebase.messaging();
           messaging.requestPermission() //권한 요청 화면
-          .then(function() {
+          .then(function () {
             return messaging.getToken();
           })
-          .then(async function(token) {
+          .then(async function (token) {
             console.log(token);
-            await fetch('/api/v1/notification', { method: 'post', body: token })
+            await fetch('/api/v1/notification',
+                {
+                  method: 'post',
+                  headers: {
+                    Authorization: "Bearer " + localStorage.getItem(
+                        "accessToken"),
+                  },
+                  body: token
+                })
             messaging.onMessage(payload => {
               const title = payload.notification.title
               const options = {
-                body : payload.notification.body
+                body: payload.notification.body
               }
               navigator.serviceWorker.ready.then(registration => {
                 registration.showNotification(title, options);
               })
             })
           })
-          .catch(function(err) {
+          .catch(function (err) {
             console.log("Error Occured");
           })
         })
