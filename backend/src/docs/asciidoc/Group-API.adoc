@@ -30,3 +30,8 @@ operation::leave-group/success[snippets='http-request,path-parameters,http-respo
 === Group 내보내기
 
 operation::delete-group-member/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Group-리스트조회]]
+=== Group 나의 리스트 조회
+
+operation::my-group-list/success[snippets='http-request,http-response,response-fields']

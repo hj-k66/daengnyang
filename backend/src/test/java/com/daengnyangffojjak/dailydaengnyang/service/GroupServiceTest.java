@@ -150,6 +150,25 @@ class GroupServiceTest {
 	}
 
 	@Nested
+	@DisplayName("유저의 그룹 리스트 조회")
+	class GetGroupList {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(validator.getGroupById(1L)).willReturn(group);
+			given(validator.getUserGroupListByUsername(group, "user")).willReturn(userGroupList);
+
+			GroupUserListResponse response = assertDoesNotThrow(
+					() -> groupService.getGroupUsers(1L, "user"));
+
+			assertEquals(2, response.getCount());
+			assertEquals(2, response.getUsers().size());
+		}
+	}
+
+	@Nested
 	@DisplayName("그룹 유저 초대")
 	class GroupInviteMember {
 
