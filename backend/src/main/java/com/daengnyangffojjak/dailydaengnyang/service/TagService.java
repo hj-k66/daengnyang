@@ -41,7 +41,6 @@ public class TagService {
 			String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);
-		validateTagName(groupId, tagWorkRequest.getName());		//이미 존재하는 이름이면 예외 발생
 
 		Tag tag = validator.getTagById(tagId);
 		tag.modify(tagWorkRequest);

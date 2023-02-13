@@ -54,7 +54,6 @@ class ValidatorTest {
 	private final RecordRepository recordRepository = mock(RecordRepository.class);
 	private final TagRepository tagRepository = mock(TagRepository.class);
 	private final DiseaseRepository diseaseRepository = mock(DiseaseRepository.class);
-	private final RecordFileRepository recordFileRepository = mock(RecordFileRepository.class);
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
@@ -319,6 +318,42 @@ class ValidatorTest {
 			RecordException e = assertThrows(RecordException.class,
 					() -> validator.getRecordById(1L));
 			assertEquals(ErrorCode.RECORD_NOT_FOUND, e.getErrorCode());
+		}
+	}
+
+	@Nested
+	@DisplayName("Pet과 User가 같은 그룹인지 확인")
+	class GetPetWithUser {
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, User.builder().userName("user").build(), group, "mom"),
+					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad"));
+			given(petRepository.findById(1L)).willReturn(Optional.of(pet));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+
+			Pet pet = assertDoesNotThrow(() -> validator.getPetWithUsername(1L, "user"));
+
+			assertEquals(1L, pet.getId());
+			assertEquals("그룹이름", pet.getGroup().getName());
+		}
+
+		@Test
+		@DisplayName("실패 - 같은 그룹이 아님")
+		void fail_다른그룹() {
+			List<UserGroup> userGroupList = List.of(
+					new UserGroup(1L, User.builder().userName("user0").build(), group, "mom"),
+					new UserGroup(2L, User.builder().userName("user1").build(), group, "dad"));
+			given(petRepository.findById(1L)).willReturn(Optional.of(pet));
+			given(userRepository.findByUserName("user")).willReturn(Optional.of(user));
+			given(userGroupRepository.findAllByGroup(group)).willReturn(userGroupList);
+
+			GroupException e = assertThrows(GroupException.class,
+					() -> validator.getPetWithUsername(1L, "user"));
+			assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
 		}
 	}
 }

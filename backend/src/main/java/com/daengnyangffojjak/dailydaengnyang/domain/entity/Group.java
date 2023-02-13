@@ -10,8 +10,8 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@Where(clause = "deleted_at is NULL")
 @Table(name = "\"Group\"")
+@Where(clause = "deleted_at is NULL")
 public class Group extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
