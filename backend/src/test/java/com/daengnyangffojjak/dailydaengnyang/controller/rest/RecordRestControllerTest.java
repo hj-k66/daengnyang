@@ -9,6 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,6 +55,8 @@ class RecordRestControllerTest extends ControllerTest {
 		void success_get_one_record() throws Exception {
 
 			// 일기 상세(1개) 조회
+			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user", true,
+					"산책", createdAt, lastmodifiedAt);
 
 			given(recordService.getOneRecord(1L, 1L, "user"))
 					.willReturn(recordResponse);
@@ -91,7 +94,11 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath("result.createdAt").description(
 													"일기 등록시간"),
 											fieldWithPath("result.lastModifiedAt").description(
-													"일기 수정시간")
+													"일기 수정시간"),
+											fieldWithPath("result.recordFiles").description(
+													"일기에 업로드 된 파일"),
+											fieldWithPath("result.recordFile").description(
+													"일기에 업로드 된 파일")
 									)
 							)
 					);
@@ -160,6 +167,12 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath(
 													"['result']['content'][0].['tag']").description(
 													"태그"),
+											fieldWithPath(
+													"['result']['content'][0].['recordFile']").description(
+													"일기에 업로드 된 파일"),
+											fieldWithPath(
+													"['result']['content'][0].['recordFiles']").description(
+													"일기에 업로드 된 파일"),
 											fieldWithPath("result.last").description(
 													"마지막 페이지인지 확인"),
 											fieldWithPath("result.totalPages").description(

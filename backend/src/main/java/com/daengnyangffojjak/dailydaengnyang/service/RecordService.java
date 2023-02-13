@@ -5,10 +5,12 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
+import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
@@ -34,6 +36,7 @@ import static com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode.*;
 public class RecordService {
 
 	private final RecordRepository recordRepository;
+	private final RecordFileRepository recordFileRepository;
 	private final Validator validator;
 	private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -45,6 +48,9 @@ public class RecordService {
 		// 유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
+
 		// 일기가 없는 경우 예외발생
 		Record record = validator.getRecordById(recordId);
 
@@ -55,13 +61,37 @@ public class RecordService {
 		}
 
 		return RecordResponse.of(record);
+		// 같은 recordId에 해당하는 recordFiles
+		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(recordId);
+
+		return RecordResponse.of(user, pet, record, recordFiles);
 	}
 
 	// 전체 피드 조회
 	@Transactional(readOnly = true)
 	public Page<RecordResponse> getAllRecords(Pageable pageable) {
+
+		// 일기 파일 중 첫 파일만 올라가게 하는 로직
 		return recordRepository.findAllByIsPublicTrue(pageable)
-				.map(RecordResponse::of);
+				.map(record -> {
+					List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(
+							record.getId());
+					RecordFile recordFile = null;
+					if (!recordFiles.isEmpty()) {
+						recordFile = recordFiles.get(0);
+						int idx = recordFile.getStoredFileUrl().lastIndexOf(".");
+						String extension = recordFile.getStoredFileUrl().substring(idx + 1);
+						if (extension.equalsIgnoreCase("mp4")) {
+							recordFile = null;
+						}
+					}
+					if (recordFile == null) {
+						recordFile = new RecordFile();
+						recordFile.changeToDefaultImage("https://daengnyang-bucket.s3.ap-northeast-2.amazonaws.com/defaultImage.png");
+					}
+
+					return RecordResponse.from(record, recordFile);
+				});
 	}
 
 	// 일기 작성
@@ -142,7 +172,10 @@ public class RecordService {
 			throw new RecordException(INVALID_PERMISSION);
 		}
 
+		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(recordId);
+		recordFileRepository.deleteAll(recordFiles);
 		record.deleteSoftly();
+
 		return RecordWorkResponse.builder()
 				.message("일기 삭제 완료")
 				.id(recordId)
