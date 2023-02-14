@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupInviteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,4 +26,10 @@ public class GroupUiController {
 		model.addAttribute("groupId", groupId);
 		return "group/group_list";
 	}
+
+	@PostMapping("/{groupId}/invite")
+	public void inviteUser(@PathVariable Long groupId, Model model) {
+		model.addAttribute("groupInviteRequest", new GroupInviteRequest());
+	}
+	
 }
