@@ -154,7 +154,6 @@
 
   async function show_tag_modify() {
     let tagId = document.querySelector('input[name="tag"]:checked').value;
-    // let tagId = $("input:radio[name=tag]:checked").val();
     let selectedName = $('label[for=tag-'+tagId+']').text();
     console.log(selectedName);
     let name = prompt("수정할 태그 이름을 입력하세요", selectedName);

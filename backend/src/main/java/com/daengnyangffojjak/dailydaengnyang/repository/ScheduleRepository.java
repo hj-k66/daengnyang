@@ -15,6 +15,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
 	Page<Schedule> findAllByPetId(Long petId, Pageable pageable); // petId 기준 일정 모아보기
 	boolean existsByTagId(Long tagId);
-	List<Schedule> findAllByCreatedAtBetweenAndPetId (Sort sort, LocalDateTime start, LocalDateTime end, Long petId);
+	List<Schedule> findAllByDueDateBetweenAndPetId (Sort sort, LocalDateTime start, LocalDateTime end, Long petId);
 
 }

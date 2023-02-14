@@ -26,9 +26,7 @@
   <div class="col-md-6 mt-5">
     <form role="form">
       <div id="tag-box">
-        <button type="button" class="btn btn-primary" onclick="moveToTagPage()">
-          +
-        </button>
+
         <input type="radio" class="btn-check mx-1" name="tag" id="tagName1" value="건강"
                autocomplete="off">
         <label class="btn btn-outline-primary" for="tagName1">건강</label>
@@ -100,69 +98,7 @@
 </div>
 
 
-<!--show Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table class="table">
-          <tbody>
-          <tr>
-            <th scope="row">종</th>
-            <td id="species"></td>
-          </tr>
-          <tr>
-            <th scope="row">품종</th>
-            <td id="breed"></td>
-          </tr>
-          <tr>
-            <th scope="row">성별</th>
-            <td id="sex"></td>
-          </tr>
-          <tr>
-            <th scope="row">생일</th>
-            <td id="birthday"></td>
-          </tr>
-          <tr>
-            <th scope="row">몸무게</th>
-            <td id="weight"></td>
-          </tr>
-          </tbody>
-        </table>
 
-      </div>
-      <div class="modal-footer">
-        <div class="p-2">
-          <button class="btn btn-danger" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseExample" aria-expanded="false"
-                  aria-controls="collapseExample">
-            삭제
-          </button>
-        </div>
-        <div class="p-2 flex-grow-1"></div>
-        <div class="p-2">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                  data-bs-target="#modifyModal" onclick="show_pet_modify()">수정
-          </button>
-        </div>
-        <div class="collapse" id="collapseExample" style="width: 100%">
-          <div class="card card-body" style="flex-direction: row;">
-            <div>정말 삭제하시겠습니까?</div>
-            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal"
-                    onclick="delete_pet()">삭제
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
@@ -215,7 +151,6 @@
         }).then(res => {
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         recordId = res.data.result.id;
         alert("일기가 성공적으로 저장되었습니다. 사진을 추가하시려면 아래에서 진행해주세요.");
         // document.location.href = "/view/pets/" + petId + "/records/"+recordId;
@@ -265,7 +200,7 @@
         console.log(res.data.result)
         $('#tag-box').empty();
         let plus_html = `
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
+                <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
         `;
         $('#tag-box').append(plus_html);
 
@@ -290,7 +225,10 @@
 
   function moveToTagPage() {
     const groupId = sessionStorage.getItem("groupId");
-    document.location.href = "/view/groups/"+groupId+"/tags";
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/tags";
+    }
   }
 
   axios.interceptors.request.use(function (config) {

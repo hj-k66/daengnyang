@@ -921,10 +921,8 @@
     let fromDate = $("#fromDate-inp").val();
     let toDate = $("#toDate-inp").val();
 
-    let url = "http://daengnyang.site/view/pets/" + petId + "/monitorings/report?fromDate="
+    let url = "/view/pets/" + petId + "/monitorings/report?fromDate="
         + fromDate + "&toDate=" + toDate;
-    // let url = "http://localhost:8080/view/pets/" + petId + "/monitorings/report?fromDate="
-    //     + fromDate + "&toDate=" + toDate;
     console.log(url);
     window.open(url, "레포트", "top=10, left=10, width=1500, height=800");
   }

@@ -274,7 +274,7 @@ public class ScheduleService {
 
 		return new ScheduleCompleteResponse("일정이 완료되었습니다.", scheduleId);
 	}
-
+	// 예정일이 기간내인 일정 조회
 	@Transactional(readOnly = true)
 	public List<ScheduleListResponse> getScheduleList(Long petId, String fromDate, String toDate, String username) {
 		User user = validator.getUserByUserName(username);
@@ -288,7 +288,7 @@ public class ScheduleService {
 		LocalDateTime start = getLocalDateFromString(fromDate);
 		LocalDateTime end = getLocalDateFromString(toDate);
 
-		List<Schedule> schedules = scheduleRepository.findAllByCreatedAtBetweenAndPetId(
+		List<Schedule> schedules = scheduleRepository.findAllByDueDateBetweenAndPetId(
 				Sort.by(Direction.DESC, "dueDate"), start, end, petId);
 
 		return schedules.stream().map(s -> ScheduleListResponse.toResponse(s, getRoleInGroup))
