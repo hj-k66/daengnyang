@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}">
+  <meta charset="UTF-8">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script th:src="@{/js/login.js}"></script>
+
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+</div>
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  let tokenVal = [[${token}]].toString();
+  $(document).ready(function () {
+    window.localStorage.setItem("accessToken", tokenVal);
+    console.log(tokenVal);
+
+    document.location.href = "/view/groups";
+    const accessToken = window.localStorage.getItem("accessToken");
+    if (accessToken != null) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      return true;
+    }
+
+  });
+
+</script>
+</body>
+</html>

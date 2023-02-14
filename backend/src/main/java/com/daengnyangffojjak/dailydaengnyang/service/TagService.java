@@ -63,12 +63,12 @@ public class TagService {
 	}
 
 	@Transactional(readOnly = true)
-	public TagListResponse getList(Long groupId, String username) {
+	public List<TagListResponse> getList(Long groupId, String username) {
 		Group group = validator.getGroupById(groupId);        //유저가 그룹에 속해있는 지 확인
 		validator.getUserGroupListByUsername(group, username);
 
 		List<Tag> tags = tagRepository.findAllByGroupId(group.getId());
-		return TagListResponse.from(tags);
+		return tags.stream().map(TagListResponse::from).toList();
 	}
 
 	private void validateTagName(Long groupId, String name) {
