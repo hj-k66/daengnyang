@@ -12,6 +12,8 @@
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
         integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
         crossorigin="anonymous"/>
+  <!-- CSS -->
+  <link th:href="@{/css/styles.css}" rel="stylesheet"/>
   <title>글 작성</title>
 </head>
 
@@ -22,67 +24,149 @@
   <div class="col-md-3">
   </div>
   <div class="col-md-6 mt-5">
-    <form role="form" method="POST" th:object="${recordWorkRequest}">
-      <a href="#" class="btn btn-primary" th:href="@{/태그 만드는곳 주소}">+</a>
-      <!--태그 만들고 매핑하기-->
-      <select class="form-select mt-3" aria-label="Default select example" >
-        <option value="" selected>카테고리를 선택하세요.</option>
-        <option name="category" th:each="recordWorkRequest : ${recordWorkRequest}"
-               >일상
-        </option>
-      </select>
+    <form role="form">
+      <div id="tag-box">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">
+          +
+        </button>
+        <input type="radio" class="btn-check mx-1" name="tag" id="tagName1" value="건강"
+               autocomplete="off">
+        <label class="btn btn-outline-primary" for="tagName1">건강</label>
+        <input type="radio" class="btn-check mx-1" name="tag" id="tagName2" value="산책"
+               autocomplete="off">
+        <label class="btn btn-outline-primary" for="tagName2">산책</label>
+      </div>
+
       <div class="col-md-12 my-3">
         <div class="form-group mb-3 mt-3">
-          <label for="title" class="form-label" th:for="title">제목</label>
-          <input type="text" class="form-control" id="title" placeholder="제목을 입력해주세요."
-                 th:field="*{title}">
+          <label for="title-inp" class="form-label">제목</label>
+          <input type="text" class="form-control" id="title-inp" placeholder="제목을 입력해주세요.">
         </div>
         <div class="mb-3">
-          <label for="body" class="form-label" th:for="body">내용</label>
-          <textarea class="form-control" id="body" rows="5" placeholder="내용을 입력해주세요."
-                    th:field="*{body}"></textarea>
+          <label for="body-inp" class="form-label">내용</label>
+          <textarea class="form-control" id="body-inp" rows="5"
+                    placeholder="내용을 입력해주세요."></textarea>
         </div>
       </div>
-      <div class="clearfix">
-        <img alt="" src="https://cdn.pixabay.com/photo/2018/05/26/18/06/dog-3431913_1280.jpg"
-             width="200" height="200" class="rounded float-start"/>
-      </div>
-      <hr/>
       <div class="form-check mt-3">
-        <label th:for="isPublic"></label>
-        <label><input type="radio" name="isPublic" th:field="*{isPublic}" value="true"> 공개</label>
-        <label><input type="radio" name="isPublic" th:field="*{isPublic}" value="false"> 비공개</label>
+        <label></label>
+        <label><input type="radio" name="isPublic" value="true"> 공개</label>
+        <label><input type="radio" name="isPublic" value="false" checked> 비공개</label>
       </div>
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <button class="btn btn-primary" type="button" onclick="일기작성함수()">작성하기</button>
+        <button class="btn btn-primary" type="button" onclick="create_records()">작성하기</button>
+      </div>
+
+      <!--      사진 저장-->
+      <div>
+        <div class="alert alert-danger mt-3" role="alert">
+          📌 [작성하기] 버튼을 누른 후 사진을 등록해주세요.
+        </div>
+        <div class="alert alert-warning mt-3" role="alert">
+          1️⃣ 처음 파일은 사진을 넣어주세요.<br>
+          2️⃣ 동영상은 하나만 입력해주세요.
+        </div>
+
+        <div class="mb-3">
+          <label for="formFileMultiple1" class="form-label">사진/동영상</label>
+          <input class="form-control files" type="file" id="formFileMultiple1" multiple>
+        </div>
+        <div class="mb-3">
+          <label for="formFileMultiple2" class="form-label">사진/동영상</label>
+          <input class="form-control files" type="file" id="formFileMultiple2" multiple>
+        </div>
+        <div class="mb-3">
+          <label for="formFileMultiple3" class="form-label">사진/동영상</label>
+          <input class="form-control files" type="file" id="formFileMultiple3" multiple>
+        </div>
+        <div class="mb-3">
+          <label for="formFileMultiple4" class="form-label">사진/동영상</label>
+          <input class="form-control files" type="file" id="formFileMultiple4" multiple>
+        </div>
+        <div class="mb-3">
+          <label for="formFileMultiple5" class="form-label">사진/동영상</label>
+          <input class="form-control files" type="file" id="formFileMultiple5" multiple>
+        </div>
+      </div>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-primary" type="button" onclick="add_file()">사진등록하기</button>
       </div>
     </form>
   </div>
   <div class="col-md-3 my-3 mt-5">
-    <div class="card my-3" style="width: 18rem;">
-      <div class="card-header">
-        🏘️️ 그룹명
-      </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">아빠</li>
-        <li class="list-group-item">엄마</li>
-        <li class="list-group-item">멍뭉이</li>
-      </ul>
-    </div>
-    <div class="card my-3 mt-5" style="width: 18rem;">
-      <div class="card-header">
-        ✅️ 오늘의 일정
-      </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">6시에 약먹기</li>
-        <li class="list-group-item">퇴근후 산책시키기</li>
-        <li class="list-group-item">메인피드 UI만들기</li>
-      </ul>
-    </div>
+    <th:block th:replace="~{fragments/right :: right}"></th:block>
   </div>
 </div>
 </div>
 
+
+<!--show Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody>
+          <tr>
+            <th scope="row">종</th>
+            <td id="species"></td>
+          </tr>
+          <tr>
+            <th scope="row">품종</th>
+            <td id="breed"></td>
+          </tr>
+          <tr>
+            <th scope="row">성별</th>
+            <td id="sex"></td>
+          </tr>
+          <tr>
+            <th scope="row">생일</th>
+            <td id="birthday"></td>
+          </tr>
+          <tr>
+            <th scope="row">몸무게</th>
+            <td id="weight"></td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <div class="p-2">
+          <button class="btn btn-danger" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseExample" aria-expanded="false"
+                  aria-controls="collapseExample">
+            삭제
+          </button>
+        </div>
+        <div class="p-2 flex-grow-1"></div>
+        <div class="p-2">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#modifyModal" onclick="show_pet_modify()">수정
+          </button>
+        </div>
+        <div class="collapse" id="collapseExample" style="width: 100%">
+          <div class="card card-body" style="flex-direction: row;">
+            <div>정말 삭제하시겠습니까?</div>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal"
+                    onclick="delete_pet()">삭제
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -94,7 +178,172 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
-</body>
-<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script th:inline="javascript">
+  const petId = [[${petId}]];
+  let recordId;
 
+  $(document).ready(function () {
+    get_group_tag();
+  });
+
+  async function create_records() {
+    let title = $("#title-inp").val();
+    if (title == null) {
+      alert("제목을 입력해주세요")
+      return;
+    }
+    let body = $("#body-inp").val();
+    let tagId = $("input:radio[name=tag]:checked").val();
+    if (tagId == null) {
+      alert("태그를 선택해 주십시오. 없다면 태그를 만들어 보세요 👍")
+      return;
+    }
+    let isPublic = $("input:radio[name=isPublic]:checked").val();
+    console.log(name)
+
+    await axios.post("/api/v1/pets/" + petId + "/records",
+        {
+          "title": title,
+          "body": body,
+          "tagId": tagId,
+          "isPublic": isPublic
+        }
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        recordId = res.data.result.id;
+        alert("일기가 성공적으로 저장되었습니다. 사진을 추가하시려면 아래에서 진행해주세요.");
+        // document.location.href = "/view/pets/" + petId + "/records/"+recordId;
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  async function add_file() {
+    let formData = new FormData();
+    var fileInput = $('.files');
+    for (let i = 0; i < fileInput.length; i++) {
+      if (fileInput[i].files.length > 0) {
+        formData.append('multipartFiles', fileInput[i].files[0]);
+      }
+    }
+    await axios.post("/api/v1/pets/" + petId + "/records/"+recordId+"/recordFiles/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/pets/" + petId + "/records/"+recordId;
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  async function get_record_detail() {
+    await axios.get("/api/v1/pets/" + petId + "/records/" + recordId, {}, {
+      headers: {},
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        author = data.userName;
+
+        let id = data.id;
+        let userId = data.userId;
+        let petId = data.petId;
+        let petName = data.petName;
+        let title = data.title;
+        let body = data.body;
+        let userName = data.userName;
+        let isPublic = data.isPublic;
+        let tag = data.tag;
+        // let recordFiles = data.recordFiles;
+        // let recordFile = data.recordFile;
+        let createdAt = data.createdAt;
+        let lastModifiedAt = data.lastModifiedAt;
+
+        $('#id').text(id);
+        $('#userId').text(userId);
+        $('#petId').text(petId);
+        $('#petName').text(petName);
+        $('#title').text(title);
+        $('#body-box').text(body);
+        $('#userName').text(userName);
+        $('#isPublic').text(isPublic);
+        $('#tag').text(tag);
+        $('#createdAt').text(createdAt);
+        $('#lastModifiedAt').text(lastModifiedAt);
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+      setTimeout(async () => {
+        await get_my_name(function (user) {
+          if (user !== author) {
+            document.getElementById('btn-delete').remove();
+            document.getElementById('btn-modify').remove();
+          }
+        });
+      })
+    });
+  }
+
+  async function get_group_tag() {
+    const groupId = sessionStorage.getItem("groupId");
+    await axios.get("/api/v1/groups/" + groupId + "/tags", {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        $('#tag-box').empty();
+        let plus_html = `
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
+        `;
+        $('#tag-box').append(plus_html);
+
+        const tags = res.data.result;
+        for (let i = 0; i < tags.length; i++) {
+          let id = tags[i]['id'];
+          let name = tags[i]['name'];
+
+          let temp_html = `
+            <input type="radio" class="btn-check mx-1" name="tag" id="tag-${name}" value="${id}" autocomplete="off">
+            <label class="btn btn-outline-primary" for="tag-${name}">${name}</label>
+          `
+          $('#tag-box').append(temp_html);
+        }
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+</body>
 </html>
+

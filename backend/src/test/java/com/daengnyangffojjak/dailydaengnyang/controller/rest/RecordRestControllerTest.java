@@ -17,6 +17,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.daengnyangffojjak.dailydaengnyang.service.RecordService;
 import java.time.LocalDateTime;
@@ -42,6 +43,8 @@ class RecordRestControllerTest extends ControllerTest {
 
 	LocalDateTime createdAt = LocalDateTime.of(2023, 1, 1, 11, 11);
 	LocalDateTime lastmodifiedAt = LocalDateTime.of(2023, 1, 2, 22, 22);
+	RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "멍멍", "제목", "본문", "user", true,
+			"산책", List.of(), new RecordFile(), createdAt, lastmodifiedAt);
 
 	@Nested
 	@DisplayName("일기 상세(1개) 조회")
@@ -52,21 +55,8 @@ class RecordRestControllerTest extends ControllerTest {
 		void success_get_one_record() throws Exception {
 
 			// 일기 상세(1개) 조회
-//			RecordResponse expectedRecordResponse = new RecordResponse(1L, 1L, 1L, "제목", "본문", "user", true,
-//					"산책", createdAt, lastmodifiedAt);
-
-			RecordResponse recordResponse = RecordResponse.builder()
-					.id(1L)
-					.userId(1L)
-					.petId(1L)
-					.title("제목")
-					.body("본문")
-					.userName("user")
-					.isPublic(true)
-					.tag("산책")
-					.createdAt(createdAt)
-					.lastModifiedAt(lastmodifiedAt)
-					.build();
+			RecordResponse recordResponse = new RecordResponse(1L, 1L, 1L, "훈이", "제목", "본문", "user", true,
+					"산책", List.of(), new RecordFile(), createdAt, lastmodifiedAt);
 
 			given(recordService.getOneRecord(1L, 1L, "user"))
 					.willReturn(recordResponse);
@@ -96,6 +86,7 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath("result.id").description("일기 번호"),
 											fieldWithPath("result.userId").description("작성자 번호"),
 											fieldWithPath("result.petId").description("반려동물 번호"),
+											fieldWithPath("result.petName").description("반려동물 이름"),
 											fieldWithPath("result.title").description("제목"),
 											fieldWithPath("result.body").description("본문"),
 											fieldWithPath("result.userName").description("작성자"),
@@ -108,11 +99,28 @@ class RecordRestControllerTest extends ControllerTest {
 											fieldWithPath("result.recordFiles").description(
 													"일기에 업로드 된 파일"),
 											fieldWithPath("result.recordFile").description(
-													"일기에 업로드 된 파일")
-									)
-							)
-					);
-
+													"일기에 업로드 된 파일"),
+											fieldWithPath(
+													"result.recordFiles").description(
+													"사진 파일 목록"),
+											fieldWithPath(
+													"result.recordFile.createdAt").description(
+													"생성 일자"),
+											fieldWithPath(
+													"result.recordFile.lastModifiedAt").description(
+													"수정 일자"),
+											fieldWithPath(
+													"result.recordFile.id").description(
+													"파일 등록 번호"),
+											fieldWithPath(
+													"result.recordFile.storedFileUrl").description(
+													"저장 경로"),
+											fieldWithPath(
+													"result.recordFile.uploadFilename").description(
+													"파일이름"),
+											fieldWithPath(
+													"result.recordFile.deleted").description(
+													"삭제여부"))));
 			verify(recordService).getOneRecord(1L, 1L, "user");
 		}
 	}
@@ -157,6 +165,8 @@ class RecordRestControllerTest extends ControllerTest {
 													"유저 번호"),
 											fieldWithPath("result.content[].petId").description(
 													"반려동물 번호"),
+											fieldWithPath("result.content[].petName").description(
+													"반려동물 이름"),
 											fieldWithPath("result.content[].createdAt").description(
 													"작성 날짜"),
 											fieldWithPath(
@@ -208,6 +218,88 @@ class RecordRestControllerTest extends ControllerTest {
 									)
 							)
 					);
+		}
+	}
+
+
+	@Nested
+	@DisplayName("기간별 일기 조회")
+	class RecordGetPeriod {
+
+		@Test
+		@DisplayName("성공")
+		void success_get_period_records() throws Exception {
+			List<RecordResponse> allRecords = List.of(recordResponse);
+
+			given(recordService.getRecordList(1L, "20220101", "20220201", "user")).willReturn(
+					allRecords);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get(
+									"/api/v1/pets/{petId}/records?fromDate=20220101&toDate=20220201", 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.result").exists())
+					.andExpect(jsonPath("$['result'][0]['title']").value("제목"))
+					.andExpect(jsonPath("$['result'][0]['body']").value("본문"))
+					.andExpect(jsonPath("$['result'][0]['userName']").value("user"))
+					.andExpect(jsonPath("$['result'][0]['tag']").value("산책"))
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("petId").description("반려동물 번호")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath(
+													"result[].id").description(
+													"일기번호"),
+											fieldWithPath("result[].userId").description(
+													"유저 번호"),
+											fieldWithPath("result[].petId").description(
+													"반려동물 번호"),
+											fieldWithPath("result[].petName").description(
+													"반려동물 이름"),
+											fieldWithPath("result[].createdAt").description(
+													"작성 날짜"),
+											fieldWithPath(
+													"result[].lastModifiedAt").description(
+													"수정 날짜"),
+											fieldWithPath(
+													"result[].isPublic").description(
+													"공개 여부"),
+											fieldWithPath(
+													"result[].title").description(
+													"제목"),
+											fieldWithPath(
+													"result[].body").description(
+													"내용"),
+											fieldWithPath(
+													"result[].userName").description(
+													"user"),
+											fieldWithPath(
+													"result[].tag").description(
+													"태그"),
+											fieldWithPath(
+													"result[].recordFiles").description(
+													"사진 파일 목록"),
+											fieldWithPath(
+													"result[].recordFile.createdAt").description(
+													"생성 일자"),
+											fieldWithPath(
+													"result[].recordFile.lastModifiedAt").description(
+													"수정 일자"),
+											fieldWithPath(
+													"result[].recordFile.id").description(
+													"파일 등록 번호"),
+											fieldWithPath(
+													"result[].recordFile.storedFileUrl").description(
+													"저장 경로"),
+											fieldWithPath(
+													"result[].recordFile.uploadFilename").description(
+													"파일이름"),
+											fieldWithPath(
+													"result[].recordFile.deleted").description(
+													"삭제여부"))));
 		}
 	}
 

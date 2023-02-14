@@ -27,4 +27,10 @@ public class Tag {
     public void modify(TagWorkRequest tagWorkRequest) {
         this.name = tagWorkRequest.getName();
     }
+    public static Tag from (Group group, String name) {
+        return Tag.builder()
+                .group(group)
+                .name(name)
+                .build();
+    }
 }
