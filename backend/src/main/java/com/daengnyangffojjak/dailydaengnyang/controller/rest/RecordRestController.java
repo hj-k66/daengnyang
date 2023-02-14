@@ -6,6 +6,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.RecordService;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,13 @@ public class RecordRestController {
 
 		Page<RecordResponse> recordResponses = recordService.getAllRecords(pageable);
 		return ResponseEntity.ok().body(Response.success(recordResponses));
+	}
+
+	// 반려동물의 기간별 일기 리스트 조회
+	@GetMapping(value = "/pets/{petId}/records")
+	public Response<List<RecordResponse>> getRecordList (@AuthenticationPrincipal UserDetails user, @PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate) {
+		List<RecordResponse> recordResponses = recordService.getRecordList(petId, fromDate, toDate, user.getUsername());
+		return Response.success(recordResponses);
 	}
 
 	// 일기 작성

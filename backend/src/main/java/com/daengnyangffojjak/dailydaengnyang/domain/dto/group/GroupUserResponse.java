@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GroupUserResponse {
 
-	private Long id;
+	private Long id;		// 유저의 등록번호
 	private String userName;
 	private String roleInGroup;
 
 	public static GroupUserResponse from(UserGroup userGroup) {
 		return GroupUserResponse.builder()
-				.id(userGroup.getId())
+				.id(userGroup.getUser().getId())
 				.userName(userGroup.getUser().getUsername())
 				.roleInGroup(userGroup.getRoleInGroup())
 				.build();

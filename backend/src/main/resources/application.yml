@@ -143,7 +143,8 @@ spring:
 server:
   port: 9002
 
-#redirect Uri
-app:
-  oauth2:
-    authorizedRedirectUri: "http://localhost:3000/oauth2/redirect"
+
+oauth2:
+  redirect:
+    url: "http://localhost/oauth2/redirect"
+

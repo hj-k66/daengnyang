@@ -22,6 +22,8 @@
     $(function () {
       $("#start-inp").datepicker({dateFormat: 'yy-mm-dd'});
       $("#end-inp").datepicker({dateFormat: 'yy-mm-dd'});
+      $("#cre-start-inp").datepicker({dateFormat: 'yy-mm-dd'});
+      $("#cre-end-inp").datepicker({dateFormat: 'yy-mm-dd'});
     });
   </script>
   <!--  달력 만들기-->
@@ -215,9 +217,88 @@
         </form>
       </div>
       <div class="modal-footer">
+        <div class="p-2">
+          <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            삭제
+          </button>
+        </div>
+        <div class="p-2 flex-grow-1"></div>
+        <div class="p-2">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
         <button type="button" class="btn btn-primary" onclick="modify_diz_info()">
           수정 완료
+        </button>
+        </div>
+        <div class="collapse" id="collapseExample" style="width: 100%">
+          <div class="card card-body" style="flex-direction: row;">
+            <div>정말 삭제하시겠습니까?</div>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal" onclick="delete_diz()">삭제</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--create-->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>질병 정보 등록</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form role="form" style="width: 80%; margin: auto;">
+
+          <table class="table">
+            <tbody>
+            <tr>
+              <th scope="row">질병 이름</th>
+              <td colspan="3">
+                <input id="cre-disease-name-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">카테고리</th>
+              <td colspan="3">
+
+                <input type="radio" name="cre-category" value="INTERNAL_MEDICINE"> 내과 <br>
+                <input type="radio" name="cre-category" value="ORTHOPEDICS"> 정형외과 <br>
+                <input type="radio" name="cre-category" value="NEUROLOGY"> 신경과 <br>
+                <input type="radio" name="cre-category" value="DERMATOLOGY"> 피부과 <br>
+                <input type="radio" name="cre-category" value="GENERAL_SURGERY"> 일반외과 <br>
+                <input type="radio" name="cre-category" value="UROLOGY"> 비뇨기과 <br>
+                <input type="radio" name="cre-category" value="OPHTHALMOLOGY"> 안과 <br>
+                <input type="radio" name="cre-category" value="DENTAL"> 치과 <br>
+                <input type="radio" name="cre-category" value="ETC"> 기타 <br>
+
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">진달일</th>
+              <td>
+                <input id="cre-start-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">치료 종료일</th>
+              <td>
+                <input id="cre-end-inp" type="text" class="form-control"/>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary" onclick="add_diz_info()">
+          작성
         </button>
       </div>
     </div>
@@ -389,6 +470,18 @@
             }
           }
         }
+        let add_button = `
+                    <div class="accordion mb-3" onclick="add_disease();"  data-bs-toggle="modal" data-bs-target="#createModal">
+                      <div class="accordion-item">
+                        <div class="accordion-collapse collapse show">
+                          <div class="accordion-body py-2" style="align-items: center; text-align: center">
+                            <h6>+</h6>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+            `;
+        $('#disease-wrapper').append(add_button);
       } else {
         console.log("실패임" + res.resultCode)
       }
@@ -459,6 +552,52 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
+        document.location.href = "/view/pets/" + petId + "/diseases";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  async function add_diz_info() {
+    let name = $('#cre-disease-name-inp').val();
+    let category = $('input:radio[name=cre-category]:checked').val();
+    let start = $('#cre-start-inp').val();
+    let end = $('#cre-end-inp').val();
+
+    await axios.post("/api/v1/pets/" + petId + "/diseases",
+        {
+          "name": name,
+          "category": category,
+          "startedAt": start,
+          "endedAt": end
+        }
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/pets/" + petId + "/diseases";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  async function delete_diz() {
+    await axios.delete("/api/v1/pets/" + petId + "/diseases/" + rct_disease_id, {}
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
         document.location.href = "/view/pets/" + petId + "/diseases";
       } else {
         console.log("실패임" + res.resultCode)

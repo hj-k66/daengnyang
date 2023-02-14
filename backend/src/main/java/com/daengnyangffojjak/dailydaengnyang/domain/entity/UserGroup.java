@@ -42,4 +42,8 @@ public class UserGroup extends BaseEntity {
 				.roleInGroup(roleInGroup)
 				.build();
 	}
+
+	public void modifyRole(String roleInGroup) {
+		this.roleInGroup = roleInGroup;
+	}
 }

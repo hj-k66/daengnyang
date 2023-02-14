@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -22,34 +23,21 @@ public class RecordController {
 
 	private final RecordService recordService;
 
-	@GetMapping("/list")
-	public String list(Model model,
-			@PageableDefault(size = 3) Pageable pageable) { // @PageableDefault(size = 3) -> 한 페이지에 보여지는 게시글 수
-		Page<RecordResponse> recordList = recordService.getAllRecords(pageable);
-		model.addAttribute("recordList", recordList);
-
-		// 페이징 처리
-		int startPage = Math.max(1, recordList.getPageable().getPageNumber() - 5);
-		int endPage = Math.min(recordList.getTotalPages(),
-				recordList.getPageable().getPageNumber() + 5);
-		model.addAttribute("startPage", startPage);
-		model.addAttribute("endPage", endPage);
-
+	@GetMapping("/records/feed")
+	public String list (Model model) {
 		return "record/record_list";
 	}
 
-	@GetMapping("/detail")
-	public String detail(Model model) {
-//        model.addAttribute("petId", petId);
-//        model.addAttribute("recordId", recordId);
-
+	@GetMapping("/pets/{petId}/records/{recordId}")
+	public String detail(Model model, @PathVariable Long petId, @PathVariable Long recordId) {
+        model.addAttribute("petId", petId);
+        model.addAttribute("recordId", recordId);
 		return "record/record_detail";
 	}
 
-	@GetMapping("/add")
-	public String add(Model model) {
-		model.addAttribute("recordWorkRequest", new RecordWorkRequest());
-
+	@GetMapping("/pets/{petId}/records/create")
+	public String add(Model model, @PathVariable Long petId) {
+		model.addAttribute("petId", petId);
 		return "record/record_add";
 	}
 
