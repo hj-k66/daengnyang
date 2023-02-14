@@ -69,7 +69,7 @@ public class RecordFileService {
 
 			String originalFilename = file.getOriginalFilename();
 
-			// file 형식이 잘못된 경우를 확인
+			// file 형식이 잘못된 경우를 확인.
 			int index;
 			try {
 				index = originalFilename.lastIndexOf(".");
