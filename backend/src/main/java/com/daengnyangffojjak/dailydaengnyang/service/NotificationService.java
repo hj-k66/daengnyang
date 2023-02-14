@@ -1,10 +1,12 @@
 package com.daengnyangffojjak.dailydaengnyang.service;
 
 
+
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationMultiUserRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationOneUserRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationReadResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
@@ -196,4 +198,27 @@ public class NotificationService {
 
 	}
 
+	@Transactional
+	public NotificationReadResponse readNotification(Long notificationId, String username) {
+		//로그인 유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(username);
+
+		//알람이 없는 경우 예외발생
+		Notification notification = notificationRepository.findById(notificationId)
+				.orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
+
+		//로그인유저 != 알람 유저일 경우 예외발생
+		Long loginUserId = user.getId();
+		NotificationUser notificationUser = notificationUserRepository.findByNotificationIdAndUserId(
+						notificationId, loginUserId)
+				.orElseThrow(() -> new NotificationException(ErrorCode.INVALID_PERMISSION));
+
+
+		//수정된 일정 저장
+		notification.changeCheck();
+		notificationRepository.saveAndFlush(notification);
+
+		return new NotificationReadResponse("알람을 읽었습니다.",notificationId);
+
+	}
 }
