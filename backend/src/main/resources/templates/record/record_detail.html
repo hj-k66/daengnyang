@@ -79,33 +79,27 @@
       <button onclick="history.back()" class="btn btn-primary">돌아가기</button>
     </div>
     <div class="card">
-      <div class="card-body"><textarea class="form-control" row="1"></textarea></div>
+      <form>
+      <div class="card-body"><textarea id="comment" class="form-control" row="1"></textarea></div>
       <div class="card-footer d-grid gap-2 d-md-flex justify-content-md-end">
-        <button class="btn btn-primary">등록</button>
+        <button class="btn btn-primary" onclick="comment_create()">등록</button>
       </div>
+      </form>
     </div>
     <br/>
     <div class="card">
-      <div class="card-header">댓글리스트</dv>
-        <ui id="comment--box" class="light-group">
-          <li id="comment--1" class="list-group-item d-flex justify-content-between my-3">
-            <div>댓글 내용입니다.</div>
-            <div class="d-flex">
-              <div class="front-italic">작성자 : 이상훈</div>
-              <button class="badge">삭제</button>
-            </div>
-          </li>
-          <li id="comment--2" class="list-group-item d-flex justify-content-between my-3">
-            <div>댓글 내용입니다.</div>
-            <div class="d-flex">
-              <div class="front-italic">작성자 : 이상훈</div>
-              <button class="badge">삭제</button>
-            </div>
-          </li>
-        </ui>
+      <div class="card-header" id="comment-wrapper">
+<!--        <ui id="comment&#45;&#45;box" class="light-group">-->
+<!--          <li id="comment&#45;&#45;1" class="list-group-item d-flex justify-content-between my-3">-->
+<!--            <div>댓글 내용입니다.</div>-->
+<!--            <div class="d-flex">-->
+<!--              <div class="front-italic" id="comment-userName">작성자 : 이상훈</div>-->
+<!--            </div>-->
+<!--            <div id="comment-list2"></div>-->
+<!--          </li>-->
+<!--        </ui>-->
       </div>
     </div>
-  </div>
   <div class="col-md-3 my-3 mt-5">
     <th:block th:replace="~{fragments/right :: right}"></th:block>
   </div>
@@ -289,6 +283,7 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result)
         user = res.data.result;
+        sessionStorage.setItem("userName", user);
       } else {
         console.log("실패임" + res.resultCode)
       }
@@ -390,6 +385,123 @@
     document.querySelector("form input[name=isPublic][value="+recordData.isPublic+"]").checked = true;
 
   }
+
+  <!-- 댓글 등록 -->
+  async function comment_create() {
+    let comment = $("#comment").val();
+    console.log("댓글" + comment)
+    if (comment == null) {
+      alert("댓글을 입력해주세요")
+      return;
+    }
+
+    await axios.post("/api/v1/records/" + recordId + "/comments", {
+      "comment": comment
+    }, {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      }
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        alert("댓글이 등록되었습니다");
+        document.location.href = "/view/pets/" + petId + "/records/" + recordId;
+      }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+      console.log("err " + errMsg);
+    });
+  }
+
+  <!-- 댓글 리스트 -->
+  $(document).ready(async function commentList() {
+    let nowPage = 0;
+    let param = '?page=' + nowPage;
+
+    await axios.get("/api/v1/records/" + recordId + "/comments" + param, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let commentList = res.data.result.content;
+        let userName = sessionStorage.getItem('userName');
+
+        for (let i = 0; i < commentList.length; i++) {
+          let commentId = commentList[i]['id'];
+          let commentUserName = commentList[i]['userName'];
+          let comment = commentList[i]['comment'];
+
+          let temp_html = `
+          <form>
+          <ui id="comment--box" class="light-group">
+            <li class="list-group-item d-flex justify-content-between my-3">
+              <div id="comment-body">${comment}</div>
+              <div class="d-flex">
+                <div class="front-italic" id="commentUserName">${commentUserName} </div>
+                <input type="hidden" id="moodifyCommentId" value="${commentId}">
+          `
+          if (userName !== commentUserName) {
+            let temp_html3 = `
+              </div>
+            </li>
+          </ui>
+          </form>
+          `
+            $('#comment-wrapper').append(temp_html + temp_html3);
+          } else {
+            let temp_html2 = `
+              <button class="badge" id="comment-modify-btn" onclick="modify_comment()">수정</button>
+              <button class="badge" id="comment-delete-btn" onclick="delete_comment()">삭제</button>
+          `
+            let temp_html3 = `
+              </div>
+             </li>
+            </ui>
+            </form>
+          `
+            $('#comment-wrapper').append(temp_html + temp_html2 + temp_html3);
+          }
+        }
+      } else {
+        console.log("실패 " + res.resultCode)
+      }
+    });
+  })
+
+  async function get_group_info() {
+    await axios.get("/api/v1/groups/" + groupId + "/users" , {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let users = res.data.result.users;
+        groupName = users[0].groupName;
+        // roleInGroup = users[0].roleInGroup
+        // userName = users[0].userName;
+        //
+        // $('input[name=roleInGroup]').attr('value', roleInGroup)
+
+        $('#groupName').text(groupName);
+        $('#exampleModalLabel').text(groupName);
+
+      } else {
+        console.log("실패 " + res.resultCode)
+      }
+    });
+  }
+
+
+
+  async function modify_comment() {
+    let commentId = $("#moodifyCommentId").val();
+    await axios.put("/api/v1/records/" + recordId + "/comments/" + commentId)
+  }
+
+
+
+
+
 
 
 
