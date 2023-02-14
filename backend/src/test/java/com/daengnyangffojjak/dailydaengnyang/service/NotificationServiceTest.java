@@ -16,7 +16,6 @@ import com.daengnyangffojjak.dailydaengnyang.repository.NotificationRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.NotificationUserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,15 +42,15 @@ public class NotificationServiceTest {
 	@DisplayName("알람 삭제")
 	class DeleteNotification {
 
+		NotificationUser notificationUser = new NotificationUser(1L,notification,user);
 
 		@Test
 		@DisplayName("성공")
 		void success() {
-			NotificationUser notificationUser = new NotificationUser(1L,notification,user);
 
 			given(validator.getUserByUserName("user")).willReturn(user);
-			given(notificationRepository.findById(1L)).willReturn(Optional.of(notification));
-			given(notificationUserRepository.findByNotificationIdAndUserId(1L,user.getId())).willReturn(Optional.of(notificationUser));
+			given(validator.getNotificationById(1L)).willReturn(notification);
+			given(validator.validateNotificationUser(1L,user.getId())).willReturn(notificationUser);
 
 			NotificationDeleteResponse response = assertDoesNotThrow(
 					() -> notificationService.delete(1L, "user"));
@@ -71,8 +70,8 @@ public class NotificationServiceTest {
 			NotificationUser notificationUser = new NotificationUser(1L,notification,user);
 
 			given(validator.getUserByUserName("user")).willReturn(user);
-			given(notificationRepository.findById(1L)).willReturn(Optional.of(notification));
-			given(notificationUserRepository.findByNotificationIdAndUserId(1L,user.getId())).willReturn(Optional.of(notificationUser));
+			given(validator.getNotificationById(1L)).willReturn(notification);
+			given(validator.validateNotificationUser(1L,user.getId())).willReturn(notificationUser);
 
 			NotificationReadResponse response = assertDoesNotThrow(
 					() -> notificationService.checkTrue(1L, "user"));

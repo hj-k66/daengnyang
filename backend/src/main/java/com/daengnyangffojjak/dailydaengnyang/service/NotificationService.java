@@ -10,8 +10,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.Notificatio
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
-import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
-import com.daengnyangffojjak.dailydaengnyang.exception.NotificationException;
 import com.daengnyangffojjak.dailydaengnyang.repository.NotificationRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.NotificationUserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
@@ -153,14 +151,6 @@ public class NotificationService {
 				user, before30days, now);
 
 
-
-//		//NotificationUser의 Notification_id로 알람 조회
-//		List<Notification> notifications = selectedNotificationUser.stream()
-//				.map(notificationUser -> notificationUser.getNotification().getId())
-//				.map(notificationId -> notificationRepository.findById(notificationId)
-//						.orElseThrow(
-//								() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND)))
-//				.collect(Collectors.toList());
 		Page<Notification> notifications = fetchPages(lastNotificationId, size,selectedNotificationUser);
 		return NotificationListResponse.from(notifications.getContent());
 
@@ -180,14 +170,11 @@ public class NotificationService {
 		User user = validator.getUserByUserName(username);
 
 		//알람이 없는 경우 예외발생
-		Notification notification = notificationRepository.findById(notificationId)
-				.orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
+		Notification notification = validator.getNotificationById(notificationId);
 
 		//로그인유저 != 알람 유저일 경우 예외발생
 		Long loginUserId = user.getId();
-		NotificationUser notificationUser = notificationUserRepository.findByNotificationIdAndUserId(
-				notificationId, loginUserId)
-				.orElseThrow(() -> new NotificationException(ErrorCode.INVALID_PERMISSION));
+		NotificationUser notificationUser = validator.validateNotificationUser(notificationId,loginUserId);
 
 		//알람 삭제
 		notificationUser.deleteSoftly();
@@ -204,14 +191,11 @@ public class NotificationService {
 		User user = validator.getUserByUserName(username);
 
 		//알람이 없는 경우 예외발생
-		Notification notification = notificationRepository.findById(notificationId)
-				.orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
+		Notification notification = validator.getNotificationById(notificationId);
 
 		//로그인유저 != 알람 유저일 경우 예외발생
 		Long loginUserId = user.getId();
-		NotificationUser notificationUser = notificationUserRepository.findByNotificationIdAndUserId(
-						notificationId, loginUserId)
-				.orElseThrow(() -> new NotificationException(ErrorCode.INVALID_PERMISSION));
+		NotificationUser notificationUser = validator.validateNotificationUser(notificationId,loginUserId);
 
 
 		//수정된 일정 저장
