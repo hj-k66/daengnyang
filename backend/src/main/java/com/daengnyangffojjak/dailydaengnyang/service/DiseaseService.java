@@ -5,10 +5,13 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizGetResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.disease.DizWriteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DiseaseService {
 
 	private final DiseaseRepository diseaseRepository;
+	private final TagRepository tagRepository;
 	private final Validator validator;
 
 	@Transactional
@@ -35,6 +39,14 @@ public class DiseaseService {
 		}
 
 		Disease saved = diseaseRepository.save(dizWriteRequest.toEntity(pet));
+
+		Group group = pet.getGroup();
+		//질병 등록 시 태그도 생성 (태그가 있는 지 확인 후)
+		if (!tagRepository.existsByGroupIdAndName(group.getId(), dizWriteRequest.getName())) {
+			Tag tag = Tag.from(group, dizWriteRequest.getName());
+			Tag savedTag = tagRepository.save(tag);
+		}
+
 		return DizWriteResponse.from(saved);
 	}
 
@@ -51,6 +63,14 @@ public class DiseaseService {
 
 		disease.modify(dizWriteRequest);
 		Disease modified = diseaseRepository.saveAndFlush(disease);
+
+		Group group = pet.getGroup();
+		//질병 등록 시 태그도 생성 (태그가 있는 지 확인 후)
+		if (!tagRepository.existsByGroupIdAndName(group.getId(), dizWriteRequest.getName())) {
+			Tag tag = Tag.from(group, dizWriteRequest.getName());
+			Tag savedTag = tagRepository.save(tag);
+		}
+
 		return DizWriteResponse.from(modified);
 	}
 
