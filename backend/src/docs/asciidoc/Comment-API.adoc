@@ -1,0 +1,22 @@
+[[Comment-API]]
+== Comment API
+
+[[Comment-등록하기]]
+=== Comment 등록하기
+operation::comment-create/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Comment-수정하기]]
+=== Comment 수정하기
+operation::comment-modify/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Comment-삭제하기]]
+=== Comment 삭제하기
+operation::comment-delete/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Comment-조회하기]]
+=== Comment 조회하기
+operation::get-all-comment/success[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[Comment-내댓글조회하기]]
+=== Comment 내 댓글 조회하기
+operation::get-my-comment/success[snippets='http-request,http-response,response-fields']
