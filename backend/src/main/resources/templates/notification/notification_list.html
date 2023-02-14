@@ -157,10 +157,13 @@
 
         }
         isFetching = false;
-      } else {
-        console.log("실패임" + res.resultCode)
       }
-    });
+    }).catch(err => {
+      console.log(err.response)
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });;
   }
 
   function convert_notification_type_to_url(notificationType_enum) {
@@ -196,9 +199,12 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
         alert(res.data.result.message);
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      console.log(err.response)
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -218,9 +224,12 @@
         alert(res.data.result.message);
         document.location.href = "/view/notification?lastNotificationId=" + Number.MAX_SAFE_INTEGER
             + "&size=3";
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      console.log(err.response)
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
