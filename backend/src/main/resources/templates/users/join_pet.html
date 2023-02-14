@@ -150,6 +150,8 @@
         console.log(res.data.resultCode);
         console.log(res.data.result.id);
 
+        sessionStorage.setItem("petId", res.data.result.id);
+
         document.location.href = "/view/calendar"
       } else {
         console.log("실패임" + res.resultCode)

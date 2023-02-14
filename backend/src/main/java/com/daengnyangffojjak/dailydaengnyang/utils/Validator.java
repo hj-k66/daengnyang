@@ -1,5 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.utils;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Comment;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
@@ -9,6 +10,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.UserGroup;
+import com.daengnyangffojjak.dailydaengnyang.exception.CommentException;
 import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.FileException;
@@ -19,6 +21,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordFileException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.repository.CommentRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
@@ -28,7 +31,9 @@ import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserGroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.UserRepository;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +51,8 @@ public class Validator {
 	private final TagRepository tagRepository;
 	private final DiseaseRepository diseaseRepository;
 	private final RecordFileRepository recordFileRepository;
+
+	private final CommentRepository commentRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -76,6 +83,7 @@ public class Validator {
 		return tagRepository.findById(tagId)
 				.orElseThrow(() -> new TagException(ErrorCode.TAG_NOT_FOUND));
 	}
+
 	public Disease getDiseaseById(Long diseaseId) {
 		return diseaseRepository.findById(diseaseId)
 				.orElseThrow(() -> new DiseaseException(ErrorCode.DISEASE_NOT_FOUND));
@@ -114,12 +122,29 @@ public class Validator {
 		return userGroupList;
 	}
 
+	public Comment getCommentById(Long commentId) {
+		return  commentRepository.findById(commentId)
+				.orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+	}
+
 	// 빈 파일을 업로드 하거나 파일을 업로드 안했을 때
 	public void validateFile(List<MultipartFile> multipartFiles) {
-		for(MultipartFile multipartFile : multipartFiles) {
+		for (MultipartFile multipartFile : multipartFiles) {
 			if (multipartFile.isEmpty()) {
 				throw new FileException(ErrorCode.FILE_NOT_FOUND);
 			}
 		}
+	}
+
+	//유저아이디 : 그룹 내 역할 -> 맵 반환
+	public Map<Long, String> makeMapWithRoleAndId(List<UserGroup> userGroupList) {
+		Map<Long, String> roleIdMap = new HashMap<>();
+		for (UserGroup userGroup : userGroupList) {
+			Long userId = userGroup.getUser().getId();
+			String role = userGroup.getRoleInGroup();
+
+			roleIdMap.put(userId, role);
+		}
+		return roleIdMap;
 	}
 }

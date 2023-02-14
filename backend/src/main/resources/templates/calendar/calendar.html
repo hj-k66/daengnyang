@@ -10,6 +10,9 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
         crossorigin="anonymous">
 
+  <!-- CSS -->
+  <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -37,20 +40,113 @@
 <body>
 
 <div th:insert="~{fragments/header :: header}"></div>
-
+<div class="col-md-12 text-center mb-5">
+  <h1>그룹 이름</h1>
+</div>
 <div class="container-fluid">
+
   <div class="row">
-    <div class="col-md-12">
-      <h3>캘린더 </h3>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-3" id="pet-list">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 mt-8">
+            <section>
+              <!--              card visually-hidden-->
+              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
+                   data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <h3 class="name card-title">일기</h3>
+                <h6 class="card-subtitle mt-3 text-muted">
+                  <section id="일기리스트">
+                    <table class="table">
+                      <tbody>
+                      <tr>
+                        <td>멍뭉이랑 산책한썰</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </section>
+                </h6>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 mt-8">
+            <section>
+              <!--              card visually-hidden-->
+              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
+                   data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <h3 class="name card-title">일정</h3>
+                <h6 class="card-subtitle mt-3 text-muted">
+                  <section id="일정리스트">
+                    <table class="table">
+                      <tbody>
+                      <tr>
+                        <td>저녁9시에 약 먹이기</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </section>
+                </h6>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 mt-8">
+            <section>
+              <!--              card visually-hidden-->
+              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
+                   data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <h3 class="name card-title">tag</h3>
+                <h6 class="card-subtitle mt-3 text-muted">
+                  <section id="태그리스트">
+                    <table class="table">
+                      <tbody>
+                      <tr>
+                        <td>일상</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </section>
+                </h6>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12 mt-8">
+            <section>
+              <!--              card visually-hidden-->
+              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
+                   data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <h3 class="name card-title">pet</h3>
+                <h6 class="card-subtitle mt-3 text-muted">
+                  <section id="pet리스트">
+                    <table class="table">
+                      <tbody>
+                      <tr>
+                        <td>훈이</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </section>
+                </h6>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="col-md-8" id='calendar'>
-
     </div>
-    <div class="col-md-2">
+    <div class="col-md-1">
     </div>
   </div>
 </div>
@@ -90,5 +186,91 @@
 </div>
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  const groupId = [[${groupId}]];
+  let rct_id;
+  let rct_title;
+  let rct_roleInGroup;
+
+  $(document).ready(function () {
+    get_group_list();
+  });
+
+  axios.defaults.withCredentials = true;
+
+  async function get_group_list() {
+    await axios.get("/api/v1/groups/mygroups", {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        let groups = res.data.result.groups;
+        console.log(groups)
+        for (let i = 0; i < groups.length; i++) {
+          let id = groups[i]['id'];
+          let title = groups[i]['title'];
+          let roleInGroup = groups[i]['roleInGroup'];
+
+          let temp_html = `
+                <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
+                  <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/8719/8719385.png">
+                  <div class="info">
+                    <h3 class="name card-title">${title}</h3>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                      <span class="group_id" style="display: none;">${id}</span>
+                      <span class="roleInGroup">${roleInGroup}</span> |
+                    </h6>
+                  </div>
+                </div>
+          `
+          $('#pet-list').append(temp_html);
+        }
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+
+  // 그룹클릭하면 그룹 id를 세션에 저장하게만들고 캘린더로 이동하기 함수?
+  async function get_pet_info(petId) {
+    await axios.get("/api/v1/groups/" + groupId + "/groups/" + petId, {}, {
+      headers: {},
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        rct_id = petId;
+        rct_title = res.data.result.title;
+        rct_roleInGroup = res.data.result.roleInGroup;
+
+        $('#title').text(rct_title);
+        $('#roleInGroup').text(rct_roleInGroup);
+
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+
 </body>
 </html>

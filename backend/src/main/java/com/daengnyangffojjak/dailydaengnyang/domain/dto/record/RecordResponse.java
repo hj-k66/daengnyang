@@ -2,11 +2,13 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.record;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -31,19 +33,23 @@ public class RecordResponse {
 	private String userName;
 	private Boolean isPublic;
 	private String tag;
+	private List<RecordFile> recordFiles;
+	private RecordFile recordFile;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime createdAt;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime lastModifiedAt;
 
-	public static RecordResponse of(User user, Pet pet, Record record) {
+	public static RecordResponse of(User user, Pet pet, Record record,
+			List<RecordFile> recordFiles) {
 		return RecordResponse.builder()
 				.id(record.getId())
 				.userId(user.getId())
 				.petId(pet.getId())
 				.title(record.getTitle())
 				.body(record.getBody())
+				.recordFiles(recordFiles)
 				.userName(record.getUser().getUsername())
 				.isPublic(record.getIsPublic())
 				.tag(record.getTag().getName())
@@ -52,10 +58,11 @@ public class RecordResponse {
 				.build();
 	}
 
-	public static RecordResponse from(Record record) {
+	public static RecordResponse from(Record record, RecordFile firstRecordFile) {
 		return RecordResponse.builder()
 				.title(record.getTitle())
 				.body(record.getBody())
+				.recordFile(firstRecordFile)
 				.userName(record.getUser().getUsername())
 				.tag(record.getTag().getName())
 				.build();

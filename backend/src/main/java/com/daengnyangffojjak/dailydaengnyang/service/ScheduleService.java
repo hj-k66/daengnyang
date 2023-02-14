@@ -12,8 +12,11 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.repository.ScheduleRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleAssignEvent;
+import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCompleteEvent;
 import com.daengnyangffojjak.dailydaengnyang.utils.event.ScheduleCreateEvent;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +52,6 @@ public class ScheduleService {
 		//등록 된 태그가 없으면 예외발생
 		Tag tag = validator.getTagById(scheduleCreateRequest.getTagId());
 
-		//일정 저장
-		Schedule savedSchedule = scheduleRepository.save(
-				scheduleCreateRequest.toEntity(pet, user, tag));
-		String message = "일정 등록 완료";
-
 		//알림 전송 - 그룹원 모두에게 전송
 		//해당 그룹(pet의 그룹) 내 멤버 이름 불러오기
 		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
@@ -64,6 +62,12 @@ public class ScheduleService {
 
 		applicationEventPublisher.publishEvent(
 				new ScheduleCreateEvent(userList, scheduleCreateRequest.getTitle(), userName));
+
+		//일정 저장
+		Schedule savedSchedule = scheduleRepository.save(
+				scheduleCreateRequest.toEntity(pet, user, tag));
+
+		String message = "일정 등록 완료";
 
 		return ScheduleCreateResponse.toResponse(message, savedSchedule);
 
@@ -125,13 +129,14 @@ public class ScheduleService {
 
 		//일정 삭제
 		schedule.deleteSoftly();
+
 		String message = "일정이 삭제되었습니다.";
 
 		return ScheduleDeleteResponse.toResponse(message);
 
 	}
 
-	// 일정 상세 조회(단건)
+	//일정 상세 조회(단건)
 	@Transactional(readOnly = true)
 	public ScheduleResponse get(Long petId, Long scheduleId, String userName) {
 
@@ -145,42 +150,64 @@ public class ScheduleService {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-		return ScheduleResponse.toResponse(user, pet, schedule);
+		//그룹 내 멤버 리스트 반환
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), userName);
+
+		//assigneeId == userId 찾아서 해당 userId의 roleInGroup 반환
+		String roleInGroup = "";
+
+		for (UserGroup userGroup : userGroupList
+		) {
+			if (userGroup.getUser().getId() == schedule.getAssigneeId()) {
+				roleInGroup = userGroup.getRoleInGroup();
+			}
+		}
+
+		return ScheduleResponse.toResponse(user, pet, schedule, roleInGroup);
 
 	}
 
-	// 개체별 일정 전체 보기
+	//개체별 일정 전체 보기
 	@Transactional(readOnly = true)
 	public Page<ScheduleListResponse> list(Long petId, String userName, Pageable pageable) {
 
 		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
 		Pet pet = validator.getPetWithUsername(petId, userName);
 
+		//그룹 내 멤버 리스트 반환
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), userName);
+
+		//유저아이디 : 그룹 내 역할 -> 맵 반환
+		Map<Long, String> getRoleInGroup = validator.makeMapWithRoleAndId(userGroupList);
+
 		Page<Schedule> schedules = scheduleRepository.findAllByPetId(pet.getId(), pageable);
 
-		return ScheduleListResponse.toResponse(schedules);
+		return ScheduleListResponse.toResponse(schedules, getRoleInGroup);
 
 	}
 
+	//일정 책임자 수정 알람
 	@Transactional
 	public MessageResponse assign(Long petId, Long scheduleId,
 			ScheduleAssignRequest scheduleAssignRequest, String userName) {
-		//1. 로그인 유저가 없는 경우 예외발생
+		//로그인 유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(userName);
 
-		//2. 일정이 없는 경우 예외발생
+		//일정이 없는 경우 예외발생
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-		//3. Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
 		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
 
-		//4. assignrequest receiverId가 userName(pet)과 같은 그룹이 아닐 경우 예외발생
+		//assignrequest receiverId가 userName(pet)과 같은 그룹이 아닐 경우 예외발생
 		//receiver 유저가 없는 경우 예외 발생 같이 처리
 		validator.getUserGroupListByUsername(pet.getGroup(),
 				scheduleAssignRequest.getReceiverName());
 
-		//5. 로그인유저 != (일정작성유저 or 이전 일정 책임자)일 경우 예외발생
+		//로그인유저 != (일정작성유저 or 이전 일정 책임자)일 경우 예외발생
 		Long loginUserId = user.getId();
 		Long scheduleWriteUserId = schedule.getUser().getId();
 		Long assigneeId = schedule.getAssigneeId();
@@ -201,5 +228,47 @@ public class ScheduleService {
 
 		return new MessageResponse("일정의 책임자가 변경되었습니다.");
 
+	}
+
+
+	@Transactional
+	public ScheduleCompleteResponse complete(Long petId, Long scheduleId, ScheduleCompleteRequest scheduleCompleteRequest, String username) {
+		//로그인 유저가 없는 경우 예외발생
+		User user = validator.getUserByUserName(username);
+
+		//일정이 없는 경우 예외발생
+		Schedule schedule = scheduleRepository.findById(scheduleId)
+				.orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+		//Pet과 userName인 User가 같은 그룹이면 Pet을 반환
+		Pet pet = validator.getPetWithUsername(petId, user.getUsername());
+
+
+		//로그인유저 != (일정작성유저 or 일정 책임자)일 경우 예외발생
+		Long loginUserId = user.getId();
+		Long scheduleWriteUserId = schedule.getUser().getId();
+		Long assigneeId = schedule.getAssigneeId();
+
+		if (!loginUserId.equals(scheduleWriteUserId) && !loginUserId.equals(assigneeId)) {
+			throw new ScheduleException(ErrorCode.INVALID_PERMISSION);
+		}
+
+		//수정된 일정 저장
+		schedule.changeToCompleted(scheduleCompleteRequest.isCompleted());
+		scheduleRepository.saveAndFlush(schedule);
+
+		//알림 전송 - 그룹원 모두에게
+		//알림 전송 - 그룹원 모두에게 전송
+		//해당 그룹(pet의 그룹) 내 멤버 이름 불러오기
+		List<UserGroup> userGroupList = validator.getUserGroupListByUsername(
+				pet.getGroup(), username);
+		List<User> userList = userGroupList.stream()
+				.map(UserGroup::getUser).collect(
+						Collectors.toList());
+
+		applicationEventPublisher.publishEvent(
+				new ScheduleCompleteEvent(userList, schedule.getTitle(), username));
+
+		return new ScheduleCompleteResponse("일정이 완료되었습니다.", scheduleId);
 	}
 }

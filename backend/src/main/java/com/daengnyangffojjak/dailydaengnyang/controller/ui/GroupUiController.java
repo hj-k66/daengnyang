@@ -31,5 +31,12 @@ public class GroupUiController {
 	public void inviteUser(@PathVariable Long groupId, Model model) {
 		model.addAttribute("groupInviteRequest", new GroupInviteRequest());
 	}
-	
+
+	// 그룹 선택
+	@GetMapping("/choice")
+	public String groupChoice(Model model) {
+		model.addAttribute("groupMakeRequest", new GroupMakeRequest());
+		return "group/group_choice";
+	}
+
 }

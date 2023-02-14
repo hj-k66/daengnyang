@@ -54,4 +54,8 @@ public class Schedule extends BaseEntity {
 		this.assigneeId = assigneeId;
 	}
 
+	public void changeToCompleted(boolean isCompleted){
+		this.isCompleted = isCompleted;
+	}
+
 }

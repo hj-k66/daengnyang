@@ -3,6 +3,7 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupInviteRequest;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
@@ -10,6 +11,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListRespo
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -77,6 +79,12 @@ public class GroupRestController {
 		MessageResponse messageResponse = groupService.deleteMember(groupId, user.getUsername(),
 				userId);
 		return Response.success(messageResponse);
+	}
+
+	@GetMapping(value = "/mygroups")
+	public Response<List<GroupListResponse>> getGroupList(@AuthenticationPrincipal UserDetails user) {
+		List<GroupListResponse> groupListResponse = groupService.getGroupList(user.getUsername());
+		return Response.success(groupListResponse);
 	}
 }
 

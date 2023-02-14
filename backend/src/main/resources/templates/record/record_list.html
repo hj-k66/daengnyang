@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: head}">
+  <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
+  <!-- Required meta tags -->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+        crossorigin="anonymous"/>
+  <title>게시판</title>
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="row">
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-6 my-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <p class="card-text">오늘은 반려동물과 어떤일이 있었나요? 🐶</p>
+        <a href="#" class="btn btn-primary" th:href="@{/view/add}">글 작성하러가기</a>
+      </div>
+    </div>
+    <form class="row g-3 d-flex justify-content-end my-3" th:method="get" th:action="@{/view/list}">
+    </form>
+    <div class="col-md-12 my-3" th:each="recordList : ${recordList}">
+      <div
+          class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="container">
+          <div class="row">
+            <div class="col-8 p-4 d-flex flex-column position-static">
+              <strong class="d-inline-block mb-2 text-success"
+                      >#산책</strong>
+              <h3 class="mb-0" >하루에 산책 3번한 날...</h3>
+              <div class="mb-1 text-muted" >작성자 : 아빠</div>
+              <p class="mb-auto" >오늘은 산책을 세번이나 했다. 멍뭉이는 아직 멀쩡해보인다. 힘이
+                어디서 나오는지 모르겠다. 너무 힘들다... 그래도 귀여워서 참는다.</p>
+              <a href="#" class="stretched-link" th:href="@{/view/detail}">자세히 보러가기</a>
+            </div>
+            <!--                                동영상-->
+            <video autoplay controls loop muted
+                   poster="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
+                   preload="auto">
+              <source
+                  src="https://s3.ap-northeast-2.amazonaws.com/daengnyang-bucket/test/records/45b576a0-7dd4-4169-98c2-e391e5f8da2f.mp4"
+                  type="video/mp4">
+              동영상을 사용할 수 없습니다.
+            </video>
+            <!--              이미지-->
+            <!--              <div class="col-4 p-4 d-flex flex-column position-static">-->
+            <!--                  <img-->
+            <!--                      src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
+            <!--                      width="250" height="250" class="img-thumbnail" alt="강아지">-->
+            <!--              </div>-->
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav aria-label="Page navigation example"> <!--페이징-->
+      <ul class="pagination justify-content-center">
+        <li class="page-item"
+            th:classappend="${1 == recordList.pageable.pageNumber + 1} ? 'disabled'">
+          <a class="page-link" th:href="@{/list(page=${recordList.pageable.pageNumber - 1})}">Previous</a>
+        </li>
+        <li class="page-item"
+            th:classappend="${i == recordList.pageable.pageNumber + 1} ? 'disabled'"
+            th:each="i : ${#numbers.sequence(startPage, endPage)}">
+          <a class="page-link" href="#" th:href="@{/view/list(page=${i - 1})}" th:text="${i}"></a>
+        </li>
+        <li class="page-item"
+            th:classappend="${recordList.totalPages == recordList.pageable.pageNumber + 1} ? 'disabled'">
+          <a class="page-link" href="#"
+             th:href="@{/view/list(page=${recordList.pageable.pageNumber + 1})}">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="col-md-3 my-3 mt-5">
+    <div class="card my-3" style="width: 18rem;">
+      <div class="card-header">
+        🏘️️ 그룹명
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">아빠</li>
+        <li class="list-group-item">엄마</li>
+        <li class="list-group-item">멍뭉이</li>
+      </ul>
+    </div>
+    <div class="card my-3 mt-5" style="width: 18rem;">
+      <div class="card-header">
+        ✅️ 오늘의 일정
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">6시에 약먹기</li>
+        <li class="list-group-item">퇴근후 산책시키기</li>
+        <li class="list-group-item">메인피드 UI만들기</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+</body>
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+</html>
