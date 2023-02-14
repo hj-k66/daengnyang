@@ -162,6 +162,49 @@
     </div>
   </div>
 </div>
+<!--댓글 수정 모달-->
+<!-- 수정 모달 -->
+<div class="modal fade" id="modifyCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+<!--        <div class="modal-body">-->
+<!--          <table class="table">-->
+<!--            <tbody>-->
+<!--            <tr>-->
+<!--              <th scope="row">닉네임</th>-->
+<!--              <td>-->
+<!--                <input id="modifyComment" name="roleInGroup" type="text" class="form-control"/>-->
+<!--              </td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--          </table>-->
+
+<!--        </div>-->
+<!--        <div class="modal-footer">-->
+
+<!--          <div class="p-2 flex-grow-1"></div>-->
+<!--          <div class="p-2">-->
+<!--            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--            <button type="button" class="btn btn-primary" data-bs-toggle="modal"-->
+<!--                    data-bs-target="#modifyModal" onclick="roleInGroup_modify()">수정</button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </form>-->
+      <form>
+        <div class="card-body"><textarea id="modifyComment" class="form-control" row="1"></textarea></div>
+        <div class="card-footer d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-primary" onclick="comment_modify()">수정</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 <!-- Optional JavaScript -->
@@ -440,7 +483,6 @@
               <div id="comment-body">${comment}</div>
               <div class="d-flex">
                 <div class="front-italic" id="commentUserName">${commentUserName} </div>
-                <input type="hidden" id="moodifyCommentId" value="${commentId}">
           `
           if (userName !== commentUserName) {
             let temp_html3 = `
@@ -452,8 +494,10 @@
             $('#comment-wrapper').append(temp_html + temp_html3);
           } else {
             let temp_html2 = `
-              <button class="badge" id="comment-modify-btn" onclick="modify_comment()">수정</button>
-              <button class="badge" id="comment-delete-btn" onclick="delete_comment()">삭제</button>
+              <button type="button" id="comment-modify-btn" value="${commentId}"
+              data-bs-toggle="modal" data-bs-target="#modifyCommentModal">수정</button>
+
+              <button type="button" class="badge" value="${commentId}" id="comment-delete-btn" onclick="delete_comment()">삭제</button>
           `
             let temp_html3 = `
               </div>
@@ -470,38 +514,51 @@
     });
   })
 
-  async function get_group_info() {
-    await axios.get("/api/v1/groups/" + groupId + "/users" , {}, {
-      headers: {},
+  async function comment_modify() {
+    let comment = $("#modifyComment").val();
+    let commentId = $("#comment-modify-btn").val();
+    if (comment == null) {
+      alert("댓글 입력")
+      return
+    }
+    await axios.put("/api/v1/records/" + recordId + "/comments/" + commentId , {
+      "comment": comment
+    }, {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      }
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        let users = res.data.result.users;
-        groupName = users[0].groupName;
-        // roleInGroup = users[0].roleInGroup
-        // userName = users[0].userName;
-        //
-        // $('input[name=roleInGroup]').attr('value', roleInGroup)
-
-        $('#groupName').text(groupName);
-        $('#exampleModalLabel').text(groupName);
-
-      } else {
-        console.log("실패 " + res.resultCode)
+        console.log(res.data.result)
+        alert("댓글이 수정되었습니다");
+        document.location.href = "/view/pets/" + petId + "/records/" + recordId;
       }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+      console.log("err " + errMsg);
     });
   }
+  <!-- 댓글 삭제 -->
+  async function delete_comment() {
+    let commentId = $("#comment-delete-btn").val();
 
-
-
-  async function modify_comment() {
-    let commentId = $("#moodifyCommentId").val();
-    await axios.put("/api/v1/records/" + recordId + "/comments/" + commentId)
+    await axios.delete("/api/v1/records/" + recordId + "/comments/" + commentId , {}, {
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      }
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        alert("댓글이 삭제되었습니다");
+        document.location.href = "/view/pets/" + petId + "/records/" + recordId;
+      }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+      console.log("err " + errMsg);
+    });
   }
-
-
-
-
-
 
 
 
