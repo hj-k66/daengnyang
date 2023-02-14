@@ -26,8 +26,7 @@
   <div class="col-md-6 mt-5">
     <form role="form">
       <div id="tag-box">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-primary" onclick="moveToTagPage()">
           +
         </button>
         <input type="radio" class="btn-check mx-1" name="tag" id="tagName1" value="건강"
@@ -220,9 +219,11 @@
         recordId = res.data.result.id;
         alert("일기가 성공적으로 저장되었습니다. 사진을 추가하시려면 아래에서 진행해주세요.");
         // document.location.href = "/view/pets/" + petId + "/records/"+recordId;
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -246,59 +247,14 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/records/"+recordId;
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
-  async function get_record_detail() {
-    await axios.get("/api/v1/pets/" + petId + "/records/" + recordId, {}, {
-      headers: {},
-    }).then(res => {
-      console.log(res)
-      if (res.data.resultCode == 'SUCCESS') {
-        let data = res.data.result;
-        author = data.userName;
-
-        let id = data.id;
-        let userId = data.userId;
-        let petId = data.petId;
-        let petName = data.petName;
-        let title = data.title;
-        let body = data.body;
-        let userName = data.userName;
-        let isPublic = data.isPublic;
-        let tag = data.tag;
-        // let recordFiles = data.recordFiles;
-        // let recordFile = data.recordFile;
-        let createdAt = data.createdAt;
-        let lastModifiedAt = data.lastModifiedAt;
-
-        $('#id').text(id);
-        $('#userId').text(userId);
-        $('#petId').text(petId);
-        $('#petName').text(petName);
-        $('#title').text(title);
-        $('#body-box').text(body);
-        $('#userName').text(userName);
-        $('#isPublic').text(isPublic);
-        $('#tag').text(tag);
-        $('#createdAt').text(createdAt);
-        $('#lastModifiedAt').text(lastModifiedAt);
-      } else {
-        console.log("실패임" + res.resultCode)
-      }
-      setTimeout(async () => {
-        await get_my_name(function (user) {
-          if (user !== author) {
-            document.getElementById('btn-delete').remove();
-            document.getElementById('btn-modify').remove();
-          }
-        });
-      })
-    });
-  }
 
   async function get_group_tag() {
     const groupId = sessionStorage.getItem("groupId");
@@ -324,13 +280,18 @@
           `
           $('#tag-box').append(temp_html);
         }
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
-
+  function moveToTagPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    document.location.href = "/view/groups/"+groupId+"/tags";
+  }
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
