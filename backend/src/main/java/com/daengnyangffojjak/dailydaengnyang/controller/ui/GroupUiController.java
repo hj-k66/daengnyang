@@ -19,4 +19,11 @@ public class GroupUiController {
 		return "users/join_group";
 	}
 
+	// 그룹 선택
+	@GetMapping("/groups/choice")
+	public String groupChoice(Model model) {
+		model.addAttribute("groupMakeRequest", new GroupMakeRequest());
+		return "group/group_choice";
+	}
+
 }
