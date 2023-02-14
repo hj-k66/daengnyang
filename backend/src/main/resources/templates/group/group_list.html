@@ -298,7 +298,6 @@
     let roleInGroup = $("#inviteRoleInGroup").val();
     let email = $("#email").val();
 
-
     await axios.post("/api/v1/groups/" + groupId + "/invite",
         {
           "roleInGroup": roleInGroup,
@@ -313,12 +312,21 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result)
-        document.location.href = "/view/groups/"+groupId+"/users";
+        document.location.href = "/view/groups/" + groupId + "/users";
       } else {
         console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+
+      if (errMsg === '가입되지 않은 이메일입니다.') {
+        alert('가입되지 않은 이메일입니다.');
+      }
+      location.reload();
     });
   }
+
+
 
 
   <!-- 그룹 탈퇴 -->
@@ -367,7 +375,6 @@
           `
           $("#deleteMemberSelect").append(select_html);
 
-
         }
       } else {
         console.log("실패 " + res.resultCode)
@@ -390,9 +397,15 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
-        document.location.href = "/view/groups/"+groupId+"/pets";
+        document.location.href = "/view/groups/"+groupId+"/users";
       } else {
         console.log("실패임" + res.resultCode)
+      }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+
+      if (errMsg === '사용자가 권한이 없습니다.') {
+        alert('내보내기는 그룹장만 가능합니다.');
       }
     });
   }
