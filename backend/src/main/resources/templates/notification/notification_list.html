@@ -57,7 +57,7 @@
   });
 
   axios.defaults.withCredentials = true;
-  let value_lastNotificationId = [[${lastNotificationId}]];  //처음값은 Number.MAX_SAFE_INTEGER로 주기
+  let value_lastNotificationId = Number.MAX_SAFE_INTEGER;  //처음값은 Number.MAX_SAFE_INTEGER로 주기
   let size = 3;
 
   //스크롤 감지

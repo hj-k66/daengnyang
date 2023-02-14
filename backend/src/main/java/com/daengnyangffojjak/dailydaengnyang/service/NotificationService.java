@@ -138,7 +138,7 @@ public class NotificationService {
 	}
 
 	@Transactional(readOnly = true)
-	public NotificationListResponse getAllNotification(Long lastNotificationId, int size,
+	public NotificationListResponse getAllNotification(Long lastNotificationId, Integer size,
 			String username) {
 		//user 있는지 검증
 		User user = validator.getUserByUserName(username);
@@ -157,7 +157,7 @@ public class NotificationService {
 
 	}
 
-	private Page<Notification> fetchPages(Long lastNotificationId, int size, List<NotificationUser> selectedNotificationUser) {
+	private Page<Notification> fetchPages(Long lastNotificationId, Integer size, List<NotificationUser> selectedNotificationUser) {
 		PageRequest pageRequest = PageRequest.of(0, size); // 페이지네이션을 위한 PageRequest, 페이지는 0으로 고정한다.
 		return notificationRepository.findByIdLessThanAndNotificationUserListInOrderByIdDesc(lastNotificationId,selectedNotificationUser,
 				pageRequest); // lastNotificationId보다 작은 값의 id의 알람 조회

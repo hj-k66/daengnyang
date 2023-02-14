@@ -49,7 +49,7 @@ public class NotificationRestController {
 	//무한 스크롤
 	@GetMapping
 	public Response<NotificationListResponse> getAllNotificationByLastPage(
-			@RequestParam Long lastNotificationId, @RequestParam int size,
+			@RequestParam(value = "lastNotificationId",required = false) Long lastNotificationId, @RequestParam(value ="size", required = false) Integer size,
 			@AuthenticationPrincipal UserDetails user) {
 		NotificationListResponse notificationListResponse = notificationService.getAllNotification(
 				lastNotificationId, size, user.getUsername());
