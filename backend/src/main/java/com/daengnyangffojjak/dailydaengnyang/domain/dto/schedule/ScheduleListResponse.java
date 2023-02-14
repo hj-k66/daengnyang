@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ScheduleListResponse {
 
+	private Long id;
 	private String tag;
 	private String title;
 	private String body;
@@ -30,6 +31,7 @@ public class ScheduleListResponse {
 	public static Page<ScheduleListResponse> toResponse(Page<Schedule> schedules, Map<Long, String> getRoleInGroup) {
 		Page<ScheduleListResponse> scheduleListResponses = schedules.map(
 				schedule -> ScheduleListResponse.builder()
+						.id(schedule.getId())
 						.tag(schedule.getTag().getName())
 						.title(schedule.getTitle())
 						.body(schedule.getBody())
@@ -41,5 +43,19 @@ public class ScheduleListResponse {
 						.build());
 
 		return scheduleListResponses;
+	}
+
+	public static ScheduleListResponse toResponse (Schedule schedule, Map<Long, String> getRoleInGroup) {
+		return ScheduleListResponse.builder()
+				.id(schedule.getId())
+				.tag(schedule.getTag().getName())
+				.title(schedule.getTitle())
+				.body(schedule.getBody())
+				.assigneeId(schedule.getAssigneeId())
+				.roleInGroup(getRoleInGroup.get(schedule.getAssigneeId())) //assigneeId == userId -> userId의 roleInGroup 반환
+				.place(schedule.getPlace())
+				.dueDate(schedule.getDueDate())
+				.isCompleted(schedule.isCompleted())
+				.build();
 	}
 }

@@ -164,6 +164,7 @@ public class RecordService {
 				.build();
 	}
 
+	// 일기 기간별 조회
 	@Transactional(readOnly = true)
 	public List<RecordResponse> getRecordList(Long petId, String fromDate, String toDate, String username) {
 		User user = validator.getUserByUserName(username);
