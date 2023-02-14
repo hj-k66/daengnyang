@@ -29,7 +29,7 @@ public class NotificationRestController {
 	//알림 읽기
 	@PutMapping(value = "/{notificationId}")
 	public ResponseEntity<Response<NotificationReadResponse>> readNotification(@PathVariable Long notificationId, @AuthenticationPrincipal UserDetails user) {
-		NotificationReadResponse notificationReadResponse= notificationService.readNotification(notificationId,user.getUsername());
+		NotificationReadResponse notificationReadResponse= notificationService.checkTrue(notificationId,user.getUsername());
 		return ResponseEntity.ok()
 				.body(Response.success(notificationReadResponse));
 

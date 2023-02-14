@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationDeleteResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationReadResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
@@ -56,6 +57,27 @@ public class NotificationServiceTest {
 					() -> notificationService.delete(1L, "user"));
 			assertEquals(1L, response.getId());
 			assertEquals("알람이 삭제되었습니다.", response.getMessage());
+		}
+	}
+
+	@Nested
+	@DisplayName("알람 읽기")
+	class ReadNotification {
+
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			NotificationUser notificationUser = new NotificationUser(1L,notification,user);
+
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(notificationRepository.findById(1L)).willReturn(Optional.of(notification));
+			given(notificationUserRepository.findByNotificationIdAndUserId(1L,user.getId())).willReturn(Optional.of(notificationUser));
+
+			NotificationReadResponse response = assertDoesNotThrow(
+					() -> notificationService.checkTrue(1L, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("알람을 읽었습니다.", response.getMessage());
 		}
 	}
 

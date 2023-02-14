@@ -199,7 +199,7 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public NotificationReadResponse readNotification(Long notificationId, String username) {
+	public NotificationReadResponse checkTrue(Long notificationId, String username) {
 		//로그인 유저가 없는 경우 예외발생
 		User user = validator.getUserByUserName(username);
 
