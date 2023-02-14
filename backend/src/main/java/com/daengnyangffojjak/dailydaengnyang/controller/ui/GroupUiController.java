@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -20,9 +19,8 @@ public class GroupUiController {
 	}
 
 	// 그룹 선택
-	@GetMapping("/groups/choice")
+	@GetMapping("/groups/mygroups")
 	public String groupChoice(Model model) {
-		model.addAttribute("groupMakeRequest", new GroupMakeRequest());
 		return "group/group_choice";
 	}
 
