@@ -9,6 +9,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
 import java.net.URI;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,6 +73,13 @@ public class GroupRestController {
 			@PathVariable Long groupId) {
 		MessageResponse messageResponse = groupService.leaveGroup(groupId, user.getUsername());
 		return Response.success(messageResponse);
+	}
+
+	@PutMapping (value = "/{groupId}/users")
+	public Response<GroupUserResponse> modifyInfoInGroup(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long groupId, @RequestBody GroupInviteRequest request) {
+		GroupUserResponse response = groupService.modifyInfoinGroup(groupId, user.getUsername(), request);
+		return Response.success(response);
 	}
 
 	@DeleteMapping(value = "/{groupId}/users/{userId}")

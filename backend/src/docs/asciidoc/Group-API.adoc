@@ -35,3 +35,9 @@ operation::delete-group-member/success[snippets='http-request,path-parameters,ht
 === Group 나의 리스트 조회
 
 operation::my-group-list/success[snippets='http-request,http-response,response-fields']
+
+
+[[Group-역할변경]]
+=== Group 역할변경
+
+operation::change-role/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']

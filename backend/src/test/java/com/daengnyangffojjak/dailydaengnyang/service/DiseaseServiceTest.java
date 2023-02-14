@@ -20,6 +20,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.fixture.GroupFixture;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.TagRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,13 +37,14 @@ import org.springframework.data.domain.Sort.Direction;
 class DiseaseServiceTest {
 
 	private final DiseaseRepository diseaseRepository = mock(DiseaseRepository.class);
+	private final TagRepository tagRepository = mock(TagRepository.class);
 	private final Validator validator = mock(Validator.class);
 
 	Group group = GroupFixture.get();
 	Pet pet = Pet.builder().id(1L).birthday(LocalDate.of(2018, 3, 1)).species(Species.CAT)
 			.name("반려동물").group(group).sex(Sex.NEUTERED_MALE).build();
 
-	private DiseaseService diseaseService = new DiseaseService(diseaseRepository, validator);
+	private DiseaseService diseaseService = new DiseaseService(diseaseRepository, tagRepository, validator);
 
 	@Nested
 	@DisplayName("질병 등록")

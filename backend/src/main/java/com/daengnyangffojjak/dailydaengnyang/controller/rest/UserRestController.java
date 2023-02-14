@@ -18,6 +18,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +52,12 @@ public class UserRestController {
 		httpServletResponse.setHeader("Set-Cookie", cookie.toString());
 		//access Token은 body로 전송
 		return Response.success(new UserResponse(tokenInfo.getAccessToken()));
+	}
+
+	@GetMapping(value = "/myname")
+	public Response<String> getMyInfo (@AuthenticationPrincipal UserDetails user) {
+		String myName = user.getUsername();
+		return Response.success(myName);
 	}
 
 	@PostMapping("/logout") //로그아웃

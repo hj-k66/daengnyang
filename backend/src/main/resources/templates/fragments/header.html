@@ -67,28 +67,28 @@
         </ul>
         <!-- <li class="nav-item"><a class="nav-link" href="/users/login">로그인</a></li> -->
 
-          <!-- 로그인 안 했을때 -->
-          <ul id="logout-on" class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAnonymous()">
-            <li class="nav-item"><a class="nav-link" th:href="@{/view/users/join}">회원가입</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/view/users/login}">로그인</a></li>
-          </ul>
+        <!-- 로그인 안 했을때 -->
+        <ul id="logout-on" class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAnonymous()">
+          <li class="nav-item"><a class="nav-link" th:href="@{/view/users/join}">회원가입</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/view/users/login}">로그인</a></li>
+        </ul>
       </div>
     </div>
   </nav>
 
-<script th:inline="javascript">
-  const token = localStorage.getItem("accessToken");
-  $(document).ready(function () {
-    if (token != null){
-      let ob = document.getElementsByClassName('login-on');
-      for (let i = 0; i < ob.length; i++) {
-        ob.item(i).classList.remove('visually-hidden');
-      }
+  <script th:inline="javascript">
+    const token = localStorage.getItem("accessToken");
+    $(document).ready(function () {
+      if (token != null) {
+        let ob = document.getElementsByClassName('login-on');
+        for (let i = 0; i < ob.length; i++) {
+          ob.item(i).classList.remove('visually-hidden');
+        }
 
-      document.getElementById('logout-on').classList.add('visually-hidden');
-    }
-  });
-</script>
+        document.getElementById('logout-on').classList.add('visually-hidden');
+      }
+    });
+  </script>
 </div>
 
 

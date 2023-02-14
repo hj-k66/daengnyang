@@ -35,6 +35,12 @@ public class UserUiController {
 		return "users/login";
 	}
 
+	@GetMapping("/oauth2/redirect")
+	public String oauthRedirect(Model model, @RequestParam String token, @CookieValue(value = "Set-Cookie", required = false) Cookie cookie) {
+		model.addAttribute("token", token);
+		return "users/oauth";
+	}
+
 	/* 아이디, 이메일 중복 여부 확인 */
 	@ResponseBody
 	@GetMapping("/check-userName")

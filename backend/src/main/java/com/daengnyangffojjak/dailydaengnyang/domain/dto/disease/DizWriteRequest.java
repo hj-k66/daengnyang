@@ -30,11 +30,6 @@ public class DizWriteRequest {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
 	private LocalDate endedAt;
 
-	@AssertTrue(message = "시작일이 종료일보다 이전이어야 합니다.")
-	public boolean isValidateEndedAt() {
-		return endedAt.isAfter(startedAt);
-	}
-
 	public Disease toEntity(Pet pet) {
 		return Disease.builder()
 				.pet(pet)
