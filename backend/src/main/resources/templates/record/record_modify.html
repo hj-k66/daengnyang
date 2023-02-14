@@ -53,26 +53,7 @@
     </div>
   </div>
   <div class="col-md-3 my-3 mt-5">
-    <div class="card my-3" style="width: 18rem;">
-      <div class="card-header">
-        🏘️️ 그룹명
-      </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">아빠</li>
-        <li class="list-group-item">엄마</li>
-        <li class="list-group-item">멍뭉이</li>
-      </ul>
-    </div>
-    <div class="card my-3 mt-5" style="width: 18rem;">
-      <div class="card-header">
-        ✅️ 오늘의 일정
-      </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">6시에 약먹기</li>
-        <li class="list-group-item">퇴근후 산책시키기</li>
-        <li class="list-group-item">메인피드 UI만들기</li>
-      </ul>
-    </div>
+    <th:block th:replace="~{fragments/right :: right}"></th:block>
   </div>
 </div>
 </div>
