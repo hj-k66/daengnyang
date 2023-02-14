@@ -30,7 +30,7 @@
 
   <div class="card my-3" style="width: 18rem;">
     <div class="card-header">
-      🏘️️ <span id="group-name">-</span>
+      🏘️️ <span id="group-name">우리집</span>
     </div>
     <ul id="group-member" class="list-group list-group-flush">
       <li class="list-group-item">-</li>
@@ -92,14 +92,9 @@
         if (res.data.resultCode == 'SUCCESS') {
           let users = res.data.result.users;
 
-          let groupName = users[0]['groupName'];
-          console.log(groupName)
-          $("#group-name").text(groupName);
-
           for (let i = 0; i < users.length; i++) {
             let name = users[i]['userName'];
             let roleInGroup = users[i]['roleInGroup'];
-
             let temp_html = `
                       <li class="list-group-item">${roleInGroup}</li>
           `
