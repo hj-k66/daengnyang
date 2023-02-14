@@ -39,7 +39,8 @@
     <div class="col-md-4">
       <section id="group-list">
       </section>
-      <div class="p2">
+      <br>
+      <div class="p-2">
         <button type="button" class="btn btn-outline-dark btn-small" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_group_info()">수정</button>
       </div>
       <div class="p-2">
@@ -198,7 +199,6 @@
 
   $(document).ready(function () {
     get_group_list();
-    delete_member_select();
   });
 
   axios.defaults.withCredentials = true;
@@ -213,8 +213,8 @@
     }).then(res => {
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        let users = res.data.result.users;
 
+        let users = res.data.result.users;
         let groupName = users[0]['groupName'];
         $("#group-name").html(groupName);
 
@@ -247,15 +247,16 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        groupName = res.data.result.users[0].groupName;
-        roleInGroup = res.data.result.users[0].roleInGroup
-        userName = res.data.result.users[0].userName;
-
-        $('input[name=roleInGroup]').attr('value', roleInGroup)
+        let users = res.data.result.users;
+        groupName = users[0].groupName;
+        // roleInGroup = users[0].roleInGroup
+        // userName = users[0].userName;
+        //
+        // $('input[name=roleInGroup]').attr('value', roleInGroup)
 
         $('#groupName').text(groupName);
         $('#exampleModalLabel').text(groupName);
-        $('#roleInGroup').text(roleInGroup);
+
       } else {
         console.log("실패 " + res.resultCode)
       }
@@ -268,10 +269,9 @@
     let roleInGroup = $("#roleInGroup").val();
     let name = $("#group-name").val();
 
-    await axios.post("/api/v1/groups",
+    await axios.put("/api/v1/groups/" + groupId + "/users",
         {
-          "name": name,
-          "roleInGroup": roleInGroup,
+          "roleInGroup": roleInGroup
         }
         , {
           headers: {
@@ -282,7 +282,7 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result)
-        // document.location.href = "/view/groups/"+groupId+"/users";
+        document.location.href = "/view/groups/"+groupId+"/users";
       } else {
         console.log("실패 " + res.resultCode)
       }
@@ -341,8 +341,7 @@
   }
 
   <!-- 그룹원 내보내기 -->
-
-  async function delete_member_select() {
+  $(document).ready(async function delete_member_select() {
 
     await axios.get(`/api/v1/groups/${groupId}/users`, {}, {
       headers: {
@@ -370,7 +369,8 @@
         console.log("실패 " + res.resultCode)
       }
     });
-  }
+  })
+
 
   async function delete_member() {
     let userId = $("#deleteMemberSelect option:selected").val();
