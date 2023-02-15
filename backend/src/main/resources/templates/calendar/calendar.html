@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <title>DAENG NYANG</title>
+  <!-- 화면 해상도에 따라 글자 크기 대응(모바일 대응) -->
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <!-- Bootstrap 5.2.3 Version -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -29,15 +32,125 @@
       const calendarEl = document.getElementById('calendar');
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
+        initialDate: '2023-02-15',
+        eventAdd: function (obj) { // 이벤트가 추가되면 발생하는 이벤트
+          console.log(obj);
+        },
+        eventChange: function (obj) { // 이벤트가 수정되면 발생하는 이벤트
+          console.log(obj);
+        },
+        eventRemove: function (obj) { // 이벤트가 삭제되면 발생하는 이벤트
+          console.log(obj);
+        },
+        select: function (arg) { // 캘린더에서 드래그로 이벤트를 생성할 수 있다.
+          var title = prompt('Event Title:');
+          if (title) {
+            calendar.addEvent({
+              title: title,
+              start: arg.start,
+              end: arg.end,
+              allDay: arg.allDay
+            })
+          }
+          calendar.unselect()
+        },
+        // 이벤트
+        events: function (fetchInfo, successCallback, failureCallback) {
+          var start = fetchInfo.start;
+          var end = fetchInfo.end;
 
+          var fromDate = date_to_yyyymmdd(start);
+          var toDate = date_to_yyyymmdd(end);
+          const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+          getContents(param, successCallback);
+        }
+
+        //     [
+        //   {
+        //     title: 'All Day Event',
+        //     start: '2023-07-01',
+        //   },
+        //   {
+        //     title: 'Long Event',
+        //     start: '2021-07-07',
+        //     end: '2023-02-10',
+        //     color: "#FF0000"
+        //     , textColor: "#FFFF00"
+        //   },
+        //   {
+        //     groupId: 999,
+        //     title: 'Repeating Event',
+        //     start: '2023-02-09T16:00:00'
+        //     , color: "#FF0000"
+        //     , textColor: "#FFFF00"
+        //   },
+        //   {
+        //     groupId: 999,
+        //     title: 'Repeating Event',
+        //     start: '2023-02-16T16:00:00'
+        //   },
+        //   {
+        //     title: 'Conference',
+        //     start: '2023-02-11',
+        //     end: '2023-02-13'
+        //   },
+        //   {
+        //     title: 'Meeting',
+        //     start: '2023-02-12T10:30:00',
+        //     end: '2023-02-12T12:30:00'
+        //   },
+        //   {
+        //     title: 'Lunch',
+        //     start: '2023-02-12T12:00:00'
+        //   },
+        //   {
+        //     title: 'Meeting',
+        //     start: '2023-02-12T14:30:00'
+        //   },
+        //   {
+        //     title: 'Happy Hour',
+        //     start: '2023-02-12T17:30:00'
+        //   },
+        //   {
+        //     title: 'Dinner',
+        //     start: '2023-02-12T20:00:00'
+        //   },
+        //   {
+        //     title: 'Birthday Party',
+        //     start: '2023-02-13T07:00:00'
+        //   },
+        //   {
+        //     title: 'Click for Google',
+        //     url: 'http://google.com/', // 클릭시 해당 url로 이동
+        //     start: '2023-02-28'
+        //   }
+        // ]
+        ,
         dateClick: function (info) {
-
           $("#calendarModal").modal("show");
         }
       });
       calendar.render();
     });
   </script>
+  <style>
+    #sidebar {
+      width: 320px;
+      position: fixed;
+      top: 56px;
+      left: 0px;
+      height: calc(100% - 56px);
+      z-index: 999;
+      background: #333;
+      color: #fff;
+      transition: all 0.3s;
+    }
+
+    #contents-wrapper {
+      width: calc(100% - 320px);
+      float: right;
+    }
+  </style>
 </head>
 <body>
 
@@ -45,113 +158,98 @@
 <div class="col-md-12 text-center mb-5">
   <h1>그룹 이름</h1>
 </div>
-<div class="container-fluid">
+<div id="wrap">
+  <nav id="sidebar" class="active" style="overflow-y: scroll;">
+    <div style="padding: 20px">
+      <h6 class="mb-2">필터</h6>
+      <div class="my-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">
+          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>
+        </div>
+      </div>
 
-  <div class="row">
-    <div class="col-md-3" id="pet-list">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-12 mt-8">
-            <section>
-              <!--              card visually-hidden-->
-              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
-                   data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <h3 class="name card-title">일기</h3>
-                <h6 class="card-subtitle mt-3 text-muted">
-                  <section id="일기리스트">
-                    <table class="table">
-                      <tbody>
-                      <tr>
-                        <td>멍뭉이랑 산책한썰</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </section>
-                </h6>
-              </div>
-            </section>
-          </div>
+      <h6 class="mb-2">선택</h6>
+      <div class="my-3">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input sort-inp" type="checkbox" name="contentsType"
+                 id="record-check"
+                 value="record" checked>
+          <label class="form-check-label" for="record-check">일기</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input sort-inp" type="checkbox" name="contentsType"
+                 id="schedule-check"
+                 value="schedule" checked>
+          <label class="form-check-label" for="schedule-check">일정</label>
         </div>
       </div>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-12 mt-8">
-            <section>
-              <!--              card visually-hidden-->
-              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
-                   data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <h3 class="name card-title">일정</h3>
-                <h6 class="card-subtitle mt-3 text-muted">
-                  <section id="일정리스트">
-                    <table class="table">
-                      <tbody>
-                      <tr>
-                        <td>저녁9시에 약 먹이기</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </section>
-                </h6>
+
+      <hr class="my-4">
+      <!--      &#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+
+
+      <div id="disease-wrapper">
+        <div class="accordion mb-3">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingOne2">
+              <button class="accordion-button" type="button">
+                🐣 애기
+              </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne2" class="accordion-collapse collapse show"
+                 aria-labelledby="panelsStayOpen-headingOne">
+              <div class="accordion-body p-1">
+                <ul id="groupPets" class="list-group list-group-flush">
+                </ul>
               </div>
-            </section>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-12 mt-8">
-            <section>
-              <!--              card visually-hidden-->
-              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
-                   data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <h3 class="name card-title">tag</h3>
-                <h6 class="card-subtitle mt-3 text-muted">
-                  <section id="태그리스트">
-                    <table class="table">
-                      <tbody>
-                      <tr>
-                        <td>일상</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </section>
-                </h6>
+
+
+        <div class="accordion mb-3">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button">🔖 태그
+              </button>
+            </h2>
+            <div class="accordion-collapse collapse show"
+                 aria-labelledby="panelsStayOpen-headingOne">
+              <div class="accordion-body p-1">
+                <ul id="groupTags" class="list-group list-group-flush">
+                </ul>
               </div>
-            </section>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-12 mt-8">
-            <section>
-              <!--              card visually-hidden-->
-              <div class="card" style="width: 300px; grid-template-columns: auto; height: auto;"
-                   data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <h3 class="name card-title">pet</h3>
-                <h6 class="card-subtitle mt-3 text-muted">
-                  <section id="pet리스트">
-                    <table class="table">
-                      <tbody>
-                      <tr>
-                        <td>훈이</td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </section>
-                </h6>
+
+        <div class="accordion mb-3">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button">
+                👥 집사
+              </button>
+            </h2>
+            <div class="accordion-collapse collapse show"
+                 aria-labelledby="panelsStayOpen-headingOne">
+              <div class="accordion-body p-1">
+                <ul id="groupUsers" class="list-group list-group-flush">
+                </ul>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </nav>
+  <section id="contents-wrapper">
+    <!----------달력---------->
     <div class="col-md-8" id='calendar'>
     </div>
-    <div class="col-md-1">
-    </div>
-  </div>
+  </section>
 </div>
+
 
 <!-- modal 추가 -->
 <div class="modal fade" id="calendarModal" tabindex="-1" role="dialog"
@@ -194,72 +292,207 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
-  const groupId = [[${groupId}]];
-  let rct_id;
-  let rct_title;
-  let rct_roleInGroup;
+  // const groupId = [[${groupId}]];
+  const groupId = sessionStorage.getItem("groupId");
+  let petList;
+  let tagList;
+  let recordEventList;
 
   $(document).ready(function () {
-    get_group_list();
+    get_user_list();
+    // get_pet_list();
+    get_group_tag();
   });
 
   axios.defaults.withCredentials = true;
 
-  async function get_group_list() {
-    await axios.get("/api/v1/groups/mygroups", {
+  function date_to_yyyymmdd(date) {
+    const year = String(date.getFullYear());
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    return year + month.padStart(2, '0') + day.padStart(2, '0');
+  }
+
+  async function getContents(param, callback) {
+    let events = [];
+    let eventsStructure = await makeEvent(param);
+    for (let i = 0; i < petList.length; i++) {
+      events.concat(eventsStructure.records[i])
+    }
+    console.log(events);
+    callback(events);
+  }
+
+  async function makeEvent(param) {
+    let schedules = {};
+    let records = {};
+    let storedPetList = await get_pet_list();
+    console.log(storedPetList);
+    console.log(petList);
+    for (let i = 0; i < petList.length; i++) {
+      let pet = petList[i];
+      let petId = pet['id'];
+      let recordsOfPet = await getRecordsOfPet(petId, param);
+      setTimeout(() => {
+        console.log(recordEventList)
+        records[petId] = recordEventList;
+      })
+    }
+    let allEvent = {
+      "schedules": schedules,
+      "records": records
+    };
+    return allEvent
+  }
+
+  async function getRecordsOfPet(petId, param) {
+    await axios.get("/api/v1/pets/" + petId + "/records" + param, {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let records = res.data.result;
+        let events = records.map(r => recordToEvent(r, randomBrightColor()));
+        setTimeout(() => {
+          recordEventList = events;
+        })
+        return events;
+      }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });
+  }
+
+  async function getSchedulesOfPet(petId, param) {
+    await axios.get("/api/v1/pets/" + petId + "/schedules/period" + param, {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let schedules = res.data.result;
+        console.log(schedules);
+        const dates = schedules.map(mnt => mnt['dueDate']);
+        var events = dates.map(date => to_map(date));
+        console.log(events)
+        callback(events);
+      }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });
+  }
+
+  function scheduleToEvent(schedule) {
+    let title = schedule['title'];
+    let dueDate = schedule['dueDate'];
+    var event =
+        {
+          title: title,
+          start: dueDate,
+          color: randomBrightColor(),
+          textColor: "#333"
+        };
+    return event;
+  }
+
+  function recordToEvent(record, color) {
+    let title = record['title'];
+    let createdAt = record['createdAt'].substring(0, 10);
+    var event =
+        {
+          title: title,
+          start: createdAt,
+          color: color,
+          textColor: "#333"
+        };
+    return event;
+  }
+
+  // 랜덤 색상
+  let randomBrightColor = () => {
+    let color_r = Math.floor(Math.random() * 127 + 128).toString(16);
+    let color_g = Math.floor(Math.random() * 127 + 128).toString(16);
+    let color_b = Math.floor(Math.random() * 127 + 128).toString(16);
+    return `#${color_r + color_g + color_b}`;
+  }
+
+  async function get_pet_list() {
+    await axios.get("/api/v1/groups/" + groupId + "/pets", {}, {
       headers: {
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        let groups = res.data.result.groups;
-        console.log(groups)
-        for (let i = 0; i < groups.length; i++) {
-          let id = groups[i]['id'];
-          let title = groups[i]['title'];
-          let roleInGroup = groups[i]['roleInGroup'];
-
+        let pets = res.data.result.pets;
+        petList = pets;
+        for (let i = 0; i < pets.length; i++) {
+          let id = pets[i]['id'];
+          let name = pets[i]['name'];
           let temp_html = `
-                <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
-                  <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/8719/8719385.png">
-                  <div class="info">
-                    <h3 class="name card-title">${title}</h3>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                      <span class="group_id" style="display: none;">${id}</span>
-                      <span class="roleInGroup">${roleInGroup}</span> |
-                    </h6>
-                  </div>
-                </div>
+                     <li id="pet-${id}" class="list-group-item">${name}</li>
           `
-          $('#pet-list').append(temp_html);
+          $('#groupPets').append(temp_html);
         }
-      } else {
-        console.log("실패임" + res.resultCode)
+        return pets;
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
+  async function get_user_list() {
+    await axios.get(`/api/v1/groups/${groupId}/users`, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let users = res.data.result.users;
 
-  // 그룹클릭하면 그룹 id를 세션에 저장하게만들고 캘린더로 이동하기 함수?
-  async function get_pet_info(petId) {
-    await axios.get("/api/v1/groups/" + groupId + "/groups/" + petId, {}, {
+        for (let i = 0; i < users.length; i++) {
+          let id = users[i]['id'];
+          let roleInGroup = users[i]['roleInGroup'];
+          let temp_html = `
+                      <li id="user-${id}" class="list-group-item">${roleInGroup}</li>
+          `
+          $('#groupUsers').append(temp_html);
+        }
+      }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });
+  }
+
+  async function get_group_tag() {
+    await axios.get("/api/v1/groups/" + groupId + "/tags", {}, {
       headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        rct_id = petId;
-        rct_title = res.data.result.title;
-        rct_roleInGroup = res.data.result.roleInGroup;
+        const tags = res.data.result;
+        tagList = tags;
+        for (let i = 0; i < tags.length; i++) {
+          let id = tags[i]['id'];
+          let name = tags[i]['name'];
 
-        $('#title').text(rct_title);
-        $('#roleInGroup').text(rct_roleInGroup);
-
-      } else {
-        console.log("실패임" + res.resultCode)
+          let temp_html = `
+                      <li id="tag-${id}" class="list-group-item">${name}</li>
+          `
+          $('#groupTags').append(temp_html);
+        }
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
+
+
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")

@@ -2,8 +2,10 @@ package com.daengnyangffojjak.dailydaengnyang.controller.rest;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.MessageResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.Response;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.*;
 import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -110,6 +112,15 @@ public class ScheduleRestController {
 		Page<ScheduleListResponse> scheduleListResponses = scheduleService.list(petId,
 				user.getUsername(), pageable);
 		return ResponseEntity.ok().body(Response.success(scheduleListResponses));
+	}
+
+	// 일정 리스트 기간별 조회
+	@GetMapping(value = "/pets/{petId}/schedules/period")
+	public Response<List<ScheduleListResponse>> getRecordListWithDate(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate) {
+		List<ScheduleListResponse> scheduleResponses = scheduleService.getScheduleList(petId, fromDate, toDate,
+				user.getUsername());
+		return Response.success(scheduleResponses);
 	}
 
 }

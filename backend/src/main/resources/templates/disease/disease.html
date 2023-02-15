@@ -482,9 +482,11 @@
                     </div>
             `;
         $('#disease-wrapper').append(add_button);
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -553,9 +555,10 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/diseases";
-      } else {
-        console.log("실패임" + res.resultCode)
-      }
+      }}).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -582,9 +585,11 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/diseases";
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -599,9 +604,11 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         document.location.href = "/view/pets/" + petId + "/diseases";
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 

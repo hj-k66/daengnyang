@@ -244,9 +244,10 @@
         </div>
         `;
         $('#pet-list').append(add_html);
-      } else {
-        console.log("실패임" + res.resultCode)
-      }
+      }}).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -273,9 +274,10 @@
         $('#sex').text(convert_sex_enum(rct_sex));
         $('#species').text(rct_species);
         $('#weight').text(rct_weight + "kg");
-      } else {
-        console.log("실패임" + res.resultCode)
-      }
+      }}).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -316,9 +318,11 @@
       if (res.data.resultCode == 'SUCCESS') {
           console.log(res.data.result);
           document.location.href = "/view/groups/"+groupId+"/pets";
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -334,9 +338,10 @@
       if (res.data.resultCode == 'SUCCESS') {
           console.log(res.data.result);
           document.location.href = "/view/groups/"+groupId+"/pets";
-      } else {
-        console.log("실패임" + res.resultCode)
-      }
+      }}).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -358,8 +363,6 @@
   function add_pet() {
     document.location.href = "/view/pets"
   }
-
-
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")

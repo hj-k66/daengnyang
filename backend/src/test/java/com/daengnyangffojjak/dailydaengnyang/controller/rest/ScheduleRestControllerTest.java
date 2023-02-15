@@ -7,6 +7,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -598,7 +599,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 			Pageable pageable = PageRequest.of(0, 20, Sort.Direction.DESC, "dueDate");
 
 			Page<ScheduleListResponse> scheduleListResponsePage = new PageImpl<>(
-					Arrays.asList(new ScheduleListResponse("일상", "title", "body", 1L, "엄마",
+					Arrays.asList(new ScheduleListResponse(1L, "일상", "title", "body", 1L, "엄마",
 							"멋사 동물병원", dateTime, false)));
 
 			given(scheduleService.list(1L, "user", pageable)).willReturn(scheduleListResponsePage);
@@ -669,6 +670,54 @@ class ScheduleRestControllerTest extends ControllerTest {
 													"실제 데이터 개수"),
 											fieldWithPath("result.empty").description(
 													"리스트가 비어있는지 여부 확인")
+									)
+							)
+					);
+		}
+	}
+
+	@Nested
+	@DisplayName("일정조회 - 개체별조회(기간별)")
+	class ScheduleListPeroid {
+
+		@Test
+		void list_success() throws Exception {
+			//개체별일정전체조회
+			List<ScheduleListResponse> response = Arrays.asList(new ScheduleListResponse(1L, "일상", "title", "body", 1L, "엄마",
+							"멋사 동물병원", dateTime, false));
+
+			given(scheduleService.getScheduleList(1L, "20230101", "20230131", "user")).willReturn(response);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/pets/{petId}/schedules/period?fromDate=20230101&toDate=20230131", 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.result").exists())
+					.andDo(
+							restDocs.document(
+									pathParameters(
+											parameterWithName("petId").description("반려동물 번호")
+									),
+									responseFields(
+											fieldWithPath("resultCode").description("결과코드"),
+											fieldWithPath("result").description("일정 리스트"),
+											fieldWithPath(
+													"result[].id").description("일정 등록번호"),
+											fieldWithPath(
+													"result[].tag").description("태그"),
+											fieldWithPath(
+													"result[].title").description("제목"),
+											fieldWithPath(
+													"result[].body").description("내용"),
+											fieldWithPath(
+													"result[].assigneeId").description("책임자 userId"),
+											fieldWithPath(
+													"result[].roleInGroup").description("책임자 그룹내 역할"),
+											fieldWithPath(
+													"result[].place").description("장소"),
+											fieldWithPath(
+													"result[].dueDate").description("예정날짜"),
+											fieldWithPath(
+													"result[].completed").description("일정 완료 여부")
 									)
 							)
 					);

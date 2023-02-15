@@ -275,12 +275,12 @@
           if (extention === '.mp4') {
             let temp_html = `
             <video style="width:300px; height:200px" autoplay loop muted>
-              <source src="${storedFileUrl}" type="video/mp4">
+              <source src="${storedFileUrl}" width="200px" height="200px type="video/mp4">
             </video>`;
             $('#video-wrapper').append(temp_html);
           } else {
             let pic_html = `
-            <img src="${storedFileUrl}" alt="" width="100px" height="100px">
+            <img src="${storedFileUrl}" alt="" width="200px" height="200px">
           `;
             $('#photo-wrapper').append(pic_html);
           }
@@ -296,6 +296,10 @@
           }
         });
       })
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -348,6 +352,10 @@
       } else {
         console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -386,6 +394,10 @@
       } else {
         console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -416,6 +428,10 @@
       } else {
         console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 

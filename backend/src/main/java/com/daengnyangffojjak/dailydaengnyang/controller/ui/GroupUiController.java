@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,13 @@ public class GroupUiController {
 	@GetMapping("/groups/mygroups")
 	public String groupChoice(Model model) {
 		return "group/group_choice";
+	}
+
+	//태그 관리 페이지
+	@GetMapping("/groups/{groupId}/tags")
+	public String tagManage (Model model, @PathVariable Long groupId) {
+		model.addAttribute("groupId", groupId);
+		return "tag/tag";
 	}
 
 }
