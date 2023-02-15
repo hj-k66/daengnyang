@@ -84,7 +84,7 @@
         console.log(res.data.result.id);
 
         sessionStorage.setItem("groupId", res.data.result.id);
-        document.location.href = "/view/pets"
+        document.location.href = "/view/groups/mygroups"
       } else {
         console.log("실패임" + res.resultCode)
       }

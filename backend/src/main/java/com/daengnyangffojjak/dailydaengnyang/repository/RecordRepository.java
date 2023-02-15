@@ -12,6 +12,8 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
 	Page<Record> findAllByIsPublicTrue(Pageable pageable);
 
+	Page<Record> findAllByIsPublicTrueAndPetId(Pageable pageable, Long petId);
+
 	boolean existsByTagId(Long tagId);
 	List<Record> findAllByCreatedAtBetweenAndPetId (Sort sort, LocalDateTime start, LocalDateTime end, Long petId);
 }

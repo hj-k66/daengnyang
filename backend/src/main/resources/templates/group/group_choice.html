@@ -111,14 +111,14 @@
   function move_detail(groupId) {
     sessionStorage.setItem("groupId", groupId);
 
-    let url = "/view/calendar"
+    let url = "/view/groups/"+groupId+"/calendar"
     location.href = url;
   }
 
   function make_group() {
 
 
-    let url = "/view/groups/mygroups"
+    let url = "/view/groups"
     location.href = url;
   }
 

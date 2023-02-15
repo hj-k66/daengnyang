@@ -150,9 +150,10 @@
         console.log(res.data.resultCode);
         console.log(res.data.result.id);
 
-        sessionStorage.setItem("petId", res.data.result.id);
+        sessionStorage.setItem("groupId", groupId);
 
-        document.location.href = "/view/calendar"
+        let url = "/view/groups/"+groupId+"/calendar"
+        location.href = url;
       } else {
         console.log("실패임" + res.resultCode)
       }

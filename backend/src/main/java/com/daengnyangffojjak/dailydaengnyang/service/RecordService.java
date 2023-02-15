@@ -71,6 +71,16 @@ public class RecordService {
 		return records.map(this::toResponse);
 	}
 
+	// 펫별로 전체 피드 조회
+	@Transactional(readOnly = true)
+	public Page<RecordResponse> getPetAllRecords(Pageable pageable, Long petId, String username) {
+		User user = validator.getUserByUserName(username);
+		Pet pet = validator.getPetWithUsername(petId, username);
+
+		Page<Record> records = recordRepository.findAllByIsPublicTrueAndPetId(pageable, petId);
+		return records.map(this::toResponse);
+	}
+
 	private RecordResponse toResponse (Record record) {
 		List<RecordFile> recordFiles = recordFileRepository.findByRecord_Id(record.getId());
 		return RecordResponse.of(record, recordFiles);
