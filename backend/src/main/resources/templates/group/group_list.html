@@ -170,6 +170,7 @@
                 닉네임
               </label>
               <select id="deleteMemberSelect">
+                <option value="none" selected>=== 선택 ===</option>
               </select>
             </div>
           </div>
@@ -208,6 +209,26 @@
   axios.defaults.withCredentials = true;
 
   console.log("그룹아이디 " + groupId);
+
+  <!-- 그룹장 정보 가져오기  -->
+  async function get_group_owner() {
+    await axios.get("/api/v1/groups" + groupId, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        let groupName = data.name;
+        let groupUserId = data.id;
+        let ownerName = data.ownerName;
+        let ownerId = data.ownerId;
+
+        $("#group-name").html(groupName);
+      }
+    })
+  }
+
   <!-- 그룹 멤버 가져오기 -->
   async function get_group_list() {
     await axios.get(`/api/v1/groups/${groupId}/users`, {}, {
@@ -243,6 +264,8 @@
       }
     });
   }
+
+
 
 
   <!-- 모달 내 그룹 닉네임 -->
@@ -348,8 +371,7 @@
       if (err.response.data.result.message === '잘못된 요청입니다. 그룹장은 그룹을 나갈 수 없습니다.'){
         alert('그룹장은 그룹을 나갈 수 없습니다');
       }
-    })
-    ;
+    });
   }
 
   <!-- 그룹원 내보내기 -->
@@ -374,10 +396,7 @@
                 <option value="${userId}">${roleInGroup}</option>
           `
           $("#deleteMemberSelect").append(select_html);
-
         }
-      } else {
-        console.log("실패 " + res.resultCode)
       }
     });
   })
@@ -403,14 +422,12 @@
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
-
+      alert(errMsg)
       if (errMsg === '사용자가 권한이 없습니다.') {
         alert('내보내기는 그룹장만 가능합니다.');
       }
     });
   }
-
-
 
 
   axios.interceptors.request.use(function (config) {
