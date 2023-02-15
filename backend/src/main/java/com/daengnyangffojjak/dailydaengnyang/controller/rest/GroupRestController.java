@@ -7,6 +7,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
@@ -93,5 +94,11 @@ public class GroupRestController {
 		List<GroupListResponse> groupListResponse = groupService.getGroupList(user.getUsername());
 		return Response.success(groupListResponse);
 	}
+	@GetMapping(value = "/{groupId}")
+	public Response<GroupResponse> getGroupInfo(@AuthenticationPrincipal UserDetails user, @PathVariable Long groupId) {
+		GroupResponse groupResponse = groupService.getGroupInfo(user.getUsername(), groupId);
+		return Response.success(groupResponse);
+	}
+
 }
 
