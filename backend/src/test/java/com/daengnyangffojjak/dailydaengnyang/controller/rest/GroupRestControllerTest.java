@@ -19,6 +19,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Sex;
@@ -126,6 +127,32 @@ class GroupRestControllerTest extends ControllerTest {
 									fieldWithPath("result[].name").description("그룹 이름"),
 									fieldWithPath("result[].roleInGroup").description("나의 그룹 내 역할"))));
 			verify(groupService).getGroupList("user");
+		}
+	}
+
+	@Nested
+	@DisplayName("그룹 정보")
+	class GroupInfo {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			GroupResponse response = new GroupResponse(1L, "그룹", "유저", 1L);
+
+			given(groupService.getGroupInfo("user", 1L)).willReturn(response);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.get("/api/v1/groups/{groupId}", 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result").exists()).andDo(restDocs.document(
+							pathParameters(parameterWithName("groupId").description("그룹 번호")),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result").description("그룹 정보"),
+									fieldWithPath("result.id").description("그룹 번호"),
+									fieldWithPath("result.name").description("그룹 이름"),
+									fieldWithPath("result.ownerId").description("그룹장 등록번호"),
+									fieldWithPath("result.ownerName").description("그룹장 이름"))));
 		}
 	}
 
