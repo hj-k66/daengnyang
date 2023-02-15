@@ -371,13 +371,17 @@
         }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
-        document.location.href = "/view/groups";
+        document.location.href = "/view/groups/mygroups";
       } else {
         console.log("실패 " + res.data.resultCode)
       }
     }).catch(err => {
-      if (err.response.data.result.message === '잘못된 요청입니다. 그룹장은 그룹을 나갈 수 없습니다.'){
+      let errMsg = err.response.data.result.message
+      if (errMsg === '잘못된 요청입니다. 그룹장은 그룹을 나갈 수 없습니다.'){
         alert('그룹장은 그룹을 나갈 수 없습니다');
+      }
+      if (errMsg === '잘못된 요청입니다. 그룹에 반려동물이 존재하여 나갈 수 없습니다.') {
+        alert('그룹에 반려동물이 존재하여 나갈 수 없습니다')
       }
     });
   }
