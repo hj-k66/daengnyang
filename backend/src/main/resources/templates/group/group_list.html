@@ -15,13 +15,18 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 
   <!-- JS -->
-  <script type="text/javascript" th:src="@{/js/login.js}"></script>
-
+  <script type="text/javascript" src="/js/sign.js"></script>
   <!-- CSS -->
   <link th:href="@{/css/styles.css}" rel="stylesheet"/>
 
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <style>
+    #h3-0 {
+      color: white;
+      background-color: grey;
+    }
+  </style>
 
 </head>
 
@@ -134,7 +139,7 @@
               </div>
               <div class="form-group">
                 <label th:for="inviteRoleInGroup">
-                  닉네임
+                  그룹 닉네임
                 </label>
                 <input type="text" id="inviteRoleInGroup">
               </div>
@@ -171,6 +176,7 @@
                 닉네임
               </label>
               <select id="deleteMemberSelect">
+                <option value="none" selected>=== 선택 ===</option>
               </select>
             </div>
           </div>
@@ -204,11 +210,33 @@
 
   $(document).ready(function () {
     get_group_list();
+    get_group_owner();
   });
 
   axios.defaults.withCredentials = true;
 
   console.log("그룹아이디 " + groupId);
+
+  <!-- 그룹장 정보 가져오기  -->
+  async function get_group_owner() {
+    await axios.get(`/api/v1/groups/${groupId}`, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      console.log("그룹장 정보")
+      console.log(res.data.result)
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        let groupName = data.name;
+        let ownerName = data.ownerName;
+        let ownerId = data.ownerId;
+
+        $("#group-name").text(groupName);
+      }
+    })
+  }
+
   <!-- 그룹 멤버 가져오기 -->
   async function get_group_list() {
     await axios.get(`/api/v1/groups/${groupId}/users`, {}, {
@@ -229,7 +257,7 @@
           let userId = users[i]['id'];
 
           let temp_html = `
-                <div class="card">
+                <div class="card" id="h3-${i}">
 
                   <div class="info">
                     <h3 class="name card-title">${roleInGroup}</h3>
@@ -244,6 +272,8 @@
       }
     });
   }
+
+
 
 
   <!-- 모달 내 그룹 닉네임 -->
@@ -349,8 +379,7 @@
       if (err.response.data.result.message === '잘못된 요청입니다. 그룹장은 그룹을 나갈 수 없습니다.'){
         alert('그룹장은 그룹을 나갈 수 없습니다');
       }
-    })
-    ;
+    });
   }
 
   <!-- 그룹원 내보내기 -->
@@ -375,10 +404,7 @@
                 <option value="${userId}">${roleInGroup}</option>
           `
           $("#deleteMemberSelect").append(select_html);
-
         }
-      } else {
-        console.log("실패 " + res.resultCode)
       }
     });
   })
@@ -404,14 +430,12 @@
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
-
+      alert(errMsg)
       if (errMsg === '사용자가 권한이 없습니다.') {
         alert('내보내기는 그룹장만 가능합니다.');
       }
     });
   }
-
-
 
 
   axios.interceptors.request.use(function (config) {
