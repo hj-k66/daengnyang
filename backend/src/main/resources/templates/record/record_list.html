@@ -145,7 +145,7 @@
     if (localStorage.getItem("accessToken") == null) {
       alert("로그인 후 이용하실 수 있습니다.");
     } else {
-      let url = "../pets/" + petId + "/records/" + recordId;
+      let url = "/view/pets/" + petId + "/records/" + recordId;
       location.href = url;
     }
   }
