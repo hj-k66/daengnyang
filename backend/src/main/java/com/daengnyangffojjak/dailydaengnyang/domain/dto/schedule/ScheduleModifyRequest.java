@@ -1,6 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import lombok.*;
 import java.time.LocalDateTime;
 

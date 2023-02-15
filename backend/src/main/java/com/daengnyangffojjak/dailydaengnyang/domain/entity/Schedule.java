@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleModifyRequest;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.*;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.Where;

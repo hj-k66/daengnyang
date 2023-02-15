@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head}">
+<head>
   <meta charset="UTF-8">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -15,6 +15,8 @@
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
+  <script type="text/javascript" th:src="@{/js/sign.js}"></script>
+
 </head>
 
 <body>
@@ -27,9 +29,10 @@
     </div>
     <div class="col-md-4">
       <section id="pet-list">
-<!--        card visually-hidden-->
-        <div class="card " style="width: 500px; grid-template-columns: 460px 300px; height: auto;" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          <div class=""  >
+        <div class="card visually-hidden"
+             style="width: 500px; grid-template-columns: 460px 300px; height: auto;"
+             data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <div class="">
             <h1 class="name card-title justify-content-md-end">산책하기</h1>
             <h6 class="card-subtitle mt-4 text-muted">
               <table class="table">
@@ -47,25 +50,20 @@
                   <td>아빠</td>
                 </tr>
                 <tr>
-                  <td>마감일</td>
+                  <td>예정일</td>
                   <td>2023-02-16 02:02:02</td>
                 </tr>
                 </tbody>
               </table>
-<!--              <div class="place">공원</div>-->
-<!--              <div class="isCompleted">완료하지 못함</div>-->
-<!--              isCompleted는 버튼을 누르면 isCompleted가 true 찍히는 함수를 만들까?-->
             </h6>
           </div>
         </div>
-
       </section>
     </div>
     <div class="col-md-4">
     </div>
   </div>
 </div>
-
 
 <!--show Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
@@ -74,6 +72,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="title">제목</h1>
+        <input type="hidden" name="scheduleId">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -84,32 +83,49 @@
             <td id="tag"></td>
           </tr>
           <tr>
+            <th scope="row">사용자</th>
+            <td id="userName"></td>
+          </tr>
+          <tr>
+            <th scope="row">펫이름</th>
+            <td id="petName"></td>
+          </tr>
+          <tr>
             <th scope="row">내용</th>
             <td id="body"></td>
           </tr>
           <tr>
             <th scope="row">담당자</th>
-            <td id="assigneeId"></td>
+            <td id="roleInGroup"></td>
           </tr>
           <tr>
             <th scope="row">장소</th>
             <td id="place"></td>
           </tr>
           <tr>
-            <th scope="row">기한</th>
+            <th scope="row">예정일</th>
             <td id="dueDate"></td>
           </tr>
           <tr>
             <th scope="row">완료여부</th>
             <td id="isCompleted"></td>
           </tr>
+          <tr>
+            <th scope="row">등록날짜</th>
+            <td id="createdAt"></td>
+          </tr>
+          <tr>
+            <th scope="row">수정날짜</th>
+            <td id="lastModifiedAt"></td>
+          </tr>
           </tbody>
         </table>
-
       </div>
       <div class="modal-footer">
         <div class="p-2">
-          <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          <button class="btn btn-danger" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseExample" aria-expanded="false"
+                  aria-controls="collapseExample">
             삭제
           </button>
         </div>
@@ -117,12 +133,15 @@
         <div class="p-2">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                  data-bs-target="#modifyModal" onclick="show_pet_modify()">수정</button>
+                  data-bs-target="#modifyModal" onclick="show_schedule_modify()">수정
+          </button>
         </div>
         <div class="collapse" id="collapseExample" style="width: 100%">
           <div class="card card-body" style="flex-direction: row;">
             <div>정말 삭제하시겠습니까?</div>
-            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal" onclick="delete_pet()">삭제</button>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal"
+                    onclick="delete_schedule()">삭제
+            </button>
           </div>
         </div>
       </div>
@@ -137,55 +156,40 @@
     <div class="modal-content">
       <form role="form">
         <div class="modal-header">
-          <input id="title-inp" type="text" class="form-control"/>
+          <input name="title-inp" type="text" class="form-control" id="title-inp"/>
           <button type="button" class="btn-close" data-bs-dismiss="modal"
                   aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!--          private String tag;-->
-          <!--          private String title;-->
-          <!--          private String body;-->
-          <!--          private Long assigneeId;-->
-          <!--          private String place;-->
-          <!--          private LocalDateTime dueDate;-->
-          <!--          private boolean isCompleted;-->
           <table class="table">
             <tbody>
-            <tr>
-              <th scope="row">tag</th>
-              <td>
-                <input id="tag-inp" type="text" class="form-control"/>
-
-              </td>
-            </tr>
+            <div id="tag-box">
+            </div>
             <tr>
               <th scope="row">내용</th>
               <td>
-                <input id="body-inp" type="text" class="form-control"/>
+                <input id="body-inp" name="body-inp" type="text" class="form-control"/>
               </td>
             </tr>
-            <tr>
-              <th scope="row">담당자</th>
-              <td>
-                <input id="assigneeId-inp" type="text" class="form-control"/>
-              </td>
-            </tr>
+            <div id="assigneeId-box">
+            </div>
             <tr>
               <th scope="row">장소</th>
               <td>
-                <input id="place-inp" type="text" class="form-control"/>
+                <input id="place-inp" name="place-inp" type="text" class="form-control"/>
               </td>
             </tr>
             <tr>
-              <th scope="row">마감일</th>
+              <th scope="row">예정일</th>
               <td>
-                <input id="dueDate-inp" type="text" class="form-control"/>
+                <input id="dueDate-inp" name="dueDate-inp" type="text" class="form-control"/>
               </td>
             </tr>
             <tr>
               <th scope="row">완료 여부</th>
               <td>
-                <input id="isCompleted-inp" type="text" class="form-control"/>
+                <input type="radio" name="isCompleted-inp" value="true"> 완료
+                <input type="radio" name="isCompleted-inp" value="false"> 미완료
               </td>
             </tr>
             </tbody>
@@ -194,7 +198,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-          <button type="button" class="btn btn-primary" onclick="modify_pet_info()">
+          <button type="button" class="btn btn-primary" onclick="modify_schedule_info()">
             수정 완료
           </button>
         </div>
@@ -212,118 +216,233 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
-  const groupId = [[${groupId}]];
+  var nowPage = 0;
+  const petId = [[${petId}]];
   let rct_id;
-  let rct_name;
-  let rct_birthday;
-  let rct_breed;
-  let rct_sex;
-  let rct_species;
-  let rct_weight;
+  let rct_tag;
+  let rct_userId;
+  let rct_userName;
+  let rct_petId;
+  let rct_petName;
+  let rct_title;
+  let rct_body;
+  let rct_assigneeId;
+  let rct_roleInGroup;
+  let rct_place;
+  let rct_dueDate;
+  let rct_isCompleted;
+  let rct_createdAt;
+  let rct_lastModifiedAt;
+  let isCompletedText;//
 
   $(document).ready(function () {
-    get_pet_list();
+    get_schedule_list();
+    get_group_tag();
   });
 
   axios.defaults.withCredentials = true;
 
-  async function get_pet_list() {
-    await axios.get("/api/v1/groups/" + groupId + "/pets", {}, {
+  async function get_schedule_list() {
+    var param = '?page=' + nowPage;
+
+    await axios.get("/api/v1/pets/" + petId + "/schedules" + param, {}, {
       headers: {
         "Content-Type": `application/json`
       },
     }).then(res => {
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        let pets = res.data.result.pets;
-        console.log(pets)
-        for (let i = 0; i < pets.length; i++) {
-          let id = pets[i]['id'];
-          let name = pets[i]['name'];
-          let species = pets[i]['species'];
-          let age = pets[i]['age'];
-          let breed = pets[i]['breed'];
-          let sex_enum = pets[i]['sex'];
-          let sex = convert_sex_enum(sex_enum);
+        let schedule = res.data.result.content;
+        console.log(schedule);
+        for (let i = 0; i < schedule.length; i++) {
+          let id = schedule[i]['id'];
+          let tag = schedule[i]['tag'];
+          let userId = schedule[i]['userId'];
+          let userName = schedule[i]['userName'];
+          let petId = schedule[i]['petId'];
+          let petName = schedule[i]['petName'];
+          let title = schedule[i]['title'];
+          let body = schedule[i]['body'];
+          let assigneeId = schedule[i]['assigneeId'];
+          let roleInGroup = schedule[i]['roleInGroup'];//
+          let place = schedule[i]['place'];
+          let dueDate = schedule[i]['dueDate'];
+          let isCompleted = schedule[i]['isCompleted'];
 
           let temp_html = `
-                <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
-                  <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
-                  <div class="info">
-                    <h3 class="name card-title">${name}</h3>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                      <span class="pet_id" style="display: none;">${id}</span>
-                      <span class="age">${species}</span> |
-                      <span class="species">${age}</span> |
-                      <span class="breed">${breed}</span> |
-                      <span class="sex">${sex}</span>
-                    </h6>
-                  </div>
-                </div>
-          `
+                    <div class="card" id="${id}" onclick="get_schedule_info(${id})" style="width: 500px; grid-template-columns: 460px 300px; height: auto;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                      <div class=""  >
+                        <h1 class="name card-title justify-content-md-end">${title}</h1>
+                        <h6 class="card-subtitle mt-4 text-muted">
+                          <table class="table">
+                            <tbody>
+                            <tr>
+                              <td>tag</td>
+                              <td>${tag}</td>
+                            </tr>
+                            <tr>
+                              <td>내용</td>
+                              <td>${body}</td>
+                            </tr>
+                            <tr>
+                              <td>담당자</td>
+                              <td>${roleInGroup}</td>
+                            </tr>
+                            <tr>
+                              <td>예정일</td>
+                              <td>${dueDate}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </h6>
+                      </div>
+                    </div>
+          `;
           $('#pet-list').append(temp_html);
         }
+
+        let add_html = `
+        <div class="card" style="width: 500px; display: flex; align-items: center;height: 80px;" onclick="add_schedule()">
+          <h3 style="text-align: center; margin: auto;">+</h3>
+        </div>
+        `;
+        $('#pet-list').append(add_html);
       } else {
         console.log("실패임" + res.resultCode)
       }
     });
   }
 
+  function add_schedule() {
+    document.location.href = "/view/pets/"+ petId +"/schedules"
+  }
 
+  async function get_schedule_info(scheduleId) {
+    await axios.get("/api/v1/pets/" + petId + "/schedules/" + scheduleId, {}, {
 
-  async function get_pet_info(petId) {
-    await axios.get("/api/v1/groups/" + groupId + "/pets/" + petId, {}, {
       headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        rct_id = petId;
-        rct_name = res.data.result.name;
-        rct_birthday = res.data.result.birthday;
-        rct_breed = res.data.result.breed;
-        rct_sex = res.data.result.sex;
-        rct_species = res.data.result.species;
-        rct_weight = res.data.result.weight;
+        let data = res.data.result;
+        recordData = data;
 
-        $('#name').text(rct_name);
-        $('#exampleModalLabel').text(rct_name);
-        $('#birthday').text(rct_birthday);
-        $('#breed').text(rct_breed);
-        $('#sex').text(convert_sex_enum(rct_sex));
-        $('#species').text(rct_species);
-        $('#weight').text(rct_weight + "kg");
+        rct_id = scheduleId;
+        rct_tag = res.data.result.tag;
+        rct_userName = res.data.result.userName;
+        rct_petName = res.data.result.petName;
+        rct_title = res.data.result.title;
+        rct_body = res.data.result.body;
+        rct_roleInGroup = res.data.result.roleInGroup;
+        rct_dueDate = res.data.result.dueDate;
+        rct_place = res.data.result.place;
+        rct_isCompleted = res.data.result.completed;
+        // let isCompletedText;
+        if (rct_isCompleted == true) {
+          isCompletedText = "완료";
+        } else {
+          isCompletedText = "미완료";
+        }
+        rct_createdAt = res.data.result.createdAt;
+        rct_lastModifiedAt = res.data.result.lastModifiedAt;
+
+        $('#id').text(rct_id);
+        $('#tag').text(rct_tag);
+        $('#userName').text(rct_userName);
+        $('#petName').text(rct_petName);
+        $('#title').text(rct_title);
+        $('#body').text(rct_body);
+        $('#roleInGroup').text(rct_roleInGroup);
+        $('#dueDate').text(rct_dueDate);
+        $('#place').text(rct_place);
+        $('#isCompleted').text(isCompletedText);
+        $('#createdAt').text(rct_createdAt);
+        $('#lastModifiedAt').text(rct_lastModifiedAt);
+        $('input[name=scheduleId]').attr('value',rct_id);
+
       } else {
         console.log("실패임" + res.resultCode)
       }
     });
   }
 
-  function show_pet_modify() {
-    document.querySelector('#name-inp').value = rct_name;
-    document.querySelector('#breed-inp').value = rct_breed;
-    document.querySelector('#birthday-inp').value = rct_birthday;
-    document.querySelector('#weight-inp').value = rct_weight;
-    document.querySelector("table td input[name=species][value="+rct_species+"]").checked = true;
-    document.querySelector("table td input[name=sex][value="+rct_sex+"]").checked = true;
+  async function show_schedule_modify() {
+    get_group_tag();
+    get_user_list();
+    let scheduleId = $('input[name=scheduleId]').val();
+    await axios.get("/api/v1/pets/" + petId + "/schedules/" + scheduleId, {}, {
+
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        recordData = data;
+
+        rct_id = scheduleId;
+        rct_tag = res.data.result.tag;
+        rct_userName = res.data.result.userName;
+        rct_title = res.data.result.title;
+        rct_body = res.data.result.body;
+        rct_roleInGroup = res.data.result.roleInGroup;
+        rct_dueDate = res.data.result.dueDate;
+        rct_place = res.data.result.place;
+        rct_isCompleted = res.data.result.completed;
+        // let isCompletedText;
+        console.log("라디오 버튼" + rct_isCompleted)
+        if (rct_isCompleted == false) {
+          $('input:radio[name=isCompleted-inp]:input[value=' + false + ']').attr("checked", true);
+
+        } else {
+          $('input:radio[name=isCompleted-inp]:input[value=' + true + ']').attr("checked", true);
+        }
+        $('input[name=title-inp]').attr('value',rct_title);
+        $('input[name=body-inp]').attr('value',rct_body);
+        $('input[name=place-inp]').attr('value',rct_place);
+        $('input[name=dueDate-inp]').attr('value',rct_dueDate);
+
+
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
   }
 
-  async function modify_pet_info() {
-    let name = $("#name-inp").val();
-    let species = $("input:radio[name=species]:checked").val();
-    let breed = $("#breed-inp").val();
-    let sex = $("input:radio[name=sex]:checked").val();
-    let birthday = $("#birthday-inp").val();
-    let weight = $("#weight-inp").val();
+  async function modify_schedule_info() {
+
+    let title = $("#title-inp").val();
+    if (title == '') {
+      alert("제목을 입력해주세요")
+      return;
+    }
+    let body = $("#body-inp").val();
+    let tagId = $('input[name="tag"]:checked').val();
+
+    if (tagId === undefined) {
+      alert("태그를 선택해 주십시오.")
+      return;
+    }
+    let assigneeId = $('input[name="assigneeId"]:checked').val();
+    if (assigneeId === undefined) {
+      alert("책임자를 선택해 주십시오.")
+      return;
+    }
+    let place = $("#place-inp").val();
+    let dueDate = $("#dueDate-inp").val();//
+    if (dueDate == '') {
+      alert("일정 예정일을 선택해 주십시오.")
+      return;
+    }
+    let completed = $("input:radio[name=isCompleted-inp]:checked").val();
     console.log(name)
 
-    await axios.put("/api/v1/groups/" + groupId + "/pets/" + rct_id,
+    await axios.put("/api/v1/pets/" + petId + "/schedules/" + rct_id,
         {
-          "name" : name,
-          "species" : species,
-          "breed" : breed,
-          "sex" : sex,
-          "birthday" : birthday,
-          "weight" : weight
+          "tagId" : tagId,
+          "title" : title,
+          "body" : body,
+          "assigneeId" : assigneeId,
+          "place" : place,
+          "dueDate" : dueDate,
+          "completed" : completed
         }
         , {
           headers: {
@@ -334,15 +453,18 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
-        document.location.href = "/view/groups/"+groupId+"/pets";
+        document.location.href = "/view/pets/"+ petId +"/schedule";
       } else {
         console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let error = err.response.data.result;
+      console.log(error.errorCode + " : " + error.message)
     });
   }
 
-  async function delete_pet() {
-    await axios.delete("/api/v1/groups/" + groupId + "/pets/" + rct_id, {}
+  async function delete_schedule() {
+    await axios.delete("/api/v1/pets/" + petId + "/schedules/" + rct_id, {}
         , {
           headers: {
             "Content-Type": `application/json`,
@@ -352,28 +474,80 @@
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
-        document.location.href = "/view/groups/"+groupId+"/pets";
+        document.location.href = "/view/pets/"+petId+"/schedule";
       } else {
         console.log("실패임" + res.resultCode)
       }
     });
   }
 
-  function convert_sex_enum(sex_enum) {
-    switch (sex_enum) {
-      case "FEMALE":
-        return "여아"
-      case "SPAYED_FEMALE":
-        return "중성화 여아"
-      case "MALE":
-        return "남아"
-      case "NEUTERED_MALE":
-        return "중성화 남아"
-      default:
-        return "?"
+  async function get_group_tag() {
+    const groupId = sessionStorage.getItem("groupId");
+    await axios.get("/api/v1/groups/" + groupId + "/tags", {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        $('#tag-box').empty();
+        let plus_html = `
+              <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
+        `;
+        $('#tag-box').append(plus_html);
+
+        const tags = res.data.result;
+        for (let i = 0; i < tags.length; i++) {
+          let id = tags[i]['id'];
+          let name = tags[i]['name'];
+
+          let temp_html = `
+            <input type="radio" class="btn-check mx-1" name="tag" id="tag-${name}" value="${id}" autocomplete="off">
+            <label class="btn btn-outline-primary" for="tag-${name}">${name}</label>
+          `
+          $('#tag-box').append(temp_html);
+        }
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+
+  }
+
+  function moveToTagPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/tags";
     }
   }
 
+
+  async function get_user_list() {
+    const groupId = sessionStorage.getItem("groupId");
+    await axios.get("/api/v1/groups/"+groupId+"/users", {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log("책임자 아이디 " + res.data.result)
+
+        const assigneeId = res.data.result.users;
+        for (let i = 0; i < assigneeId.length; i++) {
+          let id = assigneeId[i]['id'];
+          let roleInGroup = assigneeId[i]['roleInGroup'];
+
+          let temp_html = `
+            <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId-${roleInGroup}" value="${id}" autocomplete="off">
+            <label class="btn btn-outline-primary" for="assigneeId-${roleInGroup}">${roleInGroup}</label>
+          `
+          $('#assigneeId-box').append(temp_html);
+        }
+      }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    })
+    ;
+  }
 
 
   axios.interceptors.request.use(function (config) {

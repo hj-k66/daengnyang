@@ -6,6 +6,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +44,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 	private JavaTimeModule javaTimeModule = new JavaTimeModule();
 
 	//일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간 안맞음 해결
-	LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10, 26);
+	LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10,26);
 
 	//일정등록
 	ScheduleCreateRequest scheduleCreateRequest = new ScheduleCreateRequest(1L, "병원",

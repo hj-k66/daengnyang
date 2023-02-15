@@ -22,5 +22,4 @@ public class CalendarUiController {
 		log.info("캘린더: ", model);
 		return "calendar/calendar";
 	}
-
 }

@@ -43,10 +43,20 @@
                 어디서 나오는지 모르겠다. 너무 힘들다... 그래도 귀여워서 참는다.</p>
               <a href="#" class="stretched-link" th:href="@{/view/detail}">자세히 보러가기</a>
             </div>
+            <!--                                동영상-->
+<!--            <video autoplay controls loop muted-->
+<!--                   poster="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
+<!--                   preload="auto">-->
+<!--              <source-->
+<!--                  src="https://s3.ap-northeast-2.amazonaws.com/daengnyang-bucket/test/records/45b576a0-7dd4-4169-98c2-e391e5f8da2f.mp4"-->
+<!--                  type="video/mp4">-->
+<!--              동영상을 사용할 수 없습니다.-->
+<!--            </video>-->
+            <!--              이미지-->
             <div class="col-4 p-4 d-flex flex-column position-static">
-              <img
-                  src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
-                  width="250px" height="250px" class="img-thumbnail" alt="강아지">
+                <img
+                    src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
+                    width="250px" height="250px" class="img-thumbnail" alt="강아지">
             </div>
           </div>
         </div>
@@ -55,8 +65,9 @@
 
   </div>
   <div class="col-md-3 my-3 mt-5">
-<!--    <th:block th:replace="~{fragments/right :: right}"></th:block>-->
+    <th:block th:replace="~{fragments/right :: right}"></th:block>
   </div>
+</div>
 </div>
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
@@ -74,6 +85,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
   var nowPage = 0;
+  const petId = [[${petId}]];
 
   $(document).ready(function () {
     get_feed_list();
@@ -83,10 +95,10 @@
 
   async function get_feed_list() {
     var param = '?page=' + nowPage;
-
-    await axios.get("/api/v1/records/feed" + param, {}, {
+    await axios.get("/api/v1/pets/"+petId+"/petRecords"+param, {}, {////
       headers: {
-        "Content-Type": `application/json`
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
       console.log(res)
@@ -131,10 +143,6 @@
       } else {
         console.log("실패임" + res.resultCode)
       }
-    }).catch(err => {
-      let res = err.response.data.result;
-      let message = res.errorCode + " : " + res.message;
-      alert(message);
     });
   }
 

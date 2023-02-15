@@ -4,9 +4,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import java.time.LocalDateTime;
 
 @Getter
