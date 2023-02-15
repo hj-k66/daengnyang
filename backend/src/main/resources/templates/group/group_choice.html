@@ -27,7 +27,8 @@
     </div>
     <div class="col-md-4">
       <section id="pet-list">
-        <div class="card visually-hidden" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <div class="card visually-hidden" style="width: 500px;" data-bs-toggle="modal"
+             data-bs-target="#exampleModal">
           <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/8719/8719385.png">
           <div class="info">
             <h1 class="name card-title">훈이네</h1>
@@ -37,7 +38,9 @@
           </div>
         </div>
       </section>
-      <button type="button" class="btn btn-primary justify-content-md-end mt-3" th:href="@{/view/groups}">그룹 만들기</button>
+      <button type="button" class="btn btn-primary justify-content-md-end mt-3" onclick="make_group()"
+              >그룹 만들기
+      </button>
     </div>
   </div>
 </div>
@@ -51,10 +54,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
-  const groupId = [[${groupId}]];
-  let rct_id;
-  let rct_title;
-  let rct_roleInGroup;
+  var nowPage = 0;
 
   $(document).ready(function () {
     get_group_list();
@@ -63,32 +63,36 @@
   axios.defaults.withCredentials = true;
 
   async function get_group_list() {
-    await axios.get("/api/v1/groups/mygroups", {
+    var param = '?page=' + nowPage;
+
+    await axios.get("/api/v1/groups/mygroups", {}, {
       headers: {
         "Content-Type": `application/json`
       },
     }).then(res => {
       console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        let groups = res.data.result.groups;
-        console.log(groups)
-        for (let i = 0; i < groups.length; i++) {
-          let id = groups[i]['id'];
-          let title = groups[i]['title'];
-          let roleInGroup = groups[i]['roleInGroup'];
+
+        //여기서부터 작성
+        let records = res.data.result;
+
+        console.log(records);
+        for (let i = 0; i < records.length; i++) {
+          let id = records[i]['id'];
+          let name = records[i]['name'];
+          let roleInGroup = records[i]['roleInGroup'];
 
           let temp_html = `
-                <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
-                  <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/8719/8719385.png">
-                  <div class="info">
-                    <h3 class="name card-title">${title}</h3>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                      <span class="group_id" style="display: none;">${id}</span>
-                      <span class="roleInGroup">${roleInGroup}</span> |
-                    </h6>
-                  </div>
-                </div>
-          `
+                      <div class="card" id="${id}" style="width: 500px;" onclick="move_detail(${id})">
+                        <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/8719/8719385.png">
+                        <div class="info">
+                          <h1 class="name card-title">${name}</h1>
+                          <h6 class="card-subtitle mb-2 text-muted">
+                            <span class="roleInGroup">${roleInGroup}</span>
+                          </h6>
+                        </div>
+                      </div>
+          `;
           $('#pet-list').append(temp_html);
         }
       } else {
@@ -97,25 +101,17 @@
     });
   }
 
+  function move_detail(groupId) {
+    sessionStorage.setItem("groupId", groupId);
 
-// 그룹클릭하면 그룹 id를 세션에 저장하게만들고 캘린더로 이동하기 함수?
-  async function get_pet_info(petId) {
-    await axios.get("/api/v1/groups/" + groupId + "/groups/" + petId, {}, {
-      headers: {},
-    }).then(res => {
-      console.log(res)
-      if (res.data.resultCode == 'SUCCESS') {
-        rct_id = petId;
-        rct_title = res.data.result.title;
-        rct_roleInGroup = res.data.result.roleInGroup;
+    let url = "/view/calendar"
+    location.href = url;
+  }
 
-        $('#title').text(rct_title);
-        $('#roleInGroup').text(rct_roleInGroup);
+  function make_group() {
 
-      } else {
-        console.log("실패임" + res.resultCode)
-      }
-    });
+    let url = "/view/groups"
+    location.href = url;
   }
 
   axios.interceptors.request.use(function (config) {
