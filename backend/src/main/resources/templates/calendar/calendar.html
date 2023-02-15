@@ -64,67 +64,6 @@
           const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
           getContents(param, successCallback);
         }
-
-        //     [
-        //   {
-        //     title: 'All Day Event',
-        //     start: '2023-07-01',
-        //   },
-        //   {
-        //     title: 'Long Event',
-        //     start: '2021-07-07',
-        //     end: '2023-02-10',
-        //     color: "#FF0000"
-        //     , textColor: "#FFFF00"
-        //   },
-        //   {
-        //     groupId: 999,
-        //     title: 'Repeating Event',
-        //     start: '2023-02-09T16:00:00'
-        //     , color: "#FF0000"
-        //     , textColor: "#FFFF00"
-        //   },
-        //   {
-        //     groupId: 999,
-        //     title: 'Repeating Event',
-        //     start: '2023-02-16T16:00:00'
-        //   },
-        //   {
-        //     title: 'Conference',
-        //     start: '2023-02-11',
-        //     end: '2023-02-13'
-        //   },
-        //   {
-        //     title: 'Meeting',
-        //     start: '2023-02-12T10:30:00',
-        //     end: '2023-02-12T12:30:00'
-        //   },
-        //   {
-        //     title: 'Lunch',
-        //     start: '2023-02-12T12:00:00'
-        //   },
-        //   {
-        //     title: 'Meeting',
-        //     start: '2023-02-12T14:30:00'
-        //   },
-        //   {
-        //     title: 'Happy Hour',
-        //     start: '2023-02-12T17:30:00'
-        //   },
-        //   {
-        //     title: 'Dinner',
-        //     start: '2023-02-12T20:00:00'
-        //   },
-        //   {
-        //     title: 'Birthday Party',
-        //     start: '2023-02-13T07:00:00'
-        //   },
-        //   {
-        //     title: 'Click for Google',
-        //     url: 'http://google.com/', // 클릭시 해당 url로 이동
-        //     start: '2023-02-28'
-        //   }
-        // ]
         ,
         dateClick: function (info) {
           $("#calendarModal").modal("show");
@@ -183,6 +122,7 @@
                  value="schedule" checked>
           <label class="form-check-label" for="schedule-check">일정</label>
         </div>
+
       </div>
 
       <hr class="my-4">
@@ -297,13 +237,32 @@
   let petList;
   let tagList;
   let recordEventList;
+  let scheduleEventList;
   let ALLEVENT;
+  let SELECTED_EVENT;
+
+  let contentType;
 
   $(document).ready(function () {
     get_user_list();
     // get_pet_list();
     get_group_tag();
   });
+
+  function selectContentType () {
+    const query = 'input[name=contentsType]:checked';
+    const selected = document.querySelectorAll(query);
+
+    selected.forEach((el) => {
+      contentType.push(el.value);
+    })
+
+
+
+
+
+
+  }
 
   axios.defaults.withCredentials = true;
 
@@ -314,22 +273,31 @@
     return year + month.padStart(2, '0') + day.padStart(2, '0');
   }
 
+
   async function getContents(param, callback) {
     let events = [];
     let eventsStructure = await makeEvent(param);
     console.log(eventsStructure)
     setTimeout(() => {
       for (let i = 0; i < petList.length; i++) {
-        console.log(ALLEVENT)
         let id = petList[i]['id'];
-        let part = ALLEVENT['records'][id];
-        const values = Object.values(part);
-        const keys = Object.keys(part);
-        events.concat(values);
-        console.log(values);
-        console.log(typeof(values));
-        console.log(keys);
-        console.log(typeof(keys));
+        let recordList = ALLEVENT['records'][id];
+        const recValues = Object.values(recordList);
+
+        let scheduleList = ALLEVENT['schedules'][id];
+        const schValues = Object.values(scheduleList);
+
+        for (let j = 0; j < recValues.length; j++) {
+          let value = recValues[j]
+          console.log(value)
+          events.push(value);
+        }
+
+        for (let j = 0; j < schValues.length; j++) {
+          let value = schValues[j]
+          console.log(value)
+          events.push(value);
+        }
       }
       setTimeout(() => {
         console.log("events : " + events);
@@ -348,9 +316,11 @@
       let pet = petList[i];
       let petId = pet['id'];
       let recordsOfPet = await getRecordsOfPet(petId, param);
+      let scheduleOfPet = await getSchedulesOfPet(petId, param);
       setTimeout(() => {
         console.log(recordEventList)
         records[petId] = recordEventList;
+        schedules[petId] = scheduleEventList;
       })
     }
     let allEvent = {
@@ -367,7 +337,8 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let records = res.data.result;
-        let events = records.map(r => recordToEvent(r, randomBrightColor()));
+        let color = randomBrightColor();
+        let events = records.map(r => recordToEvent(r, color));
         setTimeout(() => {
           recordEventList = events;
         })
@@ -386,11 +357,13 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let schedules = res.data.result;
-        console.log(schedules);
-        const dates = schedules.map(mnt => mnt['dueDate']);
-        var events = dates.map(date => to_map(date));
-        console.log(events)
-        callback(events);
+
+        let color = randomBrightColor();
+        let events = schedules.map(s => scheduleToEvent(s, color));
+        setTimeout(() => {
+          scheduleEventList = events;
+        })
+        return events;
       }
     }).catch(err => {
       let res = err.response.data.result;
