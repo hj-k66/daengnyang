@@ -1,11 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.dto.record;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,8 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Builder

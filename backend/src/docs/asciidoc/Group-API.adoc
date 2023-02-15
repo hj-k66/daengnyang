@@ -41,3 +41,8 @@ operation::my-group-list/success[snippets='http-request,http-response,response-f
 === Group 역할변경
 
 operation::change-role/success[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[Group-그룹정보]]
+=== Group 그룹정보
+
+operation::group-info/success[snippets='http-request,path-parameters,http-response,response-fields']

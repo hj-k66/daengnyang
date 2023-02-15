@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png">
   <title>DAENG NYANG</title>
 
   <!-- Bootstrap 5.2.3 Version -->
@@ -33,7 +34,7 @@
     <div class="col-md-4">
       <h1 id="group-name"></h1>
       <div class="p-2">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal"> 그룹원 초대 </button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal"> 그룹원 초대하기 </button>
       </div>
       <div class="p-2">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteMemberModal"> 그룹원 내보내기 </button>
@@ -45,11 +46,11 @@
       </section>
       <br>
       <div class="p-2">
-        <button type="button" class="btn btn-outline-dark btn-small" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_group_info()">수정</button>
+        <button type="button" class="btn btn-outline-dark btn-small" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_group_info()">내 별명 수정</button>
       </div>
       <div class="p-2">
         <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#leaveModal">
-          탈퇴
+          탈퇴하기
         </button>
       </div>
 

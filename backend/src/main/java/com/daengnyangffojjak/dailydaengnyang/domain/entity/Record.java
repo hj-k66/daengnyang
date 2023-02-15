@@ -1,7 +1,6 @@
 package com.daengnyangffojjak.dailydaengnyang.domain.entity;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
