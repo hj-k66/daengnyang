@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png">
   <title>DAENG NYANG</title>
 
   <!-- Bootstrap 5.2.3 Version -->
@@ -151,6 +152,8 @@
         console.log(res.data.result.id);
 
         sessionStorage.setItem("groupId", groupId);
+        sessionStorage.setItem("petId", res.data.result.id);
+
 
         let url = "/view/groups/"+groupId+"/calendar"
         location.href = url;

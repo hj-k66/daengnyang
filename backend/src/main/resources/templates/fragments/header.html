@@ -5,6 +5,7 @@
 <head th:fragment="head">
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png">
   <title>DAENG NYANG</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -29,7 +30,6 @@
 <body>
 
 <div th:fragment="header">
-
   <!-- Responsive navbar-->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom: 20px;">
     <div class="container-fluid">
@@ -41,29 +41,30 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
         <ul class="login-on navbar-nav visually-hidden">
-          <li class="nav-item"><a class="nav-link" th:href="@{/view/calendar}">캘린더</a></li>
-          <li class="nav-item"><a class="nav-link" href="/">다이어리</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="move_calendar()">캘린더</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="move_all_record_feed()">다이어리</a></li>
         </ul>
         <!-- 로그인 했을때 -->
         <ul class="login-on navbar-nav ms-auto mb-2 mb-lg-0 visually-hidden">
-          <li class="nav-item"><a class="nav-link" aria-current="page" href="/">알람</a></li>
+          <li class="nav-item" onclick="move_alarm()"><a class="nav-link" aria-current="page" href="">알람</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="move_group_list()">그룹 관리</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="move_pet_list()">반려동물 관리</a></li>
+          <li class="nav-item"><a class="nav-link" onclick="logout()">로그아웃</a></li>
 
-          <li class="nav-item"><a class="nav-link" href="/">오늘의 일정</a></li>
-          <li class="nav-item dropdown">
-            <a class="nav-link" data-bs-toggle="dropdown" aria-expanded="false">마이페이지
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                   class="bi bi-caret-down" viewBox="0 0 16 16">
-                <path
-                    d="M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>
-              </svg>
-            </a>
-            <ul class="dropdown-menu">
-              <li class="dropdown-item" onclick="location.href='/boards/list'">그룹 관리</li>
-              <li class="dropdown-item" href="#">반려동물 관리</li>
-              <li class="dropdown-item" href="#">찜 리스트</li>
-              <li class="dropdown-item" onclick="logout()">로그아웃</li>
-            </ul>
-          </li>
+<!--          <li class="nav-item dropdown">-->
+<!--            <a class="nav-link" data-bs-toggle="dropdown" aria-expanded="false">마이페이지-->
+<!--              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"-->
+<!--                   class="bi bi-caret-down" viewBox="0 0 16 16">-->
+<!--                <path-->
+<!--                    d="M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>-->
+<!--              </svg>-->
+<!--            </a>-->
+<!--            <ul class="dropdown-menu">-->
+<!--              <li class="dropdown-item" onclick="move_group_list()">그룹 관리</li>-->
+<!--              <li class="dropdown-item" onclick="move_pet_list()">반려동물 관리</li>-->
+<!--              <li class="dropdown-item" onclick="logout()">로그아웃</li>-->
+<!--            </ul>-->
+<!--          </li>-->
         </ul>
         <!-- <li class="nav-item"><a class="nav-link" href="/users/login">로그인</a></li> -->
 
@@ -80,6 +81,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 
   <script th:inline="javascript">
+
     const token = localStorage.getItem("accessToken");
     $(document).ready(function () {
       if (token != null) {
@@ -155,6 +157,35 @@
         }
       }
     })()
+
+    function move_all_record_feed() {
+      let url = "/view/records/feed"
+      location.href = url;
+    }
+
+    function move_alarm() {
+      let url = "/view/notification"
+      location.href = url;
+    }
+
+    function move_calendar() {
+      let groupId = sessionStorage.getItem("groupId");
+
+      let url = "/view/groups/"+groupId+"/calendar"
+      location.href = url;
+    }
+
+    function move_group_list() {
+      let url = "/view/groups/mygroups"
+      location.href = url;
+    }
+
+    function move_pet_list() {
+      let groupId = sessionStorage.getItem("groupId");
+
+      let url = "/view/groups/"+groupId+"/pets"
+      location.href = url;
+    }
   </script>
 </div>
 
