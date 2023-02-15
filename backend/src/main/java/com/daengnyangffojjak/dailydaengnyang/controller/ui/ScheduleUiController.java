@@ -1,6 +1,5 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.pet.PetAddRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule.ScheduleCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

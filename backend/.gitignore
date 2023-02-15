@@ -40,3 +40,4 @@ out/
 **/TestContoller
 **/src/main/**/resources/static/docs/*.html
 **/resources/*.json
+**/resources/*.yml
