@@ -16,9 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
-import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.Category;
 import com.daengnyangffojjak.dailydaengnyang.service.RecordService;
 import java.time.LocalDateTime;
 import java.util.List;
