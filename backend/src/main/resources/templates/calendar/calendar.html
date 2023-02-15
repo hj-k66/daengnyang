@@ -142,6 +142,10 @@
       width: calc(100% - 320px);
       float: right;
     }
+
+    #group-name {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -159,7 +163,6 @@
 <!--          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>-->
 <!--        </div>-->
 <!--      </div>-->
-
       <h6 class="mb-2">선택</h6>
       <div class="my-3">
         <div class="form-check form-check-inline">
@@ -238,6 +241,7 @@
   </nav>
   <section id="contents-wrapper">
     <!----------달력---------->
+    <h2 id="group-name"></h2>
     <div class="col-md-8" id='calendar'>
     </div>
   </section>
@@ -308,6 +312,22 @@
   $('.sort-inp').on('change', function () {
     calendar.render();
   });
+
+  $(document).ready(async function() {
+    await axios.get(`/api/v1/groups/${groupId}`, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      console.log("그룹장 정보")
+      console.log(res.data.result)
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        let groupName = data.name;
+        $("#group-name").text(groupName);
+      }
+    })
+  })
 
   axios.defaults.withCredentials = true;
 
