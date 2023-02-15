@@ -40,9 +40,14 @@
     a.fc-event.hidden {
       display: none;
     }
+
+    a {
+      text-decoration: none;
+    }
   </style>
 
   <script>
+
     let calendaar;
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendar');
@@ -95,25 +100,18 @@
           let type = event.extendedProps.type;
           if (types.length) {
             result = result && types.indexOf(type) >= 0;
-            console.log("type : " + result)
           }
           let tag = event.extendedProps.tag;
           if (tags.length) {
             result = result && tags.indexOf(tag) >= 0;
-            console.log("tag : " + result)
           }
           let pet = event.extendedProps.petId.toString();
-          console.log(typeof(pet))
           if (pets.length) {
             result = result && pets.indexOf(pet) >= 0;
-            console.log("pet : " + result)
           }
-          console.log(result)
-
           if (!result) {
             result = "hidden";
           }
-          console.log(result);
 
           return result;
         }
@@ -303,12 +301,10 @@
   });
 
   $('input[class=sort-inp]').change(function() {
-    console.log("렌더링")
     calendar.render();
   });
 
   $('.sort-inp').on('change', function () {
-    console.log("렌더링")
     calendar.render();
   });
 
@@ -325,7 +321,6 @@
   async function getContents(param, callback) {
     let events = [];
     let eventsStructure = await makeEvent(param);
-    console.log(eventsStructure)
     setTimeout(() => {
       for (let i = 0; i < petList.length; i++) {
         let id = petList[i]['id'];
