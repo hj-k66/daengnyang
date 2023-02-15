@@ -163,17 +163,17 @@
   function convert_notification_type_to_url(notificationType_enum) {
     switch (notificationType_enum) {
       case "SCHEDULE_CREATE":
-        return "/view/groups/choice" //일정 페이지-캘린더로 가도 좋을듯
+        return "/view/records/feed" //일정 페이지-캘린더로 가도 좋을듯
       case "SCHEDULE_COMPLETE":
-        return "" //일정 페이지
+        return "/view/records/feed" //일정 페이지
       case "RECORD_CREATE":
-        return ""  //일기 페이지
+        return "/view/records/feed"  //일기 페이지
       case "GROUP_INVITE":
-        return "" //그룹 선택 페이지
+        return "view/groups/mygroups" //그룹 선택 페이지
       case "SCHEDULE_ASSIGN":
-        return ""  //일정페이지
+        return "/view/records/feed"  //일정페이지
       case "COMMENT_CREATE":
-        return ""  //피드페이지
+        return "/view/records/feed"  //피드페이지
       default:
         return "?"
     }

@@ -46,7 +46,7 @@
         </ul>
         <!-- 로그인 했을때 -->
         <ul class="login-on navbar-nav ms-auto mb-2 mb-lg-0 visually-hidden">
-          <li class="nav-item" onclick="move_alarm()"><a class="nav-link" aria-current="page" href="">알람</a></li>
+          <li class="nav-item" onclick="move_alarm()"><a class="nav-link" aria-current="page" href="/view/notification">알람</a></li>
           <li class="nav-item"><a class="nav-link" onclick="move_group_list()">그룹 관리</a></li>
           <li class="nav-item"><a class="nav-link" onclick="move_pet_list()">반려동물 관리</a></li>
           <li class="nav-item"><a class="nav-link" onclick="logout()">로그아웃</a></li>
@@ -79,8 +79,6 @@
 
       }
     });
-
-//firebase 초기화 >> 로그인한 상태에서만
     const firebaseModule = (function () {
       async function init() {
         // Your web app's Firebase configuration
@@ -169,6 +167,7 @@
       let url = "/view/groups/"+groupId+"/pets"
       location.href = url;
     }
+
   </script>
 </div>
 
