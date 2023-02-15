@@ -25,7 +25,7 @@
     <div class="card text-center">
       <div class="card-body">
         <p class="card-text">오늘은 반려동물과 어떤일이 있었나요? 🐶 🐱</p>
-        <a href="#" class="btn btn-primary" th:href="@{/view/add}">글 작성하러가기</a>
+        <a href="#" class="btn btn-primary" onclick="move_record_add()">글 작성하러가기</a>
       </div>
     </div>
     <form class="row g-3 d-flex justify-content-end my-3">
@@ -153,6 +153,23 @@
       alert("로그인 후 이용하실 수 있습니다.");
     } else {
       let url = "../pets/" + petId + "/records/" + recordId;
+      location.href = url;
+    }
+  }
+
+  function move_record_add() {
+    let groupId = sessionStorage.getItem("groupId");
+    let petId = sessionStorage.getItem("petId");
+
+    if (localStorage.getItem("accessToken") == null) {
+      alert("로그인 후 이용하실 수 있습니다.");
+    } else if(groupId == null) {
+      alert("그룹 등록 후 이용하실 수 있습니다.");
+
+    } else if(petId == null) {
+      alert("펫 등록 후 이용하실 수 있습니다.");
+    } else {
+      let url = "../pets/" + petId + "/records";
       location.href = url;
     }
   }
