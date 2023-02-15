@@ -553,7 +553,6 @@
     let color_b = Math.floor(Math.random() * 127 + 128).toString(16);
     return `#${color_r + color_g + color_b}`;
   }
-
   async function get_pet_list() {
     await axios.get("/api/v1/groups/" + groupId + "/pets", {}, {
       headers: {
@@ -714,7 +713,6 @@
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

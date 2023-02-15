@@ -330,11 +330,8 @@
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let diseases = res.data.result;
-        console.log(diseases);
-
         let order = $('input[name=sortingMethod]:checked').val();
         let only_ongoing = $('#ongoing-filter').is(":checked");
         $('#disease-wrapper').empty();
@@ -367,7 +364,6 @@
           const keys = Object.keys(categories);
           for (let i = 0; i < keys.length; i++) {
             const category_name = keys[i];
-            console.log(category_name);
             const category = categories[category_name];
             let ul_html = ``;
             for (let j = 0; j < category.length; j++) {
@@ -420,7 +416,6 @@
             let id = diseases[i]['id'];
             let name = diseases[i]['name'];
             let category_enum = diseases[i]['category'];
-            console.log(category_enum);
             let startedAt = diseases[i]['startedAt'];
             let endedAt = diseases[i]['endedAt'];
             let category = convert_category_enum(category_enum);
@@ -519,7 +514,6 @@
     let category = $('input:radio[name=category]:checked').val();
     let start = $('#start-inp').val();
     let end = $('#end-inp').val();
-    console.log(rct_disease_id);
 
     await axios.put("/api/v1/pets/" + petId + "/diseases/" + rct_disease_id,
         {
@@ -534,9 +528,7 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/diseases";
       }
     }).catch(err => {
@@ -565,9 +557,7 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/diseases";
       }
     }).catch(err => {
@@ -585,7 +575,6 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         document.location.href = "/view/pets/" + petId + "/diseases";
       }
@@ -599,12 +588,10 @@
   // -------------
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

@@ -250,10 +250,8 @@
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let schedule = res.data.result.content;
-        console.log(schedule);
         for (let i = 0; i < schedule.length; i++) {
           let id = schedule[i]['id'];
           let tag = schedule[i]['tag'];
@@ -308,7 +306,6 @@
         `;
         $('#pet-list').append(add_html);
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -360,7 +357,6 @@
         $('input[name=scheduleId]').attr('value',rct_id);
 
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -387,7 +383,6 @@
         rct_place = res.data.result.place;
         rct_isCompleted = res.data.result.completed;
         // let isCompletedText;
-        console.log("라디오 버튼" + rct_isCompleted)
         if (rct_isCompleted == false) {
           $('input:radio[name=isCompleted-inp]:input[value=' + false + ']').attr("checked", true);
 
@@ -401,7 +396,6 @@
 
 
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -432,7 +426,6 @@
       return;
     }
     let completed = $("input:radio[name=isCompleted-inp]:checked").val();
-    console.log(name)
 
     await axios.put("/api/v1/pets/" + petId + "/schedules/" + rct_id,
         {
@@ -450,16 +443,12 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/"+ petId +"/schedule";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     }).catch(err => {
       let error = err.response.data.result;
-      console.log(error.errorCode + " : " + error.message)
     });
   }
 
@@ -471,12 +460,9 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/"+petId+"/schedule";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -487,7 +473,6 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         $('#tag-box').empty();
         let plus_html = `
               <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
@@ -506,7 +491,6 @@
           $('#tag-box').append(temp_html);
         }
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
 
@@ -514,7 +498,6 @@
 
   function moveToTagPage() {
     const groupId = sessionStorage.getItem("groupId");
-    console.log(groupId)
     if (confirm("태그 관리 페이지로 이동합니다.")) {
       document.location.href = "/view/groups/"+groupId+"/tags";
     }
@@ -527,7 +510,6 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log("책임자 아이디 " + res.data.result)
 
         const assigneeId = res.data.result.users;
         for (let i = 0; i < assigneeId.length; i++) {
@@ -551,12 +533,10 @@
 
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

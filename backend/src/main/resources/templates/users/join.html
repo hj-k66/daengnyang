@@ -111,7 +111,6 @@
         email: email
       },
       success: function (data) {
-        console.log('결과 ' + data + ' ' + email);
         if (data == true) {
           $("#email_span").html("중복된 이메일입니다");
           emailPass = false;
@@ -123,7 +122,6 @@
         }
       },
       error: function () {
-        console.log('실패')
       }
     });
   }
@@ -143,7 +141,6 @@
         userName: userName
       },
       success: function (data) {
-        console.log('결과 ' + data + ' ' + userName);
         if (data == true) {
           $("#userName_span").html("중복된 아이디입니다");
           userNamePass = false;
@@ -155,7 +152,6 @@
         }
       },
       error: function () {
-        console.log('실패')
       }
     });
   }
@@ -207,11 +203,9 @@
         password: password
       }),
       success: function (data) {
-        console.log('결과 ' + data + ' ' + email);
         location.replace("/view/users/login")
       },
       error: function () {
-        console.log('실패')
       }
     });
   }

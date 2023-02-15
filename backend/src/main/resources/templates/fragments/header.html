@@ -50,23 +50,7 @@
           <li class="nav-item"><a class="nav-link" onclick="move_group_list()">그룹 관리</a></li>
           <li class="nav-item"><a class="nav-link" onclick="move_pet_list()">반려동물 관리</a></li>
           <li class="nav-item"><a class="nav-link" onclick="logout()">로그아웃</a></li>
-
-<!--          <li class="nav-item dropdown">-->
-<!--            <a class="nav-link" data-bs-toggle="dropdown" aria-expanded="false">마이페이지-->
-<!--              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"-->
-<!--                   class="bi bi-caret-down" viewBox="0 0 16 16">-->
-<!--                <path-->
-<!--                    d="M3.204 5h9.592L8 10.481 3.204 5zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659z"/>-->
-<!--              </svg>-->
-<!--            </a>-->
-<!--            <ul class="dropdown-menu">-->
-<!--              <li class="dropdown-item" onclick="move_group_list()">그룹 관리</li>-->
-<!--              <li class="dropdown-item" onclick="move_pet_list()">반려동물 관리</li>-->
-<!--              <li class="dropdown-item" onclick="logout()">로그아웃</li>-->
-<!--            </ul>-->
-<!--          </li>-->
         </ul>
-        <!-- <li class="nav-item"><a class="nav-link" href="/users/login">로그인</a></li> -->
 
         <!-- 로그인 안 했을때 -->
         <ul id="logout-on" class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="isAnonymous()">
@@ -121,7 +105,6 @@
                 return messaging.getToken();
               })
               .then(async function (token) {
-                console.log(token);
                 await fetch('/api/v1/notification',
                     {
                       method: 'post',

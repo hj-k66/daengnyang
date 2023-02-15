@@ -199,7 +199,6 @@
       alert("책임자를 선택해 주십시오.")
       return;
     }
-    console.log(name)
     let place = $("#place-add").val();
     if ($("#dueDate").val() != '') {
       var dueDate = `${$("#dueDate").val()}:00`
@@ -222,14 +221,11 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         recordId = res.data.result.id;
         alert("일정이 등록되었습니다.");
         document.location.href = "/view/pets/" + petId + "/schedule";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -240,7 +236,6 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         $('#tag-box').empty();
         let plus_html = `
                 <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
@@ -268,7 +263,6 @@
 
   function moveToTagPage() {
     const groupId = sessionStorage.getItem("groupId");
-    console.log(groupId)
     if (confirm("태그 관리 페이지로 이동합니다.")) {
       document.location.href = "/view/groups/"+groupId+"/tags";
     }
@@ -280,7 +274,6 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log("책임자 아이디 " + res.data.result)
 
         const assigneeId = res.data.result.users;
         for (let i = 0; i < assigneeId.length; i++) {
@@ -303,12 +296,10 @@
   }
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

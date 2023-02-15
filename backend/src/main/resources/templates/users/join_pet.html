@@ -122,7 +122,6 @@
 
   async function pet_create() {
     let groupId = sessionStorage.getItem("groupId");
-    console.log(sessionStorage.getItem("groupId"));
 
     let name = $("#name").val();
     let species = $("input:radio[name=species]:checked").val();
@@ -131,7 +130,6 @@
     let birthday = $("#birthday").val();
     let weight = $("#weight").val();
 
-    console.log(birthday)
     await axios.post(`/api/v1/groups/${groupId}/pets`, {
       "name": name,
       "species": species,
@@ -145,11 +143,7 @@
         Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log("바로 실행 로그");
-        console.log(res.data.resultCode);
-        console.log(res.data.result.id);
 
         sessionStorage.setItem("groupId", groupId);
         sessionStorage.setItem("petId", res.data.result.id);
@@ -158,7 +152,6 @@
         let url = "/view/groups/"+groupId+"/calendar"
         location.href = url;
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }

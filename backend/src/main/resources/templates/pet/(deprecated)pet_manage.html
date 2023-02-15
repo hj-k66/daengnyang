@@ -76,7 +76,6 @@
         Authorization: "Bearer " + "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InVzZXIiLCJyb2xlIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE2NzU4NDg1MTMsImV4cCI6MTY3NTg1MjExM30.9T3n7rIWsMVuG9-KP1zvns7mSdxWWlrz6im1z7IUR5k"
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         $('#name').text(res.data.result.name);
         $('#birthday').text(res.data.result.birthday);
@@ -85,18 +84,15 @@
         $('#species').text(res.data.result.species);
         $('#weight').text(res.data.result.weight+"kg");
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })
