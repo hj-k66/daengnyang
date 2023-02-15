@@ -11,6 +11,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserRole;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
@@ -23,14 +25,18 @@ import com.daengnyangffojjak.dailydaengnyang.exception.DiseaseException;
 import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
+import com.daengnyangffojjak.dailydaengnyang.exception.NotificationException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.TagException;
 import com.daengnyangffojjak.dailydaengnyang.exception.UserException;
+import com.daengnyangffojjak.dailydaengnyang.fixture.NotificationFixture;
 import com.daengnyangffojjak.dailydaengnyang.repository.CommentRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.NotificationRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.NotificationUserRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
@@ -57,6 +63,11 @@ class ValidatorTest {
 	private final DiseaseRepository diseaseRepository = mock(DiseaseRepository.class);
 	private final CommentRepository commentRepository = mock(CommentRepository.class);
 	private final RecordFileRepository recordFileRepository = mock(RecordFileRepository.class);
+	private final NotificationRepository notificationRepository = mock(
+			NotificationRepository.class);
+	private final NotificationUserRepository notificationUserRepository = mock(
+			NotificationUserRepository.class);
+
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
 	Group group = Group.builder().id(1L).name("그룹이름").user(user).build();
@@ -65,13 +76,19 @@ class ValidatorTest {
 	Record record = Record.builder().id(1L).user(user).pet(pet).title("제목").body("본문")
 			.isPublic(true).build();
 
+	Notification notification = NotificationFixture.get();
+	NotificationUser notificationUser = new NotificationUser(1L,notification,user);
+
+
 	private Validator validator;
 
 	@BeforeEach
 	void setUp() {
 		validator = new Validator(userRepository, userGroupRepository, groupRepository,
-						petRepository, monitoringRepository, recordRepository, tagRepository, diseaseRepository,
-						recordFileRepository, commentRepository);
+				petRepository, monitoringRepository, recordRepository, tagRepository,
+				diseaseRepository,
+				recordFileRepository, commentRepository, notificationRepository,
+				notificationUserRepository);
 	}
 
 	@Nested
@@ -241,7 +258,7 @@ class ValidatorTest {
 		@DisplayName("성공")
 		void success() {
 			Disease disease = new Disease(1L, pet, "질병", DiseaseCategory.DERMATOLOGY,
-					LocalDate.of(2000, 1, 1), LocalDate.of(2000, 12,31));
+					LocalDate.of(2000, 1, 1), LocalDate.of(2000, 12, 31));
 			given(diseaseRepository.findById(1L)).willReturn(Optional.of(disease));
 
 			Disease response = assertDoesNotThrow(
@@ -357,6 +374,62 @@ class ValidatorTest {
 
 			GroupException e = assertThrows(GroupException.class,
 					() -> validator.getPetWithUsername(1L, "user"));
+			assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
+		}
+	}
+
+	@Nested
+	@DisplayName("알람 id로 알람 반환")
+	class GetNotificationById {
+
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(notificationRepository.findById(1L)).willReturn(Optional.of(notification));
+
+			Notification result = assertDoesNotThrow(() -> validator.getNotificationById(1L));
+			assertEquals(notification.getId(), result.getId());
+			assertEquals(notification.getNotificationType(), result.getNotificationType());
+			assertEquals(notification.getTitle(), result.getTitle());
+			assertEquals(notification.getBody(), result.getBody());
+			assertEquals(notification.getCreatedAt(), result.getCreatedAt());
+
+		}
+
+		@Test
+		@DisplayName("실패 - 없음")
+		void fail() {
+			given(notificationRepository.findById(1L)).willReturn(Optional.empty());
+
+			NotificationException e = assertThrows(NotificationException.class, () -> validator.getNotificationById(1L));
+			assertEquals(ErrorCode.NOTIFICATION_NOT_FOUND, e.getErrorCode());
+		}
+	}
+
+	@Nested
+	@DisplayName("로그인유저와 알람 유저가 같은지 검증")
+	class ValidateNotificationUser {
+
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+			given(notificationUserRepository.findByNotificationIdAndUserId(1L,1L)).willReturn(Optional.of(notificationUser));
+
+			NotificationUser result = assertDoesNotThrow(() -> validator.validateNotificationUser(1L,1L));
+			assertEquals(notificationUser.getId(), result.getId());
+			assertEquals(notificationUser.getNotification(), result.getNotification());
+			assertEquals(notificationUser.getUser(), result.getUser());
+
+		}
+
+		@Test
+		@DisplayName("실패 - 로그인유저와 알람 유저가 다름")
+		void fail() {
+			given(notificationUserRepository.findByNotificationIdAndUserId(1L,100L)).willReturn(Optional.empty());
+
+			NotificationException e = assertThrows(NotificationException.class, () -> validator.validateNotificationUser(1L,100L));
 			assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
 		}
 	}

@@ -4,6 +4,8 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Comment;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Disease;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Monitoring;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
+import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Pet;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Record;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.RecordFile;
@@ -16,6 +18,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.FileException;
 import com.daengnyangffojjak.dailydaengnyang.exception.GroupException;
 import com.daengnyangffojjak.dailydaengnyang.exception.MonitoringException;
+import com.daengnyangffojjak.dailydaengnyang.exception.NotificationException;
 import com.daengnyangffojjak.dailydaengnyang.exception.PetException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordException;
 import com.daengnyangffojjak.dailydaengnyang.exception.RecordFileException;
@@ -25,6 +28,8 @@ import com.daengnyangffojjak.dailydaengnyang.repository.CommentRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.DiseaseRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.MonitoringRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.NotificationRepository;
+import com.daengnyangffojjak.dailydaengnyang.repository.NotificationUserRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.PetRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordFileRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.RecordRepository;
@@ -53,6 +58,8 @@ public class Validator {
 	private final RecordFileRepository recordFileRepository;
 
 	private final CommentRepository commentRepository;
+	private final NotificationRepository notificationRepository;
+	private final NotificationUserRepository notificationUserRepository;
 
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
@@ -147,4 +154,17 @@ public class Validator {
 		}
 		return roleIdMap;
 	}
+
+	public Notification getNotificationById(Long notificationId) {
+		return notificationRepository.findById(notificationId)
+				.orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));
+	}
+
+	public NotificationUser validateNotificationUser(Long notificationId, Long loginUserId){
+		return notificationUserRepository.findByNotificationIdAndUserId(
+						notificationId, loginUserId)
+				.orElseThrow(() -> new NotificationException(ErrorCode.INVALID_PERMISSION));
+	}
+
+
 }

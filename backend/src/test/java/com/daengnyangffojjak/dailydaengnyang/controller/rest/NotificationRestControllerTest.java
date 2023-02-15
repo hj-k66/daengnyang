@@ -4,6 +4,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -13,9 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationDeleteResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationListResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationReadResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.enums.NotificationType;
 import com.daengnyangffojjak.dailydaengnyang.service.NotificationService;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,6 +31,35 @@ public class NotificationRestControllerTest extends ControllerTest {
 
 	@MockBean
 	NotificationService notificationService;
+
+	@Nested
+	@DisplayName("알람 읽기")
+	class NotificationRead {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			given(notificationService.checkTrue(1L, "user"))
+					.willReturn(new NotificationReadResponse("알람을 읽었습니다.", 1L));
+
+			mockMvc.perform(
+							put("/api/v1/notification/{notificationId}", 1L))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result.id").value(1L))
+					.andExpect(jsonPath("$.result.message").value("알람을 읽었습니다."))
+
+					.andDo(restDocs.document(
+							pathParameters(
+									parameterWithName("notificationId").description("알람 id")
+							),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.id").description("알람 id"),
+									fieldWithPath("result.message").description("결과 메세지"))));
+			verify(notificationService).checkTrue(1L, "user");
+
+		}
+	}
 
 	@Nested
 	@DisplayName("알람 삭제")
@@ -67,10 +99,13 @@ public class NotificationRestControllerTest extends ControllerTest {
 		void success() throws Exception {
 			NotificationResponse notificationResponse1 = new NotificationResponse(2L, "일정부탁히기",
 					"희정님이 오전산책 일정을 부탁했습니다.  ",
-					NotificationType.SCHEDULE_ASSIGN, false);
+					NotificationType.SCHEDULE_ASSIGN, false,
+					LocalDateTime.of(2023, 1, 25, 10, 26));
+
 			NotificationResponse notificationResponse2 = new NotificationResponse(1L, "일정등록",
 					"예지님이 목욕 예약 일정을 등록했습니다.",
-					NotificationType.SCHEDULE_CREATE, false);
+					NotificationType.SCHEDULE_CREATE, false,
+					LocalDateTime.of(2023, 1, 25, 10, 26));
 
 			given(notificationService.getAllNotification(4L, 2, "user")).willReturn(
 					NotificationListResponse.builder()
@@ -96,7 +131,11 @@ public class NotificationRestControllerTest extends ControllerTest {
 											"result.notifications[].notificationType").description(
 											"알람 종류"),
 									fieldWithPath("result.notifications[].checked").description(
-											"읽음여부"))));
+											"읽음여부"),
+									fieldWithPath(
+											"result.notifications[].createdAt").description(
+											"알람 생성 시간")
+							)));
 			verify(notificationService).getAllNotification(4L, 2, "user");
 
 		}

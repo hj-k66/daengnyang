@@ -56,7 +56,7 @@ public class CustomEventListener {
 
 		//알림 기록 db에 저장
 		Notification savedNotification = notificationRepository.saveAndFlush(
-				Notification.from(NotificationType.SCHEDULE_COMPLETE.name(),
+				Notification.from(NotificationType.SCHEDULE_COMPLETE.getMessageTitle(),
 						message, NotificationType.SCHEDULE_COMPLETE, false));
 		//알람받을 유저 저장
 		scheduleCompleteEvent.getUserList().forEach(
@@ -92,7 +92,7 @@ public class CustomEventListener {
 
 		//알림 기록 db에 저장
 		Notification savedNotification = notificationRepository.saveAndFlush(
-				Notification.from(NotificationType.SCHEDULE_ASSIGN.name(),
+				Notification.from(NotificationType.SCHEDULE_ASSIGN.getMessageTitle(),
 						body, NotificationType.SCHEDULE_ASSIGN, false));
 		//알람받을 유저 저장 >> 로그인 안한 유저도 저장
 		notificationUserRepository.save(NotificationUser.from(savedNotification,
@@ -124,7 +124,7 @@ public class CustomEventListener {
 
 		//알림 기록 db에 저장
 		Notification savedNotification = notificationRepository.saveAndFlush(
-				Notification.from(NotificationType.SCHEDULE_CREATE.name(),
+				Notification.from(NotificationType.SCHEDULE_CREATE.getMessageTitle(),
 						message, NotificationType.SCHEDULE_CREATE, false));
 		//알람받을 유저 저장
 		scheduleCreateEvent.getUserList().forEach(
@@ -156,7 +156,7 @@ public class CustomEventListener {
 
 		//알림 기록 db에 저장
 		Notification savedNotification = notificationRepository.saveAndFlush(
-				Notification.from(NotificationType.RECORD_CREATE.name(),
+				Notification.from(NotificationType.RECORD_CREATE.getMessageTitle(),
 						message, NotificationType.RECORD_CREATE, false));
 		//알람받을 유저 저장
 		recordCreateEvent.getUserList().forEach(
@@ -189,7 +189,7 @@ public class CustomEventListener {
 
 		//알림 기록 db에 저장
 		Notification savedNotification = notificationRepository.saveAndFlush(
-				Notification.from(NotificationType.GROUP_INVITE.name(),
+				Notification.from(NotificationType.GROUP_INVITE.getMessageTitle(),
 						message, NotificationType.GROUP_INVITE, false));
 		//알람받을 유저 저장
 		notificationUserRepository.save(NotificationUser.from(savedNotification,
