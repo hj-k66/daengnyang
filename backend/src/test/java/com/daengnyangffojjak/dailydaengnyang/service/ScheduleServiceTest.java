@@ -48,6 +48,7 @@ class ScheduleServiceTest {
 			applicationEventPublisher);
 
 	LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10, 26);
+	LocalDate localDate = LocalDate.of(2023, 1, 25);
 
 	User user = User.builder().id(1L).userName("user").password("password").email("@.")
 			.role(UserRole.ROLE_USER).build();
@@ -60,7 +61,7 @@ class ScheduleServiceTest {
 	Tag tag = new Tag(1L, group, "질병");
 
 	Schedule schedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 1L, "멋사동물병원",
-			dateTime,
+			localDate,
 			false);
 
 	@Nested
@@ -68,7 +69,7 @@ class ScheduleServiceTest {
 	class ScheduleComplete{
 		ScheduleCompleteRequest scheduleCompleteRequest = new ScheduleCompleteRequest(true);
 		Schedule completeSchedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 2L, "멋사동물병원",
-				dateTime,
+				localDate,
 				true);
 
 		@Test
@@ -99,7 +100,7 @@ class ScheduleServiceTest {
 		User receiver = User.builder().id(2L).userName("희정").password("password").email("@.")
 				.role(UserRole.ROLE_USER).build();
 		Schedule modifiedSchedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 2L,
-				"멋사동물병원", dateTime, false);
+				"멋사동물병원", localDate, false);
 
 		@Test
 		@DisplayName("성공")
@@ -125,9 +126,9 @@ class ScheduleServiceTest {
 	class create_schedule {
 
 		ScheduleCreateRequest scheduleCreateRequest = new ScheduleCreateRequest(1L,
-				"병원", "초음파 재검", 1L, "멋사동물병원", dateTime);
+				"병원", "초음파 재검", 1L, "멋사동물병원", localDate);
 		Schedule schedule = new Schedule(1L, user, pet, tag, "병원", "초음파 재검", 1L, "멋사동물병원",
-				dateTime, false);
+				localDate, false);
 
 		@Test
 		@DisplayName("성공")
@@ -153,9 +154,9 @@ class ScheduleServiceTest {
 	class modify_schedule {
 
 		ScheduleModifyRequest scheduleModifyRequest = new ScheduleModifyRequest(1L,
-				"수정 병원", "수정 초음파 재검", 2L, "수정 멋사동물병원", dateTime, true);
+				"수정 병원", "수정 초음파 재검", 2L, "수정 멋사동물병원", localDate, true);
 		Schedule modifySchedule = new Schedule(1L, user, pet, tag, "수정 병원", "수정 초음파 재검",
-				2L, "수정 멋사동물병원", dateTime, true);
+				2L, "수정 멋사동물병원", localDate, true);
 
 		@Test
 		@DisplayName("성공")
@@ -219,7 +220,7 @@ class ScheduleServiceTest {
 			assertEquals("초음파 재검", response.getBody());
 			assertEquals(1L, response.getAssigneeId());
 			assertEquals("멋사동물병원", response.getPlace());
-			assertEquals(dateTime, response.getDueDate());
+			assertEquals(localDate, response.getDueDate());
 
 		}
 
