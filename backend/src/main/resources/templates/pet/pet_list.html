@@ -27,7 +27,7 @@
     </div>
     <div class="col-md-4">
       <section id="pet-list">
-        <div class="card visually-hidden" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <div class="card visually-hidden" style="width: 500px; height: auto" data-bs-toggle="modal" data-bs-target="#exampleModal">
 
           <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
           <div class="info">
@@ -39,8 +39,23 @@
               <span class="sex">중성화 수컷</span>
             </h6>
           </div>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_record()">
+            일기
+          </button>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_List()">
+            일정
+          </button>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_monitoring()">
+            모니터링
+          </button>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_List()">
+            질병
+          </button>
         </div>
-
       </section>
     </div>
     <div class="col-md-4">
@@ -222,7 +237,9 @@
           let sex = convert_sex_enum(sex_enum);
 
           let temp_html = `
-                <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
+          <div class="col-md-4">
+                <section id="pet-list">
+                <div class="card" style="width: 500px; height: auto" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_pet_info(${id})">
                   <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
                   <div class="info">
                     <h3 class="name card-title">${name}</h3>
@@ -235,6 +252,24 @@
                     </h6>
                   </div>
                 </div>
+                <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_record()">
+            일기
+          </button>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_List()">
+            일정
+          </button>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_monitoring(${id})">
+            모니터링
+          </button>
+          <button type="button" class="btn btn-primary justify-content-md-end mt-3"
+                  onclick="pet_List()">
+            질병
+          </button>
+                </section>
+          </div>
           `
           $('#pet-list').append(temp_html);
         }
@@ -358,6 +393,20 @@
       default:
         return "?"
     }
+  }
+
+  function pet_record() {
+    // sessionStorage.setItem("groupId", groupId);
+
+    let url = "/view/records/feed"
+    location.href = url;
+  }
+
+  function pet_monitoring(petId) {
+    // sessionStorage.setItem("groupId", groupId);
+
+    let url = "/view/pets/"+petId+"/monitorings"
+    location.href = url;
   }
 
   function add_pet() {

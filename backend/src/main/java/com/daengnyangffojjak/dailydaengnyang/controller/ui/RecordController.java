@@ -1,18 +1,12 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
 
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordResponse;
-import com.daengnyangffojjak.dailydaengnyang.domain.dto.record.RecordWorkRequest;
 import com.daengnyangffojjak.dailydaengnyang.service.RecordService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -28,9 +22,11 @@ public class RecordController {
 		return "record/record_list";
 	}
 
-	@GetMapping("/pets/{petId}/records")
-	public String petList (@PathVariable Long petId, Model model) {
-		return "record/record_list_pet";
+	// 반려동물별 일기 리스트 조회
+	@GetMapping("/pets/{petId}/petRecords")
+	public String petRecords(Model model, @PathVariable Long petId) {
+		model.addAttribute("petId", petId);
+		return "record/record_pet";
 	}
 
 	@GetMapping("/pets/{petId}/records/{recordId}")

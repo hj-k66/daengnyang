@@ -95,8 +95,7 @@
 
   async function get_feed_list() {
     var param = '?page=' + nowPage;
-
-    await axios.get("/api/v1/pets/"+petId+"/records"+param, {}, {////
+    await axios.get("/api/v1/pets/"+petId+"/petRecords"+param, {}, {////
       headers: {
         "Content-Type": `application/json`,
         Authorization: "Bearer " + localStorage.getItem("accessToken")
@@ -155,6 +154,17 @@
       location.href = url;
     }
   }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
 
 </script>
 
