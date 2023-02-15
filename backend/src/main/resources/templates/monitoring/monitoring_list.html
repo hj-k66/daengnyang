@@ -779,7 +779,6 @@
     await axios.post("/api/v1/pets/" + petId + "/monitorings", params, {}
     ).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/monitorings";
       } else {
         console.log("실패임" + res.resultCode)
