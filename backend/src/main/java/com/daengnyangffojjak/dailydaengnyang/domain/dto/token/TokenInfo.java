@@ -22,6 +22,7 @@ public class TokenInfo {
 		ResponseCookie cookie = ResponseCookie.from("refreshToken", this.refreshToken)
 				.maxAge(7 * 24 * 60 * 60) //만료시간 : 7일
 				.secure(true)
+				.path("/")
 				.sameSite("None") //
 				.httpOnly(true)
 				.build();
