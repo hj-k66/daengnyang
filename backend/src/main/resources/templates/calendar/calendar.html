@@ -13,8 +13,12 @@
         rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
         crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+          integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+          integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+          crossorigin="anonymous"></script>
 
   <!-- CSS -->
   <link th:href="@{/css/styles.css}" rel="stylesheet"/>
@@ -88,12 +92,9 @@
           $('input:checkbox.sort-inp:checked').each(function () {
             if ($(this).data('type') == 'type') {
               types.push($(this).val());
-            }
-            else if ($(this).data('type') == 'pet') {
-              console.log(typeof($(this).val()))
+            } else if ($(this).data('type') == 'pet') {
               pets.push($(this).val());
-            }
-            else if ($(this).data('type') == 'tag') {
+            } else if ($(this).data('type') == 'tag') {
               tags.push($(this).val());
             }
           })
@@ -115,15 +116,30 @@
           }
 
           return result;
+        },
+        eventClick: function (info) {
+          let event = info.event.extendedProps;
+          console.log(event);
+          let petId = event.petId;
+          console.log(petId);
+
+          if (event.type == 'record') {
+            let recordId = event.recordId;
+            location.href = "/view/pets/" + petId + "/records/" + recordId;
+          } else if (event.type == 'schedule') {
+            let scheduleId = event.scheduleId;
+            get_schedule_info(petId, scheduleId);
+            $("#exampleModal").modal("show");
+          }
         }
       });
       calendar.render();
 
-      $('input[class=sort-inp]').change(function() {
-        console.log("렌더링")
+      $('input[class=sort-inp]').change(function () {
         calendar.render();
       });
     });
+
   </script>
   <style>
     #sidebar {
@@ -131,8 +147,7 @@
       position: fixed;
       top: 56px;
       left: 0px;
-      height: calc(100% - 56px);
-      z-index: 999;
+      height: 100%;
       background: #333;
       color: #fff;
       transition: all 0.3s;
@@ -152,13 +167,13 @@
 <div id="wrap">
   <nav id="sidebar" class="active" style="overflow-y: scroll;">
     <div style="padding: 20px">
-<!--      <h6 class="mb-2">필터</h6>-->
-<!--      <div class="my-3">-->
-<!--        <div class="form-check form-switch">-->
-<!--          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">-->
-<!--          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>-->
-<!--        </div>-->
-<!--      </div>-->
+      <!--      <h6 class="mb-2">필터</h6>-->
+      <!--      <div class="my-3">-->
+      <!--        <div class="form-check form-switch">-->
+      <!--          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">-->
+      <!--          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
       <h6 class="mb-2">선택</h6>
       <div class="my-3">
@@ -244,6 +259,76 @@
 </div>
 
 
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="title">제목</h1>
+        <input type="hidden" name="scheduleId">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody>
+          <tr>
+            <th scope="row">tag</th>
+            <td id="tag"></td>
+          </tr>
+          <tr>
+            <th scope="row">사용자</th>
+            <td id="userName"></td>
+          </tr>
+          <tr>
+            <th scope="row">펫이름</th>
+            <td id="petName"></td>
+          </tr>
+          <tr>
+            <th scope="row">내용</th>
+            <td id="body"></td>
+          </tr>
+          <tr>
+            <th scope="row">담당자</th>
+            <td id="roleInGroup"></td>
+          </tr>
+          <tr>
+            <th scope="row">장소</th>
+            <td id="place"></td>
+          </tr>
+          <tr>
+            <th scope="row">예정일</th>
+            <td id="dueDate"></td>
+          </tr>
+          <tr>
+            <th scope="row">완료여부</th>
+            <td id="isCompleted"></td>
+          </tr>
+          <tr>
+            <th scope="row">등록날짜</th>
+            <td id="createdAt"></td>
+          </tr>
+          <tr>
+            <th scope="row">수정날짜</th>
+            <td id="lastModifiedAt"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <div class="p-2">
+        </div>
+        <div class="p-2 flex-grow-1"></div>
+        <div class="p-2">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+        <div class="collapse" id="collapseExample" style="width: 100%">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- modal 추가 -->
 <div class="modal fade" id="calendarModal" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel"
@@ -301,7 +386,7 @@
     get_group_tag();
   });
 
-  $('input[class=sort-inp]').change(function() {
+  $('input[class=sort-inp]').change(function () {
     calendar.render();
   });
 
@@ -317,7 +402,6 @@
     const day = String(date.getDate());
     return year + month.padStart(2, '0') + day.padStart(2, '0');
   }
-
 
   async function getContents(param, callback) {
     let events = [];
@@ -414,6 +498,7 @@
     let title = schedule['title'];
     let dueDate = schedule['dueDate'];
     let tag = schedule['tag'];
+    let scheduleId = schedule['id'];
     var event =
         {
           title: title,
@@ -422,7 +507,8 @@
           textColor: "#333",
           type: 'schedule',
           tag: tag,
-          petId: petId
+          petId: petId,
+          scheduleId: scheduleId
         };
     return event;
   }
@@ -432,6 +518,7 @@
     let createdAt = record['createdAt'].substring(0, 10);
     let tag = record['tag'];
     let petId = record['petId'];
+    let recordId = record['id'];
     var event =
         {
           title: title,
@@ -440,7 +527,8 @@
           textColor: "#333",
           type: 'record',
           tag: tag,
-          petId: petId
+          petId: petId,
+          recordId: recordId
         };
     return event;
   }
@@ -539,27 +627,74 @@
   function moveToPetPage() {
     let agree = confirm("반려동물 관리 페이지로 이동합니다.")
     if (agree) {
-      document.location.href = "/view/groups/"+groupId+"/pets"
+      document.location.href = "/view/groups/" + groupId + "/pets"
     }
   }
 
   function moveToTagPage() {
     const groupId = sessionStorage.getItem("groupId");
-    console.log(groupId)
     if (confirm("태그 관리 페이지로 이동합니다.")) {
-      document.location.href = "/view/groups/"+groupId+"/tags";
+      document.location.href = "/view/groups/" + groupId + "/tags";
     }
   }
 
   function moveToUserPage() {
     const groupId = sessionStorage.getItem("groupId");
-    console.log(groupId)
     if (confirm("집사 관리 페이지로 이동합니다.")) {
-      document.location.href = "/view/groups/"+groupId+"/users";
+      document.location.href = "/view/groups/" + groupId + "/users";
     }
   }
 
+  async function get_schedule_info(petId, scheduleId) {
+    console.log("scheduleId : " + scheduleId)
+    console.log("typeof : " + typeof scheduleId)
+    await axios.get("/api/v1/pets/" + petId + "/schedules/" + scheduleId, {}, {
 
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+
+        let rct_id = scheduleId;
+        let rct_tag = res.data.result.tag;
+        let rct_userName = res.data.result.userName;
+        let rct_petName = res.data.result.petName;
+        let rct_title = res.data.result.title;
+        let rct_body = res.data.result.body;
+        let rct_roleInGroup = res.data.result.roleInGroup;
+        let rct_dueDate = res.data.result.dueDate;
+        let rct_place = res.data.result.place;
+        let rct_isCompleted = res.data.result.completed;
+        let isCompletedText;
+        if (rct_isCompleted) {
+          isCompletedText = "완료";
+        } else {
+          isCompletedText = "미완료";
+        }
+        let rct_createdAt = res.data.result.createdAt;
+        let rct_lastModifiedAt = res.data.result.lastModifiedAt;
+
+        $('#id').text(rct_id);
+        $('#tag').text(rct_tag);
+        $('#userName').text(rct_userName);
+        $('#petName').text(rct_petName);
+        $('#title').text(rct_title);
+        $('#body').text(rct_body);
+        $('#roleInGroup').text(rct_roleInGroup);
+        $('#dueDate').text(rct_dueDate);
+        $('#place').text(rct_place);
+        $('#isCompleted').text(isCompletedText);
+        $('#createdAt').text(rct_createdAt);
+        $('#lastModifiedAt').text(rct_lastModifiedAt);
+        $('input[name=scheduleId]').attr('value', rct_id);
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });
+  }
 
   axios.interceptors.request.use(function (config) {
     const accessToken = localStorage.getItem('accessToken');
