@@ -325,12 +325,10 @@
 
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })
@@ -343,7 +341,6 @@
   }
 
   function drawChart() {
-    console.log(monitorings);
     const lists = parse_data(monitorings);
 
     make_chart('몸무게', lists['weight_list'], 'weight_chart');

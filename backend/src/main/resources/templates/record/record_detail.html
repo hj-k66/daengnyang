@@ -172,29 +172,6 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">댓글 수정</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-<!--        <div class="modal-body">-->
-<!--          <table class="table">-->
-<!--            <tbody>-->
-<!--            <tr>-->
-<!--              <th scope="row">닉네임</th>-->
-<!--              <td>-->
-<!--                <input id="modifyComment" name="roleInGroup" type="text" class="form-control"/>-->
-<!--              </td>-->
-<!--            </tr>-->
-<!--            </tbody>-->
-<!--          </table>-->
-
-<!--        </div>-->
-<!--        <div class="modal-footer">-->
-
-<!--          <div class="p-2 flex-grow-1"></div>-->
-<!--          <div class="p-2">-->
-<!--            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
-<!--            <button type="button" class="btn btn-primary" data-bs-toggle="modal"-->
-<!--                    data-bs-target="#modifyModal" onclick="roleInGroup_modify()">수정</button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </form>-->
       <form>
         <div class="card-body"><textarea id="modifyComment" class="form-control" row="1"></textarea></div>
         <div class="card-footer d-grid gap-2 d-md-flex justify-content-md-end">
@@ -234,7 +211,6 @@
     await axios.get("/api/v1/pets/" + petId + "/records/" + recordId, {}, {
       headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let data = res.data.result;
         recordData = data;
@@ -250,7 +226,6 @@
         let isPublic = data.isPublic;
         let tag = data.tag;
         let recordFiles = data.recordFiles;
-        console.log(recordFiles);
         // let recordFile = data.recordFile;
         let createdAt = data.createdAt;
         let lastModifiedAt = data.lastModifiedAt;
@@ -286,7 +261,6 @@
           }
         }
       } else {
-        console.log("실패임" + res.resultCode)
       }
       setTimeout(async () => {
         await get_my_name(function (user) {
@@ -328,11 +302,9 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         user = res.data.result;
         sessionStorage.setItem("userName", user);
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
     callback(user);
@@ -345,12 +317,9 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/records/feed";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     }).catch(err => {
       let res = err.response.data.result;
@@ -372,7 +341,6 @@
       return;
     }
     let isPublic = $("input:radio[name=isPublic]:checked").val();
-    console.log(name)
 
     await axios.put("/api/v1/pets/" + petId + "/records/" + recordId,
         {
@@ -387,12 +355,9 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/records/"+recordId;
       } else {
-        console.log("실패임" + res.resultCode)
       }
     }).catch(err => {
       let res = err.response.data.result;
@@ -407,7 +372,6 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         $('#tag-box').empty();
         let plus_html = `
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
@@ -426,7 +390,6 @@
           $('#tag-box').append(temp_html);
         }
       } else {
-        console.log("실패임" + res.resultCode)
       }
     }).catch(err => {
       let res = err.response.data.result;
@@ -448,7 +411,6 @@
   <!-- 댓글 등록 -->
   async function comment_create() {
     let comment = $("#comment").val();
-    console.log("댓글" + comment)
     if (comment == null) {
       alert("댓글을 입력해주세요")
       return;
@@ -463,13 +425,11 @@
       }
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         alert("댓글이 등록되었습니다");
         document.location.href = "/view/pets/" + petId + "/records/" + recordId;
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
-      console.log("err " + errMsg);
     });
   }
 
@@ -525,7 +485,6 @@
           }
         }
       } else {
-        console.log("실패 " + res.resultCode)
       }
     });
   })
@@ -546,13 +505,11 @@
       }
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         alert("댓글이 수정되었습니다");
         document.location.href = "/view/pets/" + petId + "/records/" + recordId;
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
-      console.log("err " + errMsg);
     });
   }
   <!-- 댓글 삭제 -->
@@ -566,25 +523,21 @@
       }
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         alert("댓글이 삭제되었습니다");
         document.location.href = "/view/pets/" + petId + "/records/" + recordId;
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
-      console.log("err " + errMsg);
     });
   }
 
 
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })
