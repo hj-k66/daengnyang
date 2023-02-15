@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: head}">
+  <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
+  <!-- Required meta tags -->
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+        crossorigin="anonymous"/>
+  <title>게시판</title>
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<div class="row">
+  <div class="col-md-3">
+  </div>
+  <div class="col-md-6 my-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <p class="card-text">오늘은 반려동물과 어떤일이 있었나요? 🐶 🐱</p>
+        <a href="#" class="btn btn-primary" th:href="@{/view/add}">글 작성하러가기</a>
+      </div>
+    </div>
+    <form class="row g-3 d-flex justify-content-end my-3">
+    </form>
+    <div id="record-wrapper" class="col-md-12 my-3">
+      <div
+          class="visually-hidden row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="container">
+          <div class="row">
+            <div class="col-8 p-4 d-flex flex-column position-static">
+              <strong class="d-inline-block mb-2 text-success">#산책</strong>
+              <h3 class="mb-0">하루에 산책 3번한 날...</h3>
+              <div class="mb-1 text-muted">작성자 : 아빠</div>
+              <p class="mb-auto">오늘은 산책을 세번이나 했다. 멍뭉이는 아직 멀쩡해보인다. 힘이
+                어디서 나오는지 모르겠다. 너무 힘들다... 그래도 귀여워서 참는다.</p>
+              <a href="#" class="stretched-link" th:href="@{/view/detail}">자세히 보러가기</a>
+            </div>
+            <!--                                동영상-->
+<!--            <video autoplay controls loop muted-->
+<!--                   poster="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
+<!--                   preload="auto">-->
+<!--              <source-->
+<!--                  src="https://s3.ap-northeast-2.amazonaws.com/daengnyang-bucket/test/records/45b576a0-7dd4-4169-98c2-e391e5f8da2f.mp4"-->
+<!--                  type="video/mp4">-->
+<!--              동영상을 사용할 수 없습니다.-->
+<!--            </video>-->
+            <!--              이미지-->
+            <div class="col-4 p-4 d-flex flex-column position-static">
+                <img
+                    src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
+                    width="250px" height="250px" class="img-thumbnail" alt="강아지">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-3 my-3 mt-5">
+    <th:block th:replace="~{fragments/right :: right}"></th:block>
+  </div>
+</div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  var nowPage = 0;
+  const petId = [[${petId}]];
+
+  $(document).ready(function () {
+    get_feed_list();
+  });
+
+  axios.defaults.withCredentials = true;
+
+  async function get_feed_list() {
+    var param = '?page=' + nowPage;
+    await axios.get("/api/v1/pets/"+petId+"/petRecords"+param, {}, {////
+      headers: {
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+
+        //여기서부터 작성
+        let records = res.data.result.content;
+        console.log(records);
+        for (let i = 0; i < records.length; i++) {
+          let id = records[i]['id'];
+          let petId = records[i]['petId'];
+          let petName = records[i]['petName'];
+          let title = records[i]['title'];
+          let body = records[i]['body'];
+          let tag = records[i]['tag'];
+          let storedFileUrl = records[i]['recordFile']['storedFileUrl'];
+          let uploadFilename = records[i]['recordFile']['uploadFilename'];
+
+          let temp_html = `
+                    <div id="record-${id}"
+                        class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                      <div class="container">
+                        <div class="row">
+                          <div class="col-8 p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-success">#${tag}</strong>
+                            <h3 class="mb-0">${title}</h3>
+                            <div class="mb-1 text-muted">${petName}</div>
+                            <p class="mb-auto">${body}</p>
+                            <a onclick="move_detail(${petId}, ${id})" class="stretched-link">자세히 보러가기</a>
+                          </div>
+                          <!--              이미지-->
+                            <div class="col-4 p-4 d-flex flex-column position-static">
+                                <img
+                                    src="${storedFileUrl}" width="250px" height="250px" class="img-thumbnail" alt="강아지">
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+          `;
+          $('#record-wrapper').append(temp_html);
+        }
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
+
+  function move_detail(petId, recordId) {
+    if (localStorage.getItem("accessToken") == null) {
+      alert("로그인 후 이용하실 수 있습니다.");
+    } else {
+      let url = "../pets/" + petId + "/records/" + recordId;
+      location.href = url;
+    }
+  }
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+
+</body>
+</html>

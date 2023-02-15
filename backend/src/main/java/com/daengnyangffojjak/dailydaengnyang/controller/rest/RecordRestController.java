@@ -45,6 +45,16 @@ public class RecordRestController {
 		return ResponseEntity.ok().body(Response.success(recordResponses));
 	}
 
+	// 반려동물별 일기 리스트 조회
+	@GetMapping(value = "/pets/{petId}/petRecords")
+	public Response<Page<RecordResponse>> getPetAllRecords(@AuthenticationPrincipal UserDetails user,
+			@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+			@PathVariable Long petId) {
+		Page<RecordResponse> recordResponses = recordService.getPetAllRecords(pageable,
+				petId, user.getUsername());
+		return Response.success(recordResponses);
+	}
+
 	// 반려동물의 기간별 일기 리스트 조회
 	@GetMapping(value = "/pets/{petId}/records")
 	public Response<List<RecordResponse>> getRecordList(@AuthenticationPrincipal UserDetails user,
