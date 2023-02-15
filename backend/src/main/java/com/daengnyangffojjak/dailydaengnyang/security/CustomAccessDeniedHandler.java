@@ -20,8 +20,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
-			AccessDeniedException accessDeniedException) throws IOException, ServletException {
-
+			AccessDeniedException e) throws IOException, ServletException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		log.info("엑세스 권한이 없습니다.");
 
@@ -36,6 +35,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 		response.setCharacterEncoding("utf-8");
 		response.getWriter()
 				.write(objectMapper.writeValueAsString(error)); //Response객체를 response의 바디값으로 파싱
+
+		log.error("[handle] 접근이 거부되어 경로 리다이렉트");
+		response.sendRedirect("/view/users/login");
 
 
 	}

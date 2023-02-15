@@ -211,6 +211,34 @@ class GroupRestControllerTest extends ControllerTest {
 	}
 
 	@Nested
+	@DisplayName("그룹 내 역할 변경")
+	class ChangeRole {
+
+		@Test
+		@DisplayName("성공")
+		void success() throws Exception {
+			GroupInviteRequest request = new GroupInviteRequest(null, "dad");
+			GroupUserResponse response = new GroupUserResponse(1L, "user", "mom");
+			given(groupService.modifyInfoinGroup(1L, "user", request)).willReturn(response);
+
+			mockMvc.perform(
+							RestDocumentationRequestBuilders.put("/api/v1/groups/{groupId}/users", 1L)
+									.content(objectMapper.writeValueAsBytes(request))
+									.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
+					.andExpect(jsonPath("$.result").exists()).andDo(restDocs.document(
+							pathParameters(parameterWithName("groupId").description("그룹 번호")),
+							requestFields(fieldWithPath("roleInGroup").description("그룹 내 역할"),
+									fieldWithPath("email").ignored()),
+							responseFields(fieldWithPath("resultCode").description("결과코드"),
+									fieldWithPath("result.id").description("그룹 유저 번호"),
+									fieldWithPath("result.userName").description("유저 네임"),
+									fieldWithPath("result.roleInGroup").description("그룹 내 역할")
+							)));
+		}
+	}
+
+	@Nested
 	@DisplayName("그룹에서 나오기")
 	class LeaveGroup {
 

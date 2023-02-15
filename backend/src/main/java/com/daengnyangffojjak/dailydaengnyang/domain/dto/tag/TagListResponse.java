@@ -9,9 +9,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TagListResponse {
 
-	private List<String> tags;
+	private Long id;
+	private String name;
 
-	public static TagListResponse from(List<Tag> tags) {
-		return new TagListResponse(tags.stream().map(Tag::getName).toList());
+	public static TagListResponse from(Tag tag) {
+		return new TagListResponse(tag.getId(), tag.getName());
 	}
 }

@@ -53,6 +53,16 @@
                   onclick="location.href='/view/users/join'">
             회원 가입
           </button>
+
+          <br>
+
+          <a href="/oauth2/authorization/google"><img href="/oauth2/authorization/google" style="height: 30px; width: 30px"
+                                                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK5q0FP74VV9wbfwP378_7kj7iDomHuKrxkXsxDdUT28V9dlVMNUe-EMzaLwaFhneeuZI&usqp=CAU"
+                                                      alt="구글"></a>
+          <a href="/oauth2/authorization/naver"><img style="height: 30px; width: 30px"
+                                                     src="https://blog.kakaocdn.net/dn/czMTX6/btqNbvGUwIu/xxqSeZd4eRMvTHqbfIZUd0/img.png"
+                                                     alt="네이버"></a>
+
         </div>
         <div class="col-md-4">
         </div>
@@ -96,8 +106,18 @@
         console.log("로그인 실패" + res.resultCode)
         localStorage.clear()
       }
-    });
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
 
+      if (errMsg === '사용자가 권한이 없습니다.' || errMsg === 'Not founded'){
+        alert('아이디 혹은 비밀번호를 잘못 입력하셨습니다.');
+        let userName = document.getElementById('userName');
+        let password = document.getElementById('password');
+        userName.value = null;
+        password.value = null;
+        localStorage.clear()
+      }
+    });
 
     const accessToken = window.localStorage.getItem("accessToken");
     if (accessToken != null) {
@@ -153,7 +173,6 @@
   //   });
   // }
 
-
   // axios.interceptors.response.use(
   //     function (response) {
   //       console.log("get response", response);
@@ -199,8 +218,6 @@
   //       return Promise.reject(error);
   //     }
   // );
-
-
 
 
 </script>

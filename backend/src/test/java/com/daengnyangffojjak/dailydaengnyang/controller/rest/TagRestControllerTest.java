@@ -162,20 +162,22 @@ class TagRestControllerTest extends ControllerTest {
 		@DisplayName("성공")
 		void success() throws Exception {
 			given(tagService.getList(1L, "user")).willReturn(
-					new TagListResponse(List.of("일상", "목욕"))
-			);
+					List.of(
+							new TagListResponse(1L, "일상"),
+							new TagListResponse(2L, "목욕")));
 
 			mockMvc.perform(
 							get("/api/v1/groups/{groupId}/tags", 1L))
 					.andExpect(status().isOk())
 					.andExpect(jsonPath("$.resultCode").value("SUCCESS"))
-					.andExpect(jsonPath("$.result.tags").exists())
+					.andExpect(jsonPath("$.result").exists())
 					.andDo(restDocs.document(
 							pathParameters(
 									parameterWithName("groupId").description("그룹 번호")
 							),
 							responseFields(fieldWithPath("resultCode").description("결과코드"),
-									fieldWithPath("result.tags").description("태그 리스트"))));
+									fieldWithPath("result[].id").description("태그 등록변호"),
+									fieldWithPath("result[].name").description("태그 리스트"))));
 			verify(tagService).getList(1L, "user");
 
 		}

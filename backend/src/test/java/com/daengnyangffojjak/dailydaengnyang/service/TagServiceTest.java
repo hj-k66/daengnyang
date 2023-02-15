@@ -136,10 +136,10 @@ class TagServiceTest {
 			given(validator.getGroupById(1L)).willReturn(group);
 			given(validator.getUserGroupListByUsername(group, "user")).willReturn(new ArrayList<>());
 			given(tagRepository.findAllByGroupId(group.getId())).willReturn(tagList);
-			TagListResponse response = assertDoesNotThrow(
+			List<TagListResponse> response = assertDoesNotThrow(
 					() -> tagService.getList(1L, "user"));
-			assertEquals(2, response.getTags().size());
-			assertEquals("태그이름", response.getTags().get(0));
+			assertEquals(2, response.size());
+			assertEquals("태그이름", response.get(0).getName());
 		}
 	}
 }

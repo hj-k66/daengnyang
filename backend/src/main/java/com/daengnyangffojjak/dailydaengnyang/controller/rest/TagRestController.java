@@ -8,6 +8,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.tag.TagWorkResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.TagService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,10 +41,10 @@ public class TagRestController {
 	}
 
 	@GetMapping(value = "/groups/{groupId}/tags")
-	public Response<TagListResponse> getTagList(
+	public Response<List<TagListResponse>> getTagList(
 			@AuthenticationPrincipal UserDetails user, @PathVariable Long groupId) {
-		TagListResponse tagListResponse = tagService.getList(groupId, user.getUsername());
-		return Response.success(tagListResponse);
+		List<TagListResponse> tagListResponses = tagService.getList(groupId, user.getUsername());
+		return Response.success(tagListResponses);
 	}
 
 	@PutMapping(value = "/groups/{groupId}/tags/{tagId}")
