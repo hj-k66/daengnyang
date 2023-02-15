@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>DAENG NYANG</title>
+
+  <!-- Bootstrap 5.2.3 Version -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+        crossorigin="anonymous">
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+
+  <!-- JS -->
+  <script type="text/javascript" th:src="@{/js/login.js}"></script>
+
+  <!-- CSS -->
+  <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+  <!-- JQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+</head>
+
+<body>
+<div th:replace="~{fragments/header :: header}"/>
+
+<!--header----------------------------->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-4">
+      <h1 id="group-name"></h1>
+      <div class="p-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal"> 그룹원 초대 </button>
+      </div>
+      <div class="p-2">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteMemberModal"> 그룹원 내보내기 </button>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <section id="group-list">
+      </section>
+      <br>
+      <div class="p-2">
+        <button type="button" class="btn btn-outline-dark btn-small" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="get_group_info()">수정</button>
+      </div>
+      <div class="p-2">
+        <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#leaveModal">
+          탈퇴
+        </button>
+      </div>
+
+    </div>
+    <div class="col-md-4">
+    </div>
+  </div>
+</div>
+
+
+<!-- 수정 모달 -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" onclick="get_group_info()"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form role="form">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">그룹 관리</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody>
+          <tr>
+            <th scope="row">닉네임</th>
+            <td>
+              <input id="roleInGroup" name="roleInGroup" type="text" class="form-control"/>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+
+        <div class="p-2 flex-grow-1"></div>
+        <div class="p-2">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#modifyModal" onclick="roleInGroup_modify()">수정</button>
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 탈퇴 모달 -->
+<div class="modal fade" id="leaveModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-footer">
+
+
+          <div class="card card-body" style="flex-direction: row;">
+            <div>정말 탈퇴하시겠습니까?</div>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal" onclick="leave_group()">탈퇴</button>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- 그룹원 초대 모달 -->
+<div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form role="form">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="inviteModalLabel">그룹 관리</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-4">
+              <div class="form-group">
+                <label th:for="email">
+                  이메일
+                </label>
+                <input type="email" id="email">
+              </div>
+              <div class="form-group">
+                <label th:for="inviteRoleInGroup">
+                  닉네임
+                </label>
+                <input type="text" id="inviteRoleInGroup">
+              </div>
+        </div>
+        <div class="modal-footer">
+
+          <div class="p-2 flex-grow-1"></div>
+          <div class="p-2">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modifyModal" onclick="invite_user()">초대</button>
+          </div>
+        </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 그룹원 내보내기 모달 -->
+<div class="modal fade" id="deleteMemberModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" onclick="delete_member_select()">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form role="form">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="deleteMemberModalLabel">그룹 관리</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-4">
+          </div>
+            <div class="form-group">
+              <label th:for="deleteMember">
+                닉네임
+              </label>
+              <select id="deleteMemberSelect">
+              </select>
+            </div>
+          </div>
+      <div class="modal-footer">
+
+
+        <div class="card card-body" style="flex-direction: row;">
+          <div>그룹원을 내보내시겠습니까?</div>
+          <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal" onclick="delete_member()">확인</button>
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!--footer---------------------------->
+
+<footer th:replace="~{fragments/footer :: footerFragment}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script th:inline="javascript">
+  const groupId = sessionStorage.getItem('groupId');
+  let groupName;
+  let roleInGroup;
+
+  $(document).ready(function () {
+    get_group_list();
+  });
+
+  axios.defaults.withCredentials = true;
+
+  console.log("그룹아이디 " + groupId);
+  <!-- 그룹 멤버 가져오기 -->
+  async function get_group_list() {
+    await axios.get(`/api/v1/groups/${groupId}/users`, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+
+        let users = res.data.result.users;
+        let groupName = users[0]['groupName'];
+        $("#group-name").html(groupName);
+
+        for (let i = 0; i < users.length; i++) {
+          let name = users[i]['userName'];
+          let roleInGroup = users[i]['roleInGroup'];
+          let userId = users[i]['id'];
+
+          let temp_html = `
+                <div class="card">
+
+                  <div class="info">
+                    <h3 class="name card-title">${roleInGroup}</h3>
+                  </div>
+
+                </div>
+          `
+          $('#group-list').append(temp_html);
+        }
+      } else {
+        console.log("실패 " + res.resultCode)
+      }
+    });
+  }
+
+
+  <!-- 모달 내 그룹 닉네임 -->
+  async function get_group_info() {
+    await axios.get("/api/v1/groups/" + groupId + "/users" , {}, {
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let users = res.data.result.users;
+        groupName = users[0].groupName;
+        // roleInGroup = users[0].roleInGroup
+        // userName = users[0].userName;
+        //
+        // $('input[name=roleInGroup]').attr('value', roleInGroup)
+
+        $('#groupName').text(groupName);
+        $('#exampleModalLabel').text(groupName);
+
+      } else {
+        console.log("실패 " + res.resultCode)
+      }
+    });
+  }
+
+
+  <!-- 그룹 내 닉네임 변경 -->
+  async function roleInGroup_modify() {
+    let roleInGroup = $("#roleInGroup").val();
+    let name = $("#group-name").val();
+
+    await axios.put("/api/v1/groups/" + groupId + "/users",
+        {
+          "roleInGroup": roleInGroup
+        }
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        document.location.href = "/view/groups/"+groupId+"/users";
+      } else {
+        console.log("실패 " + res.resultCode)
+      }
+    });
+  }
+
+  <!-- 그룹원 초대 -->
+  async function invite_user() {
+    let roleInGroup = $("#inviteRoleInGroup").val();
+    let email = $("#email").val();
+
+    await axios.post("/api/v1/groups/" + groupId + "/invite",
+        {
+          "roleInGroup": roleInGroup,
+          "email": email
+        }
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result)
+        document.location.href = "/view/groups/" + groupId + "/users";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+
+      if (errMsg === '가입되지 않은 이메일입니다.') {
+        alert('가입되지 않은 이메일입니다.');
+      }
+      location.reload();
+    });
+  }
+
+
+
+
+  <!-- 그룹 탈퇴 -->
+  async function leave_group() {
+    await axios.delete("/api/v1/groups/" + groupId + "/users", {}
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/groups";
+      } else {
+        console.log("실패 " + res.data.resultCode)
+      }
+    }).catch(err => {
+      if (err.response.data.result.message === '잘못된 요청입니다. 그룹장은 그룹을 나갈 수 없습니다.'){
+        alert('그룹장은 그룹을 나갈 수 없습니다');
+      }
+    })
+    ;
+  }
+
+  <!-- 그룹원 내보내기 -->
+  $(document).ready(async function delete_member_select() {
+
+    await axios.get(`/api/v1/groups/${groupId}/users`, {}, {
+      headers: {
+        "Content-Type": `application/json`
+      },
+    }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        let users = res.data.result.users;
+        let deleteMemberSelect = document.querySelector("#deleteMemberSelect");
+
+        for (let i = 0; i < users.length; i++) {
+          let name = users[i]['userName'];
+          let roleInGroup = users[i]['roleInGroup'];
+          let userId = users[i]['id'];
+
+          let select_html = `
+                <option value="${userId}">${roleInGroup}</option>
+          `
+          $("#deleteMemberSelect").append(select_html);
+
+        }
+      } else {
+        console.log("실패 " + res.resultCode)
+      }
+    });
+  })
+
+
+  async function delete_member() {
+    let userId = $("#deleteMemberSelect option:selected").val();
+    console.log("userId: " + userId);
+
+    await axios.delete("/api/v1/groups/" + groupId + "/users/" + userId, {}
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        document.location.href = "/view/groups/"+groupId+"/users";
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+
+      if (errMsg === '사용자가 권한이 없습니다.') {
+        alert('내보내기는 그룹장만 가능합니다.');
+      }
+    });
+  }
+
+
+
+
+  axios.interceptors.request.use(function (config) {
+    console.log("인터셉터 시작")
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = 'Bearer' + ' ' + accessToken
+    } else {
+      console.log("headers" + config.headers);
+    }
+    return config;
+  })
+
+</script>
+
+
+</body>
+</html>

@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationDeleteResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.notification.NotificationReadResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Notification;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.NotificationUser;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
@@ -15,7 +16,6 @@ import com.daengnyangffojjak.dailydaengnyang.repository.NotificationRepository;
 import com.daengnyangffojjak.dailydaengnyang.repository.NotificationUserRepository;
 import com.daengnyangffojjak.dailydaengnyang.utils.Validator;
 
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,6 +42,27 @@ public class NotificationServiceTest {
 	@DisplayName("알람 삭제")
 	class DeleteNotification {
 
+		NotificationUser notificationUser = new NotificationUser(1L,notification,user);
+
+		@Test
+		@DisplayName("성공")
+		void success() {
+
+			given(validator.getUserByUserName("user")).willReturn(user);
+			given(validator.getNotificationById(1L)).willReturn(notification);
+			given(validator.validateNotificationUser(1L,user.getId())).willReturn(notificationUser);
+
+			NotificationDeleteResponse response = assertDoesNotThrow(
+					() -> notificationService.delete(1L, "user"));
+			assertEquals(1L, response.getId());
+			assertEquals("알람이 삭제되었습니다.", response.getMessage());
+		}
+	}
+
+	@Nested
+	@DisplayName("알람 읽기")
+	class ReadNotification {
+
 
 		@Test
 		@DisplayName("성공")
@@ -49,13 +70,13 @@ public class NotificationServiceTest {
 			NotificationUser notificationUser = new NotificationUser(1L,notification,user);
 
 			given(validator.getUserByUserName("user")).willReturn(user);
-			given(notificationRepository.findById(1L)).willReturn(Optional.of(notification));
-			given(notificationUserRepository.findByNotificationIdAndUserId(1L,user.getId())).willReturn(Optional.of(notificationUser));
+			given(validator.getNotificationById(1L)).willReturn(notification);
+			given(validator.validateNotificationUser(1L,user.getId())).willReturn(notificationUser);
 
-			NotificationDeleteResponse response = assertDoesNotThrow(
-					() -> notificationService.delete(1L, "user"));
+			NotificationReadResponse response = assertDoesNotThrow(
+					() -> notificationService.checkTrue(1L, "user"));
 			assertEquals(1L, response.getId());
-			assertEquals("알람이 삭제되었습니다.", response.getMessage());
+			assertEquals("알람을 읽었습니다.", response.getMessage());
 		}
 	}
 
