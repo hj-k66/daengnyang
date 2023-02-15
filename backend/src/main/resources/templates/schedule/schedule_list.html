@@ -70,6 +70,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="title">제목</h1>
+        <input type="hidden" name="scheduleId">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -153,7 +154,7 @@
     <div class="modal-content">
       <form role="form">
         <div class="modal-header">
-          <input id="title-inp" type="text" class="form-control"/>
+          <input name="title-inp" type="text" class="form-control" id="title-inp"/>
           <button type="button" class="btn-close" data-bs-dismiss="modal"
                   aria-label="Close"></button>
         </div>
@@ -161,51 +162,25 @@
           <table class="table">
             <tbody>
             <div id="tag-box">
-              <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
-                      data-bs-target="#exampleModal">
-                +
-              </button>
-              <input type="radio" class="btn-check mx-1" name="tag" id="tagName1" value="건강"
-                     autocomplete="off">
-              <label class="btn btn-outline-primary" for="tagName1">건강</label>
-              <input type="radio" class="btn-check mx-1" name="tag" id="tagName2" value="산책"
-                     autocomplete="off">
-              <label class="btn btn-outline-primary" for="tagName2">산책</label>
             </div>
             <tr>
               <th scope="row">내용</th>
               <td>
-                <input id="body-inp" type="text" class="form-control"/>
+                <input id="body-inp" name="body-inp" type="text" class="form-control"/>
               </td>
             </tr>
             <div id="assigneeId-box">
-              <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal"
-                      data-bs-target="#exampleModal">
-                +
-              </button>
-              <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId1" value="엄마"
-                     autocomplete="off">
-              <label class="btn btn-outline-primary" for="assigneeId1">엄마</label>
-              <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId2" value="아빠"
-                     autocomplete="off">
-              <label class="btn btn-outline-primary" for="assigneeId2">아빠</label>
             </div>
-            <!--            <tr>-->
-            <!--              <th scope="row">담당자</th>-->
-            <!--              <td>-->
-            <!--                <input id="assigneeId-inp" type="text" class="form-control"/>-->
-            <!--              </td>-->
-            <!--            </tr>-->
             <tr>
               <th scope="row">장소</th>
               <td>
-                <input id="place-inp" type="text" class="form-control"/>
+                <input id="place-inp" name="place-inp" type="text" class="form-control"/>
               </td>
             </tr>
             <tr>
               <th scope="row">예정일</th>
               <td>
-                <input id="dueDate-inp" type="text" class="form-control"/>
+                <input id="dueDate-inp" name="dueDate-inp" type="text" class="form-control"/>
               </td>
             </tr>
             <tr>
@@ -341,12 +316,10 @@
   }
 
   async function get_schedule_info(scheduleId) {
-    console.log(scheduleId);
     await axios.get("/api/v1/pets/" + petId + "/schedules/" + scheduleId, {}, {
 
       headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let data = res.data.result;
         recordData = data;
@@ -360,9 +333,9 @@
         rct_roleInGroup = res.data.result.roleInGroup;
         rct_dueDate = res.data.result.dueDate;
         rct_place = res.data.result.place;
-        rct_isCompleted = res.data.result.isCompleted;
+        rct_isCompleted = res.data.result.completed;
         // let isCompletedText;
-        if (rct_isCompleted) {
+        if (rct_isCompleted == true) {
           isCompletedText = "완료";
         } else {
           isCompletedText = "미완료";
@@ -382,6 +355,7 @@
         $('#isCompleted').text(isCompletedText);
         $('#createdAt').text(rct_createdAt);
         $('#lastModifiedAt').text(rct_lastModifiedAt);
+        $('input[name=scheduleId]').attr('value',rct_id);
 
       } else {
         console.log("실패임" + res.resultCode)
@@ -389,47 +363,73 @@
     });
   }
 
-  function show_schedule_modify() {
+  async function show_schedule_modify() {
     get_group_tag();
     get_user_list();
+    let scheduleId = $('input[name=scheduleId]').val();
+    await axios.get("/api/v1/pets/" + petId + "/schedules/" + scheduleId, {}, {
 
-    document.querySelector('#title-inp').value = rct_title;
-    document.querySelector('#body-inp').value = rct_body;
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        recordData = data;
 
-    document.querySelector("table td input[name=assigneeId][value="+rct_roleInGroup+"]").checked = true;
-    document.querySelector('#place-inp').value = rct_place;
-    console.log(rct_place);
-    document.querySelector('#dueDate-inp').value = rct_dueDate;
-    console.log(rct_dueDate);
-    document.querySelector('#isCompleted-inp').value = isCompletedText;
-    console.log(isCompletedText);
-    document.querySelector("form input[name=tag][value=tag-"+recordData.tag+"]").checked = true;
+        rct_id = scheduleId;
+        rct_tag = res.data.result.tag;
+        rct_userName = res.data.result.userName;
+        rct_title = res.data.result.title;
+        rct_body = res.data.result.body;
+        rct_roleInGroup = res.data.result.roleInGroup;
+        rct_dueDate = res.data.result.dueDate;
+        rct_place = res.data.result.place;
+        rct_isCompleted = res.data.result.completed;
+        // let isCompletedText;
+        console.log("라디오 버튼" + rct_isCompleted)
+        if (rct_isCompleted == false) {
+          $('input:radio[name=isCompleted-inp]:input[value=' + false + ']').attr("checked", true);
+
+        } else {
+          $('input:radio[name=isCompleted-inp]:input[value=' + true + ']').attr("checked", true);
+        }
+        $('input[name=title-inp]').attr('value',rct_title);
+        $('input[name=body-inp]').attr('value',rct_body);
+        $('input[name=place-inp]').attr('value',rct_place);
+        $('input[name=dueDate-inp]').attr('value',rct_dueDate);
 
 
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
   }
 
   async function modify_schedule_info() {
 
     let title = $("#title-inp").val();
-    if (title == null) {
+    if (title == '') {
       alert("제목을 입력해주세요")
       return;
     }
     let body = $("#body-inp").val();
-    // let tagId = $("input:radio[name=tagId]:checked").val();
-    let tagId = document.querySelector('input[name="tag"]:checked').value;
-    // let tagId = $("input:radio[name=tag]:checked").val();
-    if (tagId == null) {
-      alert("태그를 선택해 주십시오. 없다면 태그를 만들어 보세요 👍")
+    let tagId = $('input[name="tag"]:checked').val();
+
+    if (tagId === undefined) {
+      alert("태그를 선택해 주십시오.")
       return;
     }
-    // let assigneeId = $("input:radio[name=assigneeId]:checked").val();
-    let assigneeId = document.querySelector('input[name="assigneeId"]:checked').value;
-    // let assigneeId = $("input:radio[name=assigneeId]:checked").val();
-    console.log(name)
+    let assigneeId = $('input[name="assigneeId"]:checked').val();
+    if (assigneeId === undefined) {
+      alert("책임자를 선택해 주십시오.")
+      return;
+    }
     let place = $("#place-inp").val();
     let dueDate = $("#dueDate-inp").val();//
-    let completed = $("input:radio[name=completed-inp]:checked").val();
+    if (dueDate == '') {
+      alert("일정 예정일을 선택해 주십시오.")
+      return;
+    }
+    let completed = $("input:radio[name=isCompleted-inp]:checked").val();
     console.log(name)
 
     await axios.put("/api/v1/pets/" + petId + "/schedules/" + rct_id,
@@ -455,6 +455,9 @@
       } else {
         console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let error = err.response.data.result;
+      console.log(error.errorCode + " : " + error.message)
     });
   }
 
@@ -485,7 +488,7 @@
         console.log(res.data.result)
         $('#tag-box').empty();
         let plus_html = `
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
+              <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
         `;
         $('#tag-box').append(plus_html);
 
@@ -504,32 +507,46 @@
         console.log("실패임" + res.resultCode)
       }
     });
+
   }
+
+  function moveToTagPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/tags";
+    }
+  }
+
+
   async function get_user_list() {
     const groupId = sessionStorage.getItem("groupId");
-    await axios.get("/api/v1/groups/"+ groupId +"/users", {}, {
-      headers: {
-        "Content-Type": `application/json`
-      },
+    await axios.get("/api/v1/groups/"+groupId+"/users", {}, {
+      headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        let users = res.data.result.users;
+        console.log("책임자 아이디 " + res.data.result)
 
-        for (let i = 0; i < users.length; i++) {
-          let id = users[i]['id'];
-          let roleInGroup = users[i]['roleInGroup'];
+        const assigneeId = res.data.result.users;
+        for (let i = 0; i < assigneeId.length; i++) {
+          let id = assigneeId[i]['id'];
+          let roleInGroup = assigneeId[i]['roleInGroup'];
+
           let temp_html = `
-             <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId-${roleInGroup}" value="${id}"
-                     autocomplete="off">
-             <label class="btn btn-outline-primary" for="assigneeId-${roleInGroup}">${roleInGroup}</label>          `
+            <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId-${roleInGroup}" value="${id}" autocomplete="off">
+            <label class="btn btn-outline-primary" for="assigneeId-${roleInGroup}">${roleInGroup}</label>
+          `
           $('#assigneeId-box').append(temp_html);
         }
-      } else {
-        console.log("실패 " + res.resultCode)
       }
-    });
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    })
+    ;
   }
+
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")

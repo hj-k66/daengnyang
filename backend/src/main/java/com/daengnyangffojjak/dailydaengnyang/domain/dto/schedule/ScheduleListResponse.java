@@ -2,6 +2,7 @@ package com.daengnyangffojjak.dailydaengnyang.domain.dto.schedule;
 
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import java.util.Map;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -23,8 +24,7 @@ public class ScheduleListResponse {
 	private String roleInGroup;
 	private String place;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-	private LocalDateTime dueDate;
+	private LocalDate dueDate;
 
 	private boolean isCompleted;
 

@@ -5,8 +5,10 @@ import com.daengnyangffojjak.dailydaengnyang.domain.entity.Schedule;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Tag;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDate;
 import lombok.*;
 import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @AllArgsConstructor
@@ -20,8 +22,7 @@ public class ScheduleCreateRequest {
 	private String body;
 	private Long assigneeId;
 	private String place;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-	private LocalDateTime dueDate;
+	private LocalDate dueDate;
 
 	public Schedule toEntity(Pet pet, User user, Tag tag) {
 		return Schedule.builder()

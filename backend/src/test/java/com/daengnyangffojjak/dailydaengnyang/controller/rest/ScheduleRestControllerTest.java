@@ -6,6 +6,7 @@ import com.daengnyangffojjak.dailydaengnyang.exception.ErrorCode;
 import com.daengnyangffojjak.dailydaengnyang.exception.ScheduleException;
 import com.daengnyangffojjak.dailydaengnyang.service.ScheduleService;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +44,8 @@ class ScheduleRestControllerTest extends ControllerTest {
 	private JavaTimeModule javaTimeModule = new JavaTimeModule();
 
 	//일정 등록시간 미리 지정해둠 -> 테스트할 때 현재시간으로 되어 시간 안맞음 해결
-	LocalDateTime dateTime = LocalDateTime.of(2023, 1, 25, 10, 26);
+	LocalDate dateTime = LocalDate.of(2023, 1, 25);
+	LocalDateTime localDateTime = LocalDateTime.of(2023, 1, 25, 10,26);
 
 	//일정등록
 	ScheduleCreateRequest scheduleCreateRequest = new ScheduleCreateRequest(1L, "병원",
@@ -257,7 +259,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 		void modify_success() throws Exception {
 
 			ScheduleModifyResponse scheduleModifyResponse = new ScheduleModifyResponse(1L, "수정 병원",
-					dateTime);
+					localDateTime);
 
 			given(scheduleService.modify(1L, 1L, scheduleModifyRequest, "user"))
 					.willReturn(scheduleModifyResponse);
@@ -496,7 +498,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 			//일정상세조회(단건)
 			ScheduleResponse scheduleResponse = new ScheduleResponse(1L, "일상", 1L, "user", 1L,
 					"pet",
-					"병원", "초음파 재검", 1L, "엄마", "멋사동물병원", dateTime, false, dateTime, dateTime);
+					"병원", "초음파 재검", 1L, "엄마", "멋사동물병원", dateTime, false, localDateTime, localDateTime);
 
 			given(scheduleService.get(1L, 1L, "user"))
 					.willReturn(scheduleResponse);
@@ -516,7 +518,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$.result.assigneeId").value(1L))
 					.andExpect(jsonPath("$.result.roleInGroup").value("엄마"))
 					.andExpect(jsonPath("$.result.place").value("멋사동물병원"))
-					.andExpect(jsonPath("$.result.dueDate").value("2023-01-25 10:26:00"))
+					.andExpect(jsonPath("$.result.dueDate").value("2023-01-25"))
 					.andExpect(jsonPath("$.result.completed").value(false))
 					.andExpect(jsonPath("$.result.createdAt").value("2023-01-25 10:26:00"))
 					.andExpect(jsonPath("$.result.lastModifiedAt").value("2023-01-25 10:26:00"))
@@ -615,7 +617,7 @@ class ScheduleRestControllerTest extends ControllerTest {
 					.andExpect(jsonPath("$['result']['content'][0]['roleInGroup']").value("엄마"))
 					.andExpect(jsonPath("$['result']['content'][0]['place']").value("멋사 동물병원"))
 					.andExpect(jsonPath("$['result']['content'][0]['dueDate']").value(
-							"2023-01-25 10:26:00"))
+							"2023-01-25"))
 					.andExpect(jsonPath("$['result']['content'][0]['completed']").value(false))
 					.andDo(
 							restDocs.document(

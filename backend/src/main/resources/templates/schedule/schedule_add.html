@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/header :: head}">
+<head>
   <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
   <!-- Required meta tags -->
   <meta charset="utf-8"/>
@@ -12,6 +12,7 @@
         rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
         crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!-- CSS -->
   <link th:href="@{/css/styles.css}" rel="stylesheet"/>
@@ -43,15 +44,17 @@
   </div>
   <div class="col-md-6 mt-5">
     <form role="form">
-      <div class="p-2">
+      <div id="tag-box">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                 data-bs-target="#exampleModal">
           +
         </button>
-      </div>
-      <div id="tag-box">
         <input type="radio" class="btn-check mx-1" name="tag" id="tagName1" value="건강"
                autocomplete="off">
+        <label class="btn btn-outline-primary" for="tagName1">건강</label>
+        <input type="radio" class="btn-check mx-1" name="tag" id="tagName2" value="산책"
+               autocomplete="off">
+        <label class="btn btn-outline-primary" for="tagName2">산책</label>
       </div>
 
       <div class="col-md-12 my-3">
@@ -65,17 +68,9 @@
                     placeholder="내용을 입력해주세요."></textarea>
         </div>
       </div>
+      <div> 책임자
       <div id="assigneeId-box">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                data-bs-target="#exampleModal">
-          +
-        </button>
-        <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId1" value="아빠"
-               autocomplete="off">
-        <label class="btn btn-outline-primary" for="assigneeId1">아빠</label>
-        <input type="radio" class="btn-check mx-1" name="assigneeId" id="assigneeId2" value="엄마"
-               autocomplete="off">
-        <label class="btn btn-outline-primary" for="assigneeId2">엄마</label>
+      </div>
       </div>
       <div class="form-group mb-3 mt-3">
         <label for="place-add" class="form-label">장소</label>
@@ -84,7 +79,7 @@
       <label for="dueDate" >
         예정일
       </label>
-      <input type="text"  id="dueDate" class="form-control" placeholder="yyyy-MM-dd HH:mm:ss">
+      <input type="text"  id="dueDate" class="form-control" placeholder="yyyy-MM-dd">
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
         <button class="btn btn-primary" type="button" onclick="create_records()">작성하기</button>
       </div>
@@ -164,12 +159,12 @@
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
+<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"-->
+<!--        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"-->
+<!--        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"-->
+<!--        crossorigin="anonymous"></script>-->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
@@ -184,22 +179,29 @@
 
   async function create_records() {
     let title = $("#title-add").val();
-    if (title == null) {
+    if (title == '') {
       alert("제목을 입력해주세요")
       return;
     }
     let body = $("#body-add").val();
-    let tagId = document.querySelector('input[name="tag"]:checked').value;
-    // let tagId = $("input:radio[name=tag]:checked").val();
-    // if (tagId == null) {
-    //   alert("태그를 선택해 주십시오. 없다면 태그를 만들어 보세요 👍")
-    //   return;
-    // }
-    let assigneeId = document.querySelector('input[name="assigneeId"]:checked').value;
-    // let assigneeId = $("input:radio[name=assigneeId]:checked").val();
+    let tagId = $('input[name="tag"]:checked').val();
+
+    if (tagId === undefined) {
+      alert("태그를 선택해 주십시오. 없다면 태그를 만들어 보세요 👍")
+      return;
+    }
+    let assigneeId = $('input[name="assigneeId"]:checked').val();
+    if (assigneeId === undefined) {
+      alert("책임자를 선택해 주십시오.")
+      return;
+    }
     console.log(name)
     let place = $("#place-add").val();
-    let dueDate = $("#dueDate-add").val();
+    let dueDate = $("#dueDate").val();
+    if (dueDate == '') {
+      alert("일정 예정일을 선택해 주십시오.")
+      return;
+    }
 
     await axios.post("/api/v1/pets/" + petId + "/schedules",
         {
@@ -221,7 +223,7 @@
         console.log(res.data.result);
         recordId = res.data.result.id;
         alert("일정이 등록되었습니다.");
-        // document.location.href = "/view/pets/" + petId + "/records/"+recordId;
+        document.location.href = "/view/pets/" + petId + "/schedule";
       } else {
         console.log("실패임" + res.resultCode)
       }
@@ -235,6 +237,11 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result)
+        $('#tag-box').empty();
+        let plus_html = `
+                <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
+        `;
+        $('#tag-box').append(plus_html);
 
         const tags = res.data.result;
         for (let i = 0; i < tags.length; i++) {
@@ -247,23 +254,29 @@
           `
           $('#tag-box').append(temp_html);
         }
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
+
+  function moveToTagPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/tags";
+    }
+  }
+
   async function get_group_assigneeId() {
     const groupId = sessionStorage.getItem("groupId");
     await axios.get("/api/v1/groups/"+groupId+"/users", {}, {
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
-        $('#assigneeId-box').empty();
-        let plus_html = `
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
-        `;
-        $('#assigneeId-box').append(plus_html);
+        console.log("책임자 아이디 " + res.data.result)
 
         const assigneeId = res.data.result.users;
         for (let i = 0; i < assigneeId.length; i++) {
@@ -276,10 +289,13 @@
           `
           $('#assigneeId-box').append(temp_html);
         }
-      } else {
-        console.log("실패임" + res.resultCode)
       }
-    });
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    })
+    ;
   }
 
   axios.interceptors.request.use(function (config) {
@@ -296,4 +312,3 @@
 </script>
 </body>
 </html>
-
