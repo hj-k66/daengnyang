@@ -6,6 +6,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.entity.Group;
@@ -165,6 +166,15 @@ public class GroupService {
 		userGroup.modifyRole(request.getRoleInGroup());
 		UserGroup saved = userGroupRepository.saveAndFlush(userGroup);
 		return GroupUserResponse.from(saved);
+
+	}
+	@Transactional(readOnly = true)
+	public GroupResponse getGroupInfo(String username, Long groupId) {
+		Group group = validator.getGroupById(groupId);
+		List<UserGroup> userGroups = validator.getUserGroupListByUsername(group, username);
+		return GroupResponse.from(group);
+
+
 
 	}
 }
