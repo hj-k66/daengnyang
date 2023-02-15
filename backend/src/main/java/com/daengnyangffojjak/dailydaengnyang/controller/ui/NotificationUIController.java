@@ -16,7 +16,7 @@ public class NotificationUIController {
 
 
 	@GetMapping
-	public String getNotificationList(@RequestParam Long lastNotificationId, @RequestParam int size, Model model) {
+	public String getNotificationList(@RequestParam(required = false) Long lastNotificationId, @RequestParam(required = false) Integer size, Model model) {
 		model.addAttribute("lastNotificationId", lastNotificationId);
 		model.addAttribute("size", size);
 		return "notification/notification_list";

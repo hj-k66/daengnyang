@@ -1,5 +1,7 @@
 package com.daengnyangffojjak.dailydaengnyang.controller.ui;
 
+import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserJoinRequest;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -14,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public class CalendarUiController {
 
-	@GetMapping("/calendar")
-	public String calendar(Model model) {
-
+	@GetMapping("/groups/{groupId}/calendar")
+	public String calendar(Model model, @PathVariable Long groupId) {
+		model.addAttribute("groupId", groupId);
 		log.info("캘린더: ", model);
 		return "calendar/calendar";
 	}

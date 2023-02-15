@@ -8,7 +8,6 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupMakeResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupPetListResponse;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserListResponse;
-import com.daengnyangffojjak.dailydaengnyang.repository.GroupRepository;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.group.GroupUserResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.GroupService;
 import java.net.URI;
@@ -32,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupRestController {
 
 	private final GroupService groupService;
-	private final GroupRepository groupRepository;
 
 	@PostMapping
 	public ResponseEntity<Response<GroupMakeResponse>> create(

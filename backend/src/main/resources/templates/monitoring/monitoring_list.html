@@ -61,6 +61,10 @@
               } else {
                 console.log("실패임" + res.resultCode)
               }
+            }).catch(err => {
+              let res = err.response.data.result;
+              let message = res.errorCode + " : " + res.message;
+              alert(message);
             });
           },
           eventClick: function (event, jsEvent, view) {
@@ -888,9 +892,11 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/monitorings";
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -903,9 +909,11 @@
       if (res.data.resultCode == 'SUCCESS') {
         alert(res.data.result.message);
         window.location.reload();
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -913,10 +921,8 @@
     let fromDate = $("#fromDate-inp").val();
     let toDate = $("#toDate-inp").val();
 
-    let url = "http://daengnyang.site/view/pets/" + petId + "/monitorings/report?fromDate="
+    let url = "/view/pets/" + petId + "/monitorings/report?fromDate="
         + fromDate + "&toDate=" + toDate;
-    // let url = "http://localhost:8080/view/pets/" + petId + "/monitorings/report?fromDate="
-    //     + fromDate + "&toDate=" + toDate;
     console.log(url);
     window.open(url, "레포트", "top=10, left=10, width=1500, height=800");
   }

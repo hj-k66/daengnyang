@@ -41,21 +41,6 @@ public class RecordController {
 		return "record/record_add";
 	}
 
-	@PostMapping("/add")
-	public String add(Long petId, Model model) {
-		return "record/record_list";
-	}
-
-	@GetMapping("/modify")
-	public String modify() {
-		return "record/record_modify";
-	}
-
-	@GetMapping("/delete")
-	public String deleteBoard() {
-		return "redirect:/record_list";
-	}
-
 	// 알람 드롭다운
 	@GetMapping("/alarm")
 	public String alarm() {

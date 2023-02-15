@@ -76,9 +76,11 @@
           `
             $('#group-member').append(temp_html);
           }
-        } else {
-          console.log("실패임" + res.resultCode)
         }
+      }).catch(err => {
+        let res = err.response.data.result;
+        let message = res.errorCode + " : " + res.message;
+        alert(message);
       });
     }
 
@@ -100,9 +102,11 @@
           `
             $('#group-member').append(temp_html);
           }
-        } else {
-          console.log("실패 " + res.resultCode)
         }
+      }).catch(err => {
+        let res = err.response.data.result;
+        let message = res.errorCode + " : " + res.message;
+        alert(message);
       });
     }
 

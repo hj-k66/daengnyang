@@ -44,4 +44,8 @@ public class Notification extends BaseEntity{
 				.build();
 	}
 
+	public void changeCheck(){
+		this.checked = true;
+	}
+
 }
