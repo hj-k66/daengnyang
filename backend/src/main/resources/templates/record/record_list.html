@@ -22,8 +22,8 @@
   <div class="col-md-3">
   </div>
   <div class="col-md-6 my-3">
-    <div class="card text-center">
-      <div class="card-body">
+    <div class="card text-center visually-hidden">
+      <div class="card-body" id="writeBox">
         <p class="card-text">오늘은 반려동물과 어떤일이 있었나요? 🐶 🐱</p>
         <a href="#" class="btn btn-primary" th:href="@{/view/add}">글 작성하러가기</a>
       </div>
@@ -76,6 +76,12 @@
   var nowPage = 0;
 
   $(document).ready(function () {
+    if (token == null) {
+      let ob = document.getElementById('writeBox');
+      ob.classList.add('visually-hidden');
+    }
+
+
     get_feed_list();
   });
 
