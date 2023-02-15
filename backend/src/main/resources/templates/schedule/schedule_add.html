@@ -18,16 +18,20 @@
   <link th:href="@{/css/styles.css}" rel="stylesheet"/>
 
   <!-- Datepicker 생일 클릭시 달력 이벤트 -->
-  <link rel="stylesheet" th:href="@{//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css}">
-  <!--  <link rel="stylesheet" th:href="@{/resources/demos/style.css}">-->
-  <script th:src="@{https://code.jquery.com/jquery-3.6.0.js}"></script>
-  <script th:src="@{https://code.jquery.com/ui/1.13.2/jquery-ui.js}"></script>
+  <link rel="stylesheet" href="//mugifly.github.io/jquery-simple-datetimepicker/jquery.simple-dtpicker.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="//mugifly.github.io/jquery-simple-datetimepicker/jquery.simple-dtpicker.js"></script>
   <script>
-
-    $(function () {
-      $("#dueDate").datepicker({dateFormat: 'yy-mm-dd'});
+    $(function(){
+      $('#dueDate').appendDtpicker({
+        'locale':'ko',
+        format: 'yyyy-MM-dd hh:mm:tt',
+      });
     });
   </script>
+
+  <script type="text/javascript" th:src="@{/js/sign.js}"></script>
+
   <title>글 작성</title>
 </head>
 
@@ -79,7 +83,7 @@
       <label for="dueDate" >
         예정일
       </label>
-      <input type="text"  id="dueDate" class="form-control" placeholder="yyyy-MM-dd">
+      <input type="text"  id="dueDate" class="form-control" placeholder="yyyy-MM-dd HH:mm:ss">
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
         <button class="btn btn-primary" type="button" onclick="create_records()">작성하기</button>
       </div>
@@ -197,10 +201,10 @@
     }
     console.log(name)
     let place = $("#place-add").val();
-    let dueDate = $("#dueDate").val();
-    if (dueDate == '') {
+    if ($("#dueDate").val() != '') {
+      var dueDate = `${$("#dueDate").val()}:00`
+    } else {
       alert("일정 예정일을 선택해 주십시오.")
-      return;
     }
 
     await axios.post("/api/v1/pets/" + petId + "/schedules",
