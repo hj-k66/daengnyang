@@ -85,6 +85,7 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:inline="javascript">
   var nowPage = 0;
+  const petId = [[${petId}]];
 
   $(document).ready(function () {
     get_feed_list();
@@ -95,9 +96,10 @@
   async function get_feed_list() {
     var param = '?page=' + nowPage;
 
-    await axios.get("/api/v1/records/feed"+param, {}, {////
+    await axios.get("/api/v1/pets/"+petId+"/records"+param, {}, {////
       headers: {
-        "Content-Type": `application/json`///
+        "Content-Type": `application/json`,
+        Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
       console.log(res)

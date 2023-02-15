@@ -28,6 +28,11 @@ public class RecordController {
 		return "record/record_list";
 	}
 
+	@GetMapping("/pets/{petId}/records")
+	public String petList (@PathVariable Long petId, Model model) {
+		return "record/record_list_pet";
+	}
+
 	@GetMapping("/pets/{petId}/records/{recordId}")
 	public String detail(Model model, @PathVariable Long petId, @PathVariable Long recordId) {
         model.addAttribute("petId", petId);

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ScheduleListResponse {
 
+	private Long id;
 	private String tag;
 	private String title;
 	private String body;
@@ -30,6 +31,7 @@ public class ScheduleListResponse {
 	public static Page<ScheduleListResponse> toResponse(Page<Schedule> schedules, Map<Long, String> getRoleInGroup) {
 		Page<ScheduleListResponse> scheduleListResponses = schedules.map(
 				schedule -> ScheduleListResponse.builder()
+						.id(schedule.getId())
 						.tag(schedule.getTag().getName())
 						.title(schedule.getTitle())
 						.body(schedule.getBody())
