@@ -30,8 +30,7 @@
   <style>
 
     #calendar {
-      margin: 3em 0 0 0;
-      grid-area: 1 / 1 / 2 / 2;
+      margin: 3em auto auto;
     }
 
     .fc-day-grid-event .fc-content {
@@ -150,18 +149,17 @@
 
 <div th:insert="~{fragments/header :: header}"></div>
 <div class="col-md-12 text-center mb-5">
-  <h1>그룹 이름</h1>
 </div>
 <div id="wrap">
   <nav id="sidebar" class="active" style="overflow-y: scroll;">
     <div style="padding: 20px">
-      <h6 class="mb-2">필터</h6>
-      <div class="my-3">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">
-          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>
-        </div>
-      </div>
+<!--      <h6 class="mb-2">필터</h6>-->
+<!--      <div class="my-3">-->
+<!--        <div class="form-check form-switch">-->
+<!--          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">-->
+<!--          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <h6 class="mb-2">선택</h6>
       <div class="my-3">
@@ -189,7 +187,7 @@
         <div class="accordion mb-3">
           <div class="accordion-item">
             <h2 class="accordion-header" id="panelsStayOpen-headingOne2">
-              <button class="accordion-button" type="button">
+              <button class="accordion-button" type="button" onclick="moveToPetPage()">
                 🐣 애기
               </button>
             </h2>
@@ -207,7 +205,7 @@
         <div class="accordion mb-3">
           <div class="accordion-item">
             <h2 class="accordion-header">
-              <button class="accordion-button" type="button">🔖 태그
+              <button class="accordion-button" type="button" onclick="moveToTagPage()">🔖 태그
               </button>
             </h2>
             <div class="accordion-collapse collapse show"
@@ -223,7 +221,7 @@
         <div class="accordion mb-3">
           <div class="accordion-item">
             <h2 class="accordion-header">
-              <button class="accordion-button" type="button">
+              <button class="accordion-button" type="button" onclick="moveToUserPage()">
                 👥 집사
               </button>
             </h2>
@@ -295,7 +293,6 @@
   let recordEventList;
   let scheduleEventList;
   let ALLEVENT;
-  let SELECTED_EVENT;
 
   let contentType;
 
@@ -537,6 +534,29 @@
       let message = res.errorCode + " : " + res.message;
       alert(message);
     });
+  }
+
+  function moveToPetPage() {
+    let agree = confirm("반려동물 관리 페이지로 이동합니다.")
+    if (agree) {
+      document.location.href = "/view/groups/"+groupId+"/pets"
+    }
+  }
+
+  function moveToTagPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/tags";
+    }
+  }
+
+  function moveToUserPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/users";
+    }
   }
 
 
