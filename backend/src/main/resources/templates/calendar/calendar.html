@@ -3,6 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="16x16" href="/image/favicon-16x16.png">
   <title>DAENG NYANG</title>
   <!-- 화면 해상도에 따라 글자 크기 대응(모바일 대응) -->
   <meta name="viewport"
@@ -460,6 +461,7 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let pets = res.data.result.pets;
+        $('#groupPets').empty();
         petList = pets;
         for (let i = 0; i < pets.length; i++) {
           let id = pets[i]['id'];
@@ -487,6 +489,7 @@
       },
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
+        $('#groupUsers').empty();
         let users = res.data.result.users;
 
         for (let i = 0; i < users.length; i++) {
@@ -512,6 +515,8 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         const tags = res.data.result;
+        $('#groupTags').empty();
+
         tagList = tags;
         for (let i = 0; i < tags.length; i++) {
           let id = tags[i]['id'];
@@ -549,7 +554,7 @@
   function moveToUserPage() {
     const groupId = sessionStorage.getItem("groupId");
     console.log(groupId)
-    if (confirm("태그 관리 페이지로 이동합니다.")) {
+    if (confirm("집사 관리 페이지로 이동합니다.")) {
       document.location.href = "/view/groups/"+groupId+"/users";
     }
   }
