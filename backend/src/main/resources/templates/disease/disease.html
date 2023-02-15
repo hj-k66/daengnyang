@@ -60,29 +60,15 @@
 
   <style>
     #sidebar {
-      width: 320px;
-      position: fixed;
-      top: 56px;
-      left: -240px;
-      height: calc(100% - 56px);
-      z-index: 999;
-      background: #333;
-      color: #fff;
-      transition: all 0.3s;
+      width: 40%;
+      margin: auto;
+      height: 100%;
+      background: #fff;
+      color: #333;
     }
 
     #sidebar.active {
       left: 0;
-    }
-
-    #contents-wrapper {
-      width: calc(100% - 10px);
-      float: right;
-      transition: all 0.3s;
-    }
-
-    #contents-wrapper.active {
-      width: calc(100% - 250px);
     }
 
     #modifyModal th {
@@ -101,8 +87,8 @@
 
 
 <div id="wrap">
-  <nav id="sidebar" class="active" style="overflow-y: scroll;">
-    <div style="padding: 20px">
+  <nav id="sidebar" class="p-5" style="overflow-y: scroll;">
+    <div style="padding: 10px 25% 0 25%">
       <h6 class="mb-2">필터</h6>
       <div class="my-3">
         <div class="form-check form-switch">
@@ -157,10 +143,6 @@
       </div>
     </div>
   </nav>
-  <section id="contents-wrapper">
-
-
-  </section>
 </div>
 
 <!--modify-->
@@ -219,21 +201,25 @@
       </div>
       <div class="modal-footer">
         <div class="p-2">
-          <button class="btn btn-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          <button class="btn btn-danger" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseExample" aria-expanded="false"
+                  aria-controls="collapseExample">
             삭제
           </button>
         </div>
         <div class="p-2 flex-grow-1"></div>
         <div class="p-2">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-        <button type="button" class="btn btn-primary" onclick="modify_diz_info()">
-          수정 완료
-        </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          <button type="button" class="btn btn-primary" onclick="modify_diz_info()">
+            수정 완료
+          </button>
         </div>
         <div class="collapse" id="collapseExample" style="width: 100%">
           <div class="card card-body" style="flex-direction: row;">
             <div>정말 삭제하시겠습니까?</div>
-            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal" onclick="delete_diz()">삭제</button>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal"
+                    onclick="delete_diz()">삭제
+            </button>
           </div>
         </div>
       </div>
@@ -307,11 +293,6 @@
 </div>
 
 
-<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modifyModal"
-        aria-controls="offcanvasTop">Toggle bottom offcanvas
-</button>
-
-
 <!--footer---------------------------->
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
@@ -327,6 +308,7 @@
 
   $(document).ready(function () {
     get_diz_list();
+    get_schedule_list();
   });
 
   $('#sidebarCollapse').on('click', function () {
@@ -556,7 +538,8 @@
       if (res.data.resultCode == 'SUCCESS') {
         console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/diseases";
-      }}).catch(err => {
+      }
+    }).catch(err => {
       let res = err.response.data.result;
       let message = res.errorCode + " : " + res.message;
       alert(message);
@@ -612,6 +595,8 @@
       alert(message);
     });
   }
+
+  // -------------
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")

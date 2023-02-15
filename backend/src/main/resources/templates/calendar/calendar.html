@@ -28,21 +28,33 @@
   <script type="text/javascript" th:src="@{/js/sign.js}"></script>
   <script th:src="@{/fullcalendar-6.0.3/dist/index.global.js}"></script>
 
+  <style>
+
+    #calendar {
+      margin: 3em auto auto;
+    }
+
+    .fc-day-grid-event .fc-content {
+      white-space: normal;
+    }
+
+    a.fc-event.hidden {
+      display: none;
+    }
+
+    a {
+      text-decoration: none;
+    }
+  </style>
+
   <script>
+
+    let calendaar;
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendar');
-      const calendar = new FullCalendar.Calendar(calendarEl, {
+      calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         initialDate: '2023-02-15',
-        eventAdd: function (obj) { // 이벤트가 추가되면 발생하는 이벤트
-          console.log(obj);
-        },
-        eventChange: function (obj) { // 이벤트가 수정되면 발생하는 이벤트
-          console.log(obj);
-        },
-        eventRemove: function (obj) { // 이벤트가 삭제되면 발생하는 이벤트
-          console.log(obj);
-        },
         select: function (arg) { // 캘린더에서 드래그로 이벤트를 생성할 수 있다.
           var title = prompt('Event Title:');
           if (title) {
@@ -64,74 +76,53 @@
           var toDate = date_to_yyyymmdd(end);
           const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
           getContents(param, successCallback);
-        }
+        },
+        eventClassNames: function (info) {
+          let result = true;
+          let event = info.event;
 
-        //     [
-        //   {
-        //     title: 'All Day Event',
-        //     start: '2023-07-01',
-        //   },
-        //   {
-        //     title: 'Long Event',
-        //     start: '2021-07-07',
-        //     end: '2023-02-10',
-        //     color: "#FF0000"
-        //     , textColor: "#FFFF00"
-        //   },
-        //   {
-        //     groupId: 999,
-        //     title: 'Repeating Event',
-        //     start: '2023-02-09T16:00:00'
-        //     , color: "#FF0000"
-        //     , textColor: "#FFFF00"
-        //   },
-        //   {
-        //     groupId: 999,
-        //     title: 'Repeating Event',
-        //     start: '2023-02-16T16:00:00'
-        //   },
-        //   {
-        //     title: 'Conference',
-        //     start: '2023-02-11',
-        //     end: '2023-02-13'
-        //   },
-        //   {
-        //     title: 'Meeting',
-        //     start: '2023-02-12T10:30:00',
-        //     end: '2023-02-12T12:30:00'
-        //   },
-        //   {
-        //     title: 'Lunch',
-        //     start: '2023-02-12T12:00:00'
-        //   },
-        //   {
-        //     title: 'Meeting',
-        //     start: '2023-02-12T14:30:00'
-        //   },
-        //   {
-        //     title: 'Happy Hour',
-        //     start: '2023-02-12T17:30:00'
-        //   },
-        //   {
-        //     title: 'Dinner',
-        //     start: '2023-02-12T20:00:00'
-        //   },
-        //   {
-        //     title: 'Birthday Party',
-        //     start: '2023-02-13T07:00:00'
-        //   },
-        //   {
-        //     title: 'Click for Google',
-        //     url: 'http://google.com/', // 클릭시 해당 url로 이동
-        //     start: '2023-02-28'
-        //   }
-        // ]
-        ,
-        dateClick: function (info) {
-          $("#calendarModal").modal("show");
+          var types = [];
+          var pets = [];
+          var tags = [];
+
+          $('input:checkbox.sort-inp:checked').each(function () {
+            if ($(this).data('type') == 'type') {
+              types.push($(this).val());
+            }
+            else if ($(this).data('type') == 'pet') {
+              console.log(typeof($(this).val()))
+              pets.push($(this).val());
+            }
+            else if ($(this).data('type') == 'tag') {
+              tags.push($(this).val());
+            }
+          })
+
+          let type = event.extendedProps.type;
+          if (types.length) {
+            result = result && types.indexOf(type) >= 0;
+          }
+          let tag = event.extendedProps.tag;
+          if (tags.length) {
+            result = result && tags.indexOf(tag) >= 0;
+          }
+          let pet = event.extendedProps.petId.toString();
+          if (pets.length) {
+            result = result && pets.indexOf(pet) >= 0;
+          }
+          if (!result) {
+            result = "hidden";
+          }
+
+          return result;
         }
       });
       calendar.render();
+
+      $('input[class=sort-inp]').change(function() {
+        console.log("렌더링")
+        calendar.render();
+      });
     });
   </script>
   <style>
@@ -157,33 +148,34 @@
 
 <div th:insert="~{fragments/header :: header}"></div>
 <div class="col-md-12 text-center mb-5">
-  <h1>그룹 이름</h1>
 </div>
 <div id="wrap">
   <nav id="sidebar" class="active" style="overflow-y: scroll;">
     <div style="padding: 20px">
-      <h6 class="mb-2">필터</h6>
-      <div class="my-3">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">
-          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>
-        </div>
-      </div>
+<!--      <h6 class="mb-2">필터</h6>-->
+<!--      <div class="my-3">-->
+<!--        <div class="form-check form-switch">-->
+<!--          <input class="form-check-input" type="checkbox" role="switch" id="ongoing-filter">-->
+<!--          <label class="form-check-label" for="ongoing-filter">치료 중만 보기</label>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <h6 class="mb-2">선택</h6>
       <div class="my-3">
         <div class="form-check form-check-inline">
+
           <input class="form-check-input sort-inp" type="checkbox" name="contentsType"
-                 id="record-check"
+                 id="record-check" data-type="type"
                  value="record" checked>
           <label class="form-check-label" for="record-check">일기</label>
         </div>
         <div class="form-check form-check-inline">
           <input class="form-check-input sort-inp" type="checkbox" name="contentsType"
-                 id="schedule-check"
+                 id="schedule-check" data-type="type"
                  value="schedule" checked>
           <label class="form-check-label" for="schedule-check">일정</label>
         </div>
+
       </div>
 
       <hr class="my-4">
@@ -194,7 +186,7 @@
         <div class="accordion mb-3">
           <div class="accordion-item">
             <h2 class="accordion-header" id="panelsStayOpen-headingOne2">
-              <button class="accordion-button" type="button">
+              <button class="accordion-button" type="button" onclick="moveToPetPage()">
                 🐣 애기
               </button>
             </h2>
@@ -212,7 +204,7 @@
         <div class="accordion mb-3">
           <div class="accordion-item">
             <h2 class="accordion-header">
-              <button class="accordion-button" type="button">🔖 태그
+              <button class="accordion-button" type="button" onclick="moveToTagPage()">🔖 태그
               </button>
             </h2>
             <div class="accordion-collapse collapse show"
@@ -228,7 +220,7 @@
         <div class="accordion mb-3">
           <div class="accordion-item">
             <h2 class="accordion-header">
-              <button class="accordion-button" type="button">
+              <button class="accordion-button" type="button" onclick="moveToUserPage()">
                 👥 집사
               </button>
             </h2>
@@ -298,12 +290,23 @@
   let petList;
   let tagList;
   let recordEventList;
+  let scheduleEventList;
   let ALLEVENT;
+
+  let contentType;
 
   $(document).ready(function () {
     get_user_list();
     // get_pet_list();
     get_group_tag();
+  });
+
+  $('input[class=sort-inp]').change(function() {
+    calendar.render();
+  });
+
+  $('.sort-inp').on('change', function () {
+    calendar.render();
   });
 
   axios.defaults.withCredentials = true;
@@ -315,25 +318,30 @@
     return year + month.padStart(2, '0') + day.padStart(2, '0');
   }
 
+
   async function getContents(param, callback) {
     let events = [];
     let eventsStructure = await makeEvent(param);
-    console.log(eventsStructure)
     setTimeout(() => {
       for (let i = 0; i < petList.length; i++) {
-        console.log(ALLEVENT)
         let id = petList[i]['id'];
-        let part = ALLEVENT['records'][id];
-        const values = Object.values(part);
-        const keys = Object.keys(part);
-        events.concat(values);
-        console.log(values);
-        console.log(typeof(values));
-        console.log(keys);
-        console.log(typeof(keys));
+        let recordList = ALLEVENT['records'][id];
+        const recValues = Object.values(recordList);
+
+        let scheduleList = ALLEVENT['schedules'][id];
+        const schValues = Object.values(scheduleList);
+
+        for (let j = 0; j < recValues.length; j++) {
+          let value = recValues[j]
+          events.push(value);
+        }
+
+        for (let j = 0; j < schValues.length; j++) {
+          let value = schValues[j]
+          events.push(value);
+        }
       }
       setTimeout(() => {
-        console.log("events : " + events);
         callback(events);
       })
     })
@@ -343,15 +351,14 @@
     let schedules = {};
     let records = {};
     let storedPetList = await get_pet_list();
-    console.log(storedPetList);
-    console.log(petList);
     for (let i = 0; i < petList.length; i++) {
       let pet = petList[i];
       let petId = pet['id'];
       let recordsOfPet = await getRecordsOfPet(petId, param);
+      let scheduleOfPet = await getSchedulesOfPet(petId, param);
       setTimeout(() => {
-        console.log(recordEventList)
         records[petId] = recordEventList;
+        schedules[petId] = scheduleEventList;
       })
     }
     let allEvent = {
@@ -368,7 +375,8 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let records = res.data.result;
-        let events = records.map(r => recordToEvent(r, randomBrightColor()));
+        let color = randomBrightColor();
+        let events = records.map(r => recordToEvent(r, color));
         setTimeout(() => {
           recordEventList = events;
         })
@@ -387,11 +395,13 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let schedules = res.data.result;
-        console.log(schedules);
-        const dates = schedules.map(mnt => mnt['dueDate']);
-        var events = dates.map(date => to_map(date));
-        console.log(events)
-        callback(events);
+
+        let color = randomBrightColor();
+        let events = schedules.map(s => scheduleToEvent(s, color, petId));
+        setTimeout(() => {
+          scheduleEventList = events;
+        })
+        return events;
       }
     }).catch(err => {
       let res = err.response.data.result;
@@ -400,15 +410,19 @@
     });
   }
 
-  function scheduleToEvent(schedule) {
+  function scheduleToEvent(schedule, color, petId) {
     let title = schedule['title'];
     let dueDate = schedule['dueDate'];
+    let tag = schedule['tag'];
     var event =
         {
           title: title,
           start: dueDate,
-          color: randomBrightColor(),
-          textColor: "#333"
+          color: color,
+          textColor: "#333",
+          type: 'schedule',
+          tag: tag,
+          petId: petId
         };
     return event;
   }
@@ -416,12 +430,17 @@
   function recordToEvent(record, color) {
     let title = record['title'];
     let createdAt = record['createdAt'].substring(0, 10);
+    let tag = record['tag'];
+    let petId = record['petId'];
     var event =
         {
           title: title,
           start: createdAt,
           color: color,
-          textColor: "#333"
+          textColor: "#333",
+          type: 'record',
+          tag: tag,
+          petId: petId
         };
     return event;
   }
@@ -442,12 +461,15 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let pets = res.data.result.pets;
+        $('#groupPets').empty();
         petList = pets;
         for (let i = 0; i < pets.length; i++) {
           let id = pets[i]['id'];
           let name = pets[i]['name'];
           let temp_html = `
-                     <li id="pet-${id}" class="list-group-item">${name}</li>
+                  <input type="checkbox" class="btn-check pet-check sort-inp" id="pet-${id}" checked data-type="pet" value="${id}" onchange="calendar.render();">
+                  <label class="btn btn-outline-primary" for="pet-${id}">${name}</label><br>
+
           `
           $('#groupPets').append(temp_html);
         }
@@ -467,12 +489,14 @@
       },
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
+        $('#groupUsers').empty();
         let users = res.data.result.users;
 
         for (let i = 0; i < users.length; i++) {
           let id = users[i]['id'];
           let roleInGroup = users[i]['roleInGroup'];
           let temp_html = `
+
                       <li id="user-${id}" class="list-group-item">${roleInGroup}</li>
           `
           $('#groupUsers').append(temp_html);
@@ -491,13 +515,16 @@
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         const tags = res.data.result;
+        $('#groupTags').empty();
+
         tagList = tags;
         for (let i = 0; i < tags.length; i++) {
           let id = tags[i]['id'];
           let name = tags[i]['name'];
 
           let temp_html = `
-                      <li id="tag-${id}" class="list-group-item">${name}</li>
+<input type="checkbox" class="btn-check tag-check sort-inp" id="${name}" checked value="${name}" data-type="tag" onchange="calendar.render();">
+<label class="btn btn-outline-secondary" for="${name}">${name}</label><br>
           `
           $('#groupTags').append(temp_html);
         }
@@ -509,10 +536,32 @@
     });
   }
 
+  function moveToPetPage() {
+    let agree = confirm("반려동물 관리 페이지로 이동합니다.")
+    if (agree) {
+      document.location.href = "/view/groups/"+groupId+"/pets"
+    }
+  }
+
+  function moveToTagPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("태그 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/tags";
+    }
+  }
+
+  function moveToUserPage() {
+    const groupId = sessionStorage.getItem("groupId");
+    console.log(groupId)
+    if (confirm("집사 관리 페이지로 이동합니다.")) {
+      document.location.href = "/view/groups/"+groupId+"/users";
+    }
+  }
+
 
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken

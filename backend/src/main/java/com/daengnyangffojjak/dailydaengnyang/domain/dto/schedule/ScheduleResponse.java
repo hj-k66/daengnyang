@@ -27,7 +27,8 @@ public class ScheduleResponse {
 	private String roleInGroup;
 	private String place;
 
-	private LocalDate dueDate;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	private LocalDateTime dueDate;
 	private boolean isCompleted;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
