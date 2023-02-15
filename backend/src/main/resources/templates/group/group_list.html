@@ -22,6 +22,12 @@
 
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <style>
+    #h3-0 {
+      color: white;
+      background-color: grey;
+    }
+  </style>
 
 </head>
 
@@ -205,6 +211,7 @@
 
   $(document).ready(function () {
     get_group_list();
+    get_group_owner();
   });
 
   axios.defaults.withCredentials = true;
@@ -213,19 +220,20 @@
 
   <!-- 그룹장 정보 가져오기  -->
   async function get_group_owner() {
-    await axios.get("/api/v1/groups" + groupId, {}, {
+    await axios.get(`/api/v1/groups/${groupId}`, {}, {
       headers: {
         "Content-Type": `application/json`
       },
     }).then(res => {
+      console.log("그룹장 정보")
+      console.log(res.data.result)
       if (res.data.resultCode == 'SUCCESS') {
         let data = res.data.result;
         let groupName = data.name;
-        let groupUserId = data.id;
         let ownerName = data.ownerName;
         let ownerId = data.ownerId;
 
-        $("#group-name").html(groupName);
+        $("#group-name").text(groupName);
       }
     })
   }
@@ -250,7 +258,7 @@
           let userId = users[i]['id'];
 
           let temp_html = `
-                <div class="card">
+                <div class="card" id="h3-${i}">
 
                   <div class="info">
                     <h3 class="name card-title">${roleInGroup}</h3>
