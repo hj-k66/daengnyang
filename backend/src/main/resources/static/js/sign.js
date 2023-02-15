@@ -1,7 +1,5 @@
 async function logout() {
 
-  /** 쿠키 꺼내기 */
-  const cookie = document.cookie;
   /** 로컬스토리지에 담긴 토큰 꺼내기 */
   const accessToken = localStorage.getItem('accessToken');
 
@@ -15,7 +13,6 @@ async function logout() {
   /** 로그아웃 */
   await axios.post(`/api/v1/users/logout`, {
     "accessToken": accessToken,
-    "refreshToken": cookie
   }, {
     headers: {
       "Content-Type": `application/json`,
