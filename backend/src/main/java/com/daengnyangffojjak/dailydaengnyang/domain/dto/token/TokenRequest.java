@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class TokenRequest {
 	@NotEmpty(message = "accessToken은 필수 입력값입니다.")
 	private String accessToken;
-	@NotEmpty(message = "refreshToken은 필수 입력값입니다.")
 	private String refreshToken;
 
 	//TokenRequest 파싱하기

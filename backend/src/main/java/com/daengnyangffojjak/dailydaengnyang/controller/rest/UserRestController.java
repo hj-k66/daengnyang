@@ -10,6 +10,7 @@ import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserLoginRequest;
 import com.daengnyangffojjak.dailydaengnyang.domain.dto.user.UserResponse;
 import com.daengnyangffojjak.dailydaengnyang.service.NotificationService;
 import com.daengnyangffojjak.dailydaengnyang.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -61,9 +62,14 @@ public class UserRestController {
 	}
 
 	@PostMapping("/logout") //로그아웃
-	public Response<MessageResponse> logout(@RequestBody @Valid TokenRequest tokenRequest, @AuthenticationPrincipal UserDetails user){
+	public Response<MessageResponse> logout(@RequestBody @Valid TokenRequest tokenRequest, @AuthenticationPrincipal UserDetails user,
+			HttpServletResponse response){
 		MessageResponse messageResponse = userService.logout(tokenRequest);
 		notificationService.deleteToken(user.getUsername());
+		Cookie cookie = new Cookie("refreshToken", null);
+		cookie.setMaxAge(0);
+		cookie.setPath("/");
+		response.addCookie(cookie);
 		return Response.success(messageResponse);
 	}
 
@@ -77,4 +83,5 @@ public class UserRestController {
 		//access Token은 body로 전송
 		return Response.success(new UserResponse(tokenInfo.getAccessToken()));
 	}
+
 }
