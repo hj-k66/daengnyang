@@ -114,6 +114,19 @@
           }
 
           return result;
+        },
+        eventClick: function(event, jsEvent, view) {
+          let petId = event.petId;
+
+          if (event.type == 'record') {
+            let recordId = event.recordId;
+            let url = "/view/pets/"+petId+"/records/"+recordId;
+            location.href = url;
+          } else if (event.type == 'schedule') {
+            let scheduleId = event.scheduleId;
+            get_schedule_info(scheduleId)
+            $("#exampleModal").modal("show");
+          }
         }
       });
       calendar.render();
@@ -130,8 +143,7 @@
       position: fixed;
       top: 56px;
       left: 0px;
-      height: calc(100% - 56px);
-      z-index: 999;
+      height: 100%;
       background: #333;
       color: #fff;
       transition: all 0.3s;
@@ -241,6 +253,95 @@
     </div>
   </section>
 </div>
+
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="title">제목</h1>
+        <input type="hidden" name="scheduleId">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <tbody>
+          <tr>
+            <th scope="row">tag</th>
+            <td id="tag"></td>
+          </tr>
+          <tr>
+            <th scope="row">사용자</th>
+            <td id="userName"></td>
+          </tr>
+          <tr>
+            <th scope="row">펫이름</th>
+            <td id="petName"></td>
+          </tr>
+          <tr>
+            <th scope="row">내용</th>
+            <td id="body"></td>
+          </tr>
+          <tr>
+            <th scope="row">담당자</th>
+            <td id="roleInGroup"></td>
+          </tr>
+          <tr>
+            <th scope="row">장소</th>
+            <td id="place"></td>
+          </tr>
+          <tr>
+            <th scope="row">예정일</th>
+            <td id="dueDate"></td>
+          </tr>
+          <tr>
+            <th scope="row">완료여부</th>
+            <td id="isCompleted"></td>
+          </tr>
+          <tr>
+            <th scope="row">등록날짜</th>
+            <td id="createdAt"></td>
+          </tr>
+          <tr>
+            <th scope="row">수정날짜</th>
+            <td id="lastModifiedAt"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <div class="p-2">
+          <button class="btn btn-danger" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseExample" aria-expanded="false"
+                  aria-controls="collapseExample">
+            삭제
+          </button>
+        </div>
+        <div class="p-2 flex-grow-1"></div>
+        <div class="p-2">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#modifyModal" onclick="show_schedule_modify()">수정
+          </button>
+        </div>
+        <div class="collapse" id="collapseExample" style="width: 100%">
+          <div class="card card-body" style="flex-direction: row;">
+            <div>정말 삭제하시겠습니까?</div>
+            <button type="button" class="btn btn-danger btn-sm ms-3" data-bs-dismiss="modal"
+                    onclick="delete_schedule()">삭제
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 
 <!-- modal 추가 -->
@@ -413,6 +514,7 @@
     let title = schedule['title'];
     let dueDate = schedule['dueDate'];
     let tag = schedule['tag'];
+    let scheduleId = schedule['id'];
     var event =
         {
           title: title,
@@ -421,7 +523,8 @@
           textColor: "#333",
           type: 'schedule',
           tag: tag,
-          petId: petId
+          petId: petId,
+          scheduleId: scheduleId
         };
     return event;
   }
@@ -431,6 +534,7 @@
     let createdAt = record['createdAt'].substring(0, 10);
     let tag = record['tag'];
     let petId = record['petId'];
+    let recordId = record['id'];
     var event =
         {
           title: title,
@@ -439,7 +543,8 @@
           textColor: "#333",
           type: 'record',
           tag: tag,
-          petId: petId
+          petId: petId,
+          recordId: recordId
         };
     return event;
   }
@@ -558,6 +663,53 @@
     }
   }
 
+  async function get_schedule_info(scheduleId) {
+    await axios.get("/api/v1/pets/" + petId + "/schedules/" + scheduleId, {}, {
+
+      headers: {},
+    }).then(res => {
+      if (res.data.resultCode == 'SUCCESS') {
+        let data = res.data.result;
+        recordData = data;
+
+        rct_id = scheduleId;
+        rct_tag = res.data.result.tag;
+        rct_userName = res.data.result.userName;
+        rct_petName = res.data.result.petName;
+        rct_title = res.data.result.title;
+        rct_body = res.data.result.body;
+        rct_roleInGroup = res.data.result.roleInGroup;
+        rct_dueDate = res.data.result.dueDate;
+        rct_place = res.data.result.place;
+        rct_isCompleted = res.data.result.completed;
+        // let isCompletedText;
+        if (rct_isCompleted == true) {
+          isCompletedText = "완료";
+        } else {
+          isCompletedText = "미완료";
+        }
+        rct_createdAt = res.data.result.createdAt;
+        rct_lastModifiedAt = res.data.result.lastModifiedAt;
+
+        $('#id').text(rct_id);
+        $('#tag').text(rct_tag);
+        $('#userName').text(rct_userName);
+        $('#petName').text(rct_petName);
+        $('#title').text(rct_title);
+        $('#body').text(rct_body);
+        $('#roleInGroup').text(rct_roleInGroup);
+        $('#dueDate').text(rct_dueDate);
+        $('#place').text(rct_place);
+        $('#isCompleted').text(isCompletedText);
+        $('#createdAt').text(rct_createdAt);
+        $('#lastModifiedAt').text(rct_lastModifiedAt);
+        $('input[name=scheduleId]').attr('value',rct_id);
+
+      } else {
+        console.log("실패임" + res.resultCode)
+      }
+    });
+  }
 
 
   axios.interceptors.request.use(function (config) {
