@@ -22,7 +22,8 @@ public class ScheduleCreateRequest {
 	private String body;
 	private Long assigneeId;
 	private String place;
-	private LocalDate dueDate;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+	private LocalDateTime dueDate;
 
 	public Schedule toEntity(Pet pet, User user, Tag tag) {
 		return Schedule.builder()

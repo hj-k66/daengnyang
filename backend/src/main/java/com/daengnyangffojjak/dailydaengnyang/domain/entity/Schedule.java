@@ -34,7 +34,7 @@ public class Schedule extends BaseEntity {
 	private String body;
 	private Long assigneeId;        //책임자 user-id
 	private String place;           //추후 지도 연동 시 좌표로 변경 가능
-	private LocalDate dueDate;      //예정일
+	private LocalDateTime dueDate;      //예정일
 	private boolean isCompleted;    //일정 수행 여부
 
 	//수정 된 Schedule 저장
