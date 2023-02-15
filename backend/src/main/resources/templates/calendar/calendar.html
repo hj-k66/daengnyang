@@ -53,13 +53,14 @@
           calendar.unselect()
         },
         // 이벤트
-        events: function(fetchInfo, successCallback, failureCallback) {
+        events: function (fetchInfo, successCallback, failureCallback) {
           var start = fetchInfo.start;
           var end = fetchInfo.end;
 
           var fromDate = date_to_yyyymmdd(start);
           var toDate = date_to_yyyymmdd(end);
-          getSchedulesOfPet(4, fromDate, toDate, successCallback);
+          const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+          getContents(param, successCallback);
         }
 
         //     [
@@ -293,34 +294,66 @@
   const groupId = sessionStorage.getItem("groupId");
   let petList;
   let tagList;
+  let recordEventList;
 
   $(document).ready(function () {
     get_user_list();
-    get_pet_list();
+    // get_pet_list();
     get_group_tag();
   });
 
   axios.defaults.withCredentials = true;
 
-  async function getContents() {
-    let schedules = {};
-    let records = {};
-
-
+  function date_to_yyyymmdd(date) {
+    const year = String(date.getFullYear());
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    return year + month.padStart(2, '0') + day.padStart(2, '0');
   }
 
-  async function getRecordsOfPet (petId, fromDate, toDate, callback) {
-    const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+  async function getContents(param, callback) {
+    let events = [];
+    let eventsStructure = await makeEvent(param);
+    for (let i = 0; i < petList.length; i++) {
+      events.concat(eventsStructure.records[i])
+    }
+    console.log(events);
+    callback(events);
+  }
+
+  async function makeEvent(param) {
+    let schedules = {};
+    let records = {};
+    let storedPetList = await get_pet_list();
+    console.log(storedPetList);
+    console.log(petList);
+    for (let i = 0; i < petList.length; i++) {
+      let pet = petList[i];
+      let petId = pet['id'];
+      let recordsOfPet = await getRecordsOfPet(petId, param);
+      setTimeout(() => {
+        console.log(recordEventList)
+        records[petId] = recordEventList;
+      })
+    }
+    let allEvent = {
+      "schedules": schedules,
+      "records": records
+    };
+    return allEvent
+  }
+
+  async function getRecordsOfPet(petId, param) {
     await axios.get("/api/v1/pets/" + petId + "/records" + param, {}, {
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
         let records = res.data.result;
-        console.log(records);
-        const dates = records.map(mnt => mnt['createdAt']);
-        var events = dates.map(date => to_map(date));
-        console.log(events)
-        callback(events);
+        let events = records.map(r => recordToEvent(r, randomBrightColor()));
+        setTimeout(() => {
+          recordEventList = events;
+        })
+        return events;
       }
     }).catch(err => {
       let res = err.response.data.result;
@@ -329,8 +362,7 @@
     });
   }
 
-  async function getSchedulesOfPet (petId, fromDate, toDate, callback) {
-    const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
+  async function getSchedulesOfPet(petId, param) {
     await axios.get("/api/v1/pets/" + petId + "/schedules/period" + param, {}, {
       headers: {},
     }).then(res => {
@@ -349,12 +381,39 @@
     });
   }
 
+  function scheduleToEvent(schedule) {
+    let title = schedule['title'];
+    let dueDate = schedule['dueDate'];
+    var event =
+        {
+          title: title,
+          start: dueDate,
+          color: randomBrightColor(),
+          textColor: "#333"
+        };
+    return event;
+  }
 
+  function recordToEvent(record, color) {
+    let title = record['title'];
+    let createdAt = record['createdAt'].substring(0, 10);
+    var event =
+        {
+          title: title,
+          start: createdAt,
+          color: color,
+          textColor: "#333"
+        };
+    return event;
+  }
 
-
-
-
-
+  // 랜덤 색상
+  let randomBrightColor = () => {
+    let color_r = Math.floor(Math.random() * 127 + 128).toString(16);
+    let color_g = Math.floor(Math.random() * 127 + 128).toString(16);
+    let color_b = Math.floor(Math.random() * 127 + 128).toString(16);
+    return `#${color_r + color_g + color_b}`;
+  }
 
   async function get_pet_list() {
     await axios.get("/api/v1/groups/" + groupId + "/pets", {}, {
@@ -373,6 +432,7 @@
           `
           $('#groupPets').append(temp_html);
         }
+        return pets;
       }
     }).catch(err => {
       let res = err.response.data.result;
@@ -387,7 +447,6 @@
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let users = res.data.result.users;
 
@@ -431,21 +490,7 @@
     });
   }
 
-  function date_to_yyyymmdd(date) {
-    const year = String(date.getFullYear());
-    const month = String(date.getMonth() + 1);
-    const day = String(date.getDate());
-    return year + month.padStart(2, '0') + day.padStart(2, '0');
-  }
 
-  function to_map(date) {
-    var result =
-        {
-          title: ' ',
-          start: date
-        };
-    return result;
-  }
 
   axios.interceptors.request.use(function (config) {
     console.log("인터셉터 시작")
