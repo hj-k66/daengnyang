@@ -297,6 +297,7 @@
   let petList;
   let tagList;
   let recordEventList;
+  let ALLEVENT;
 
   $(document).ready(function () {
     get_user_list();
@@ -316,11 +317,25 @@
   async function getContents(param, callback) {
     let events = [];
     let eventsStructure = await makeEvent(param);
-    for (let i = 0; i < petList.length; i++) {
-      events.concat(eventsStructure.records[i])
-    }
-    console.log(events);
-    callback(events);
+    console.log(eventsStructure)
+    setTimeout(() => {
+      for (let i = 0; i < petList.length; i++) {
+        console.log(ALLEVENT)
+        let id = petList[i]['id'];
+        let part = ALLEVENT['records'][id];
+        const values = Object.values(part);
+        const keys = Object.keys(part);
+        events.concat(values);
+        console.log(values);
+        console.log(typeof(values));
+        console.log(keys);
+        console.log(typeof(keys));
+      }
+      setTimeout(() => {
+        console.log("events : " + events);
+        callback(events);
+      })
+    })
   }
 
   async function makeEvent(param) {
@@ -342,6 +357,7 @@
       "schedules": schedules,
       "records": records
     };
+    ALLEVENT = allEvent;
     return allEvent
   }
 

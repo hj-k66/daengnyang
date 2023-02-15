@@ -625,6 +625,9 @@ class ScheduleRestControllerTest extends ControllerTest {
 									responseFields(
 											fieldWithPath("resultCode").description("결과코드"),
 											fieldWithPath(
+													"['result']['content'][0].['id']").description(
+													"일정 등록번호"),
+											fieldWithPath(
 													"['result']['content'][0].['tag']").description(
 													"태그"),
 											fieldWithPath(
