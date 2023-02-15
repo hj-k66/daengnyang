@@ -510,16 +510,17 @@
             $('#comment-wrapper').append(temp_html + temp_html3);
           } else {
             let temp_html2 = `
-              <button type="button" id="comment-modify-btn" value="${commentId}"
+              <button type="button" class="btn btn-secondary btn-sm" id="comment-modify-btn" value="${commentId}"
               data-bs-toggle="modal" data-bs-target="#modifyCommentModal">수정</button>
 
-              <button type="button" class="badge" value="${commentId}" id="comment-delete-btn" onclick="delete_comment()">삭제</button>
+              <button type="button" class="btn btn-warning btn-sm" value="${commentId}" id="comment-delete-btn" onclick="delete_comment()">삭제</button>
           `
             let temp_html3 = `
               </div>
              </li>
             </ui>
             </form>
+
           `
             $('#comment-wrapper').append(temp_html + temp_html2 + temp_html3);
           }
