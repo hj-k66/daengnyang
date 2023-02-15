@@ -27,21 +27,29 @@
   <script type="text/javascript" th:src="@{/js/sign.js}"></script>
   <script th:src="@{/fullcalendar-6.0.3/dist/index.global.js}"></script>
 
+  <style>
+
+    #calendar {
+      margin: 3em 0 0 0;
+      grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .fc-day-grid-event .fc-content {
+      white-space: normal;
+    }
+
+    a.fc-event.hidden {
+      display: none;
+    }
+  </style>
+
   <script>
+    let calendaar;
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendar');
-      const calendar = new FullCalendar.Calendar(calendarEl, {
+      calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         initialDate: '2023-02-15',
-        eventAdd: function (obj) { // 이벤트가 추가되면 발생하는 이벤트
-          console.log(obj);
-        },
-        eventChange: function (obj) { // 이벤트가 수정되면 발생하는 이벤트
-          console.log(obj);
-        },
-        eventRemove: function (obj) { // 이벤트가 삭제되면 발생하는 이벤트
-          console.log(obj);
-        },
         select: function (arg) { // 캘린더에서 드래그로 이벤트를 생성할 수 있다.
           var title = prompt('Event Title:');
           if (title) {
@@ -63,13 +71,60 @@
           var toDate = date_to_yyyymmdd(end);
           const param = "?fromDate=" + fromDate + "&toDate=" + toDate;
           getContents(param, successCallback);
-        }
-        ,
-        dateClick: function (info) {
-          $("#calendarModal").modal("show");
+        },
+        eventClassNames: function (info) {
+          let result = true;
+          let event = info.event;
+
+          var types = [];
+          var pets = [];
+          var tags = [];
+
+          $('input:checkbox.sort-inp:checked').each(function () {
+            if ($(this).data('type') == 'type') {
+              types.push($(this).val());
+            }
+            else if ($(this).data('type') == 'pet') {
+              console.log(typeof($(this).val()))
+              pets.push($(this).val());
+            }
+            else if ($(this).data('type') == 'tag') {
+              tags.push($(this).val());
+            }
+          })
+
+          let type = event.extendedProps.type;
+          if (types.length) {
+            result = result && types.indexOf(type) >= 0;
+            console.log("type : " + result)
+          }
+          let tag = event.extendedProps.tag;
+          if (tags.length) {
+            result = result && tags.indexOf(tag) >= 0;
+            console.log("tag : " + result)
+          }
+          let pet = event.extendedProps.petId.toString();
+          console.log(typeof(pet))
+          if (pets.length) {
+            result = result && pets.indexOf(pet) >= 0;
+            console.log("pet : " + result)
+          }
+          console.log(result)
+
+          if (!result) {
+            result = "hidden";
+          }
+          console.log(result);
+
+          return result;
         }
       });
       calendar.render();
+
+      $('input[class=sort-inp]').change(function() {
+        console.log("렌더링")
+        calendar.render();
+      });
     });
   </script>
   <style>
@@ -111,14 +166,15 @@
       <h6 class="mb-2">선택</h6>
       <div class="my-3">
         <div class="form-check form-check-inline">
+
           <input class="form-check-input sort-inp" type="checkbox" name="contentsType"
-                 id="record-check"
+                 id="record-check" data-type="type"
                  value="record" checked>
           <label class="form-check-label" for="record-check">일기</label>
         </div>
         <div class="form-check form-check-inline">
           <input class="form-check-input sort-inp" type="checkbox" name="contentsType"
-                 id="schedule-check"
+                 id="schedule-check" data-type="type"
                  value="schedule" checked>
           <label class="form-check-label" for="schedule-check">일정</label>
         </div>
@@ -249,20 +305,15 @@
     get_group_tag();
   });
 
-  function selectContentType () {
-    const query = 'input[name=contentsType]:checked';
-    const selected = document.querySelectorAll(query);
+  $('input[class=sort-inp]').change(function() {
+    console.log("렌더링")
+    calendar.render();
+  });
 
-    selected.forEach((el) => {
-      contentType.push(el.value);
-    })
-
-
-
-
-
-
-  }
+  $('.sort-inp').on('change', function () {
+    console.log("렌더링")
+    calendar.render();
+  });
 
   axios.defaults.withCredentials = true;
 
@@ -289,18 +340,15 @@
 
         for (let j = 0; j < recValues.length; j++) {
           let value = recValues[j]
-          console.log(value)
           events.push(value);
         }
 
         for (let j = 0; j < schValues.length; j++) {
           let value = schValues[j]
-          console.log(value)
           events.push(value);
         }
       }
       setTimeout(() => {
-        console.log("events : " + events);
         callback(events);
       })
     })
@@ -310,15 +358,12 @@
     let schedules = {};
     let records = {};
     let storedPetList = await get_pet_list();
-    console.log(storedPetList);
-    console.log(petList);
     for (let i = 0; i < petList.length; i++) {
       let pet = petList[i];
       let petId = pet['id'];
       let recordsOfPet = await getRecordsOfPet(petId, param);
       let scheduleOfPet = await getSchedulesOfPet(petId, param);
       setTimeout(() => {
-        console.log(recordEventList)
         records[petId] = recordEventList;
         schedules[petId] = scheduleEventList;
       })
@@ -359,7 +404,7 @@
         let schedules = res.data.result;
 
         let color = randomBrightColor();
-        let events = schedules.map(s => scheduleToEvent(s, color));
+        let events = schedules.map(s => scheduleToEvent(s, color, petId));
         setTimeout(() => {
           scheduleEventList = events;
         })
@@ -372,15 +417,19 @@
     });
   }
 
-  function scheduleToEvent(schedule) {
+  function scheduleToEvent(schedule, color, petId) {
     let title = schedule['title'];
     let dueDate = schedule['dueDate'];
+    let tag = schedule['tag'];
     var event =
         {
           title: title,
           start: dueDate,
-          color: randomBrightColor(),
-          textColor: "#333"
+          color: color,
+          textColor: "#333",
+          type: 'schedule',
+          tag: tag,
+          petId: petId
         };
     return event;
   }
@@ -388,12 +437,17 @@
   function recordToEvent(record, color) {
     let title = record['title'];
     let createdAt = record['createdAt'].substring(0, 10);
+    let tag = record['tag'];
+    let petId = record['petId'];
     var event =
         {
           title: title,
           start: createdAt,
           color: color,
-          textColor: "#333"
+          textColor: "#333",
+          type: 'record',
+          tag: tag,
+          petId: petId
         };
     return event;
   }
@@ -419,7 +473,9 @@
           let id = pets[i]['id'];
           let name = pets[i]['name'];
           let temp_html = `
-                     <li id="pet-${id}" class="list-group-item">${name}</li>
+                  <input type="checkbox" class="btn-check pet-check sort-inp" id="pet-${id}" checked data-type="pet" value="${id}" onchange="calendar.render();">
+                  <label class="btn btn-outline-primary" for="pet-${id}">${name}</label><br>
+
           `
           $('#groupPets').append(temp_html);
         }
@@ -445,6 +501,7 @@
           let id = users[i]['id'];
           let roleInGroup = users[i]['roleInGroup'];
           let temp_html = `
+
                       <li id="user-${id}" class="list-group-item">${roleInGroup}</li>
           `
           $('#groupUsers').append(temp_html);
@@ -469,7 +526,8 @@
           let name = tags[i]['name'];
 
           let temp_html = `
-                      <li id="tag-${id}" class="list-group-item">${name}</li>
+<input type="checkbox" class="btn-check tag-check sort-inp" id="${name}" checked value="${name}" data-type="tag" onchange="calendar.render();">
+<label class="btn btn-outline-secondary" for="${name}">${name}</label><br>
           `
           $('#groupTags').append(temp_html);
         }
@@ -484,7 +542,6 @@
 
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
