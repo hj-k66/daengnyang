@@ -100,10 +100,21 @@
         console.log(config.headers)
 
         window.localStorage.setItem("accessToken", res.data.result.accessToken);
-        document.location.href = "/view/groups";
+        document.location.href = "/view/groups/mygroups";
 
       } else {
         console.log("로그인 실패" + res.resultCode)
+        localStorage.clear()
+      }
+    }).catch(err => {
+      let errMsg = err.response.data.result.message;
+
+      if (errMsg === '사용자가 권한이 없습니다.' || errMsg === 'Not founded'){
+        alert('아이디 혹은 비밀번호를 잘못 입력하셨습니다.');
+        let userName = document.getElementById('userName');
+        let password = document.getElementById('password');
+        userName.value = null;
+        password.value = null;
         localStorage.clear()
       }
     });

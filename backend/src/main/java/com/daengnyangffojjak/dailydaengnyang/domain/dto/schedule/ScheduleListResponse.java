@@ -44,4 +44,18 @@ public class ScheduleListResponse {
 
 		return scheduleListResponses;
 	}
+
+	public static ScheduleListResponse toResponse (Schedule schedule, Map<Long, String> getRoleInGroup) {
+		return ScheduleListResponse.builder()
+				.id(schedule.getId())
+				.tag(schedule.getTag().getName())
+				.title(schedule.getTitle())
+				.body(schedule.getBody())
+				.assigneeId(schedule.getAssigneeId())
+				.roleInGroup(getRoleInGroup.get(schedule.getAssigneeId())) //assigneeId == userId -> userId의 roleInGroup 반환
+				.place(schedule.getPlace())
+				.dueDate(schedule.getDueDate())
+				.isCompleted(schedule.isCompleted())
+				.build();
+	}
 }

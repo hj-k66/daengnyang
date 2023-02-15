@@ -1,3 +1,12 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+toc::[]
+
 = 댕냥뽀짝 REST Docs
 
 개묘한 이야기 Rest API 문서입니다.
@@ -8,6 +17,8 @@
 :toc: left
 :toclevels: 2
 :sectlinks:
+
+toc::[]
 
 include::User-API.adoc[]
 

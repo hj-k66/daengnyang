@@ -53,6 +53,11 @@
         crossorigin="anonymous"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+<script src="/js/notification/notification.js"></script>
+
 <script th:inline="javascript">
   var nowPage = 0;
 
@@ -95,9 +100,11 @@
           `;
           $('#pet-list').append(temp_html);
         }
-      } else {
-        console.log("실패임" + res.resultCode)
       }
+    }).catch(err => {
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
     });
   }
 
@@ -110,7 +117,8 @@
 
   function make_group() {
 
-    let url = "/view/groups"
+
+    let url = "/view/groups/mygroups"
     location.href = url;
   }
 

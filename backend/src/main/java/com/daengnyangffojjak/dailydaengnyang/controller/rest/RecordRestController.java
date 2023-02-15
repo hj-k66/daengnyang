@@ -47,8 +47,10 @@ public class RecordRestController {
 
 	// 반려동물의 기간별 일기 리스트 조회
 	@GetMapping(value = "/pets/{petId}/records")
-	public Response<List<RecordResponse>> getRecordList (@AuthenticationPrincipal UserDetails user, @PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate) {
-		List<RecordResponse> recordResponses = recordService.getRecordList(petId, fromDate, toDate, user.getUsername());
+	public Response<List<RecordResponse>> getRecordList(@AuthenticationPrincipal UserDetails user,
+			@PathVariable Long petId, @RequestParam String fromDate, @RequestParam String toDate) {
+		List<RecordResponse> recordResponses = recordService.getRecordList(petId, fromDate, toDate,
+				user.getUsername());
 		return Response.success(recordResponses);
 	}
 

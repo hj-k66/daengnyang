@@ -16,6 +16,9 @@ operation::schedule-get/get_success[snippets='http-request,path-parameters,http-
 [[Schedule-개체별전체조회하기]]
 === Schedule 일정 개체별 전체 조회하기
 operation::schedule-list/list_success[snippets='http-request,path-parameters,http-response,response-fields']
+[[Schedule-개체별기간별조회하기]]
+=== Schedule 일정 개체별 기간별 조회하기
+operation::schedule-list-peroid/list_success[snippets='http-request,path-parameters,http-response,response-fields']
 [[Schedule-일정부탁하기]]
 === Schedule 일정 부탁하기
 operation::schedule-assign/assign_success[snippets='http-request,path-parameters,http-response,response-fields']

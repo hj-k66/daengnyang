@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: head}">
   <meta charset="UTF-8">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
         rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
@@ -23,21 +24,14 @@
 <!--header----------------------------->
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-2">
     </div>
-    <div class="col-md-4">
+    <div class="col-md-7">
+      <h1>알림</h1>
+      <h7>최근 30일 이내 알람만 표시됩니다</h7>
       <section id="notification-list">
         <div class="card visually-hidden" style="width: 500px;">
 
-          <div class="info">
-            <h1 class="name card-title">훈이</h1>
-            <h6 class="card-subtitle mb-2 text-muted">
-              <span class="title">4살</span> |
-              <span class="body">CAT</span> |
-              <span class="checked">KSH</span> |
-              <span class="notificationType">중성화 수컷</span>
-            </h6>
-          </div>
         </div>
 
       </section>
@@ -48,200 +42,198 @@
 </div>
 
 
-
-<!--show Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <table class="table">
-          <tbody>
-          <tr>
-            <th scope="row">제목</th>
-            <td id="title"></td>
-          </tr>
-          <tr>
-            <th scope="row">메세지</th>
-            <td id="body"></td>
-          </tr>
-          <tr>
-            <th scope="row">checked</th>
-            <td id="checked"></td>
-          </tr>
-          <tr>
-            <th scope="row">생일</th>가
-            <td id="birthday"></td>
-          </tr>
-          <tr>
-            <th scope="row">알람타입</th>
-            <td id="notificationType"></td>
-          </tr>
-          </tbody>
-        </table>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <!--footer---------------------------->
 
 <footer th:replace="~{fragments/footer :: footerFragment}"></footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/sign.js"></script>
 <script th:inline="javascript">
-  let lastId = 10000;
-  const TABLE_ELE = document.querySelector("table");
-
-  const drawList = (DATA) => {
-    let listHtml = "";
-    DATA.forEach((item, index) => {
-      const { id, data1, data2, data3, data4, data5, data6, data7 } = item;
-      const TR_ELE = document.createElement('tr');
-      listHtml = `<td>${data1}</td>
-                    <td>${data2}</td>
-                    <td>${data3}</td>
-                    <td>${data4}</td>
-                    <td>${data5}</td>
-                    <td>${data6}</td>
-                    <td>${data7}</td>`;
-
-      if (index === DATA.length - 1) lastId = id; // 마지막건 ID 저장
-
-      TR_ELE.innerHtml = listHtml;
-      TABLE_ELE.appendChild(TR_ELE);
-    });
-  };
-
-  const getList = () => {
-    fetch("/api/v1/notification", {
-      method: "GET",
-      params: {
-        lastNotificationId:lastId,
-        size:7
-      }
-    })
-    .then((res) => res.json())
-    .then((resJson) => {
-      drawList(resJson);
-    });
-  };
-
-  window.addEventListener("scroll", function () {
-    const SCROLLED_HEIGHT = window.scrollY;
-    const WINDOW_HEIGHT = window.innerHeight;
-    const DOC_TOTAL_HEIGHT = document.body.offsetHeight;
-    const IS_BOTTOM = WINDOW_HEIGHT + SCROLLED_HEIGHT === DOC_TOTAL_HEIGHT;
-
-    if (IS_BOTTOM) {
-      getList();
-    }
+  let isFetching = true;
+  $(document).ready(function () {
+    get_notification_list();
   });
-  // const value_lastNotificationId = [[${lastNotificationId}]];
-  // const value_size = [[${size}]];
-  // let rct_id;
-  // let rct_name;
-  // let rct_birthday;
-  // let rct_breed;
-  // let rct_sex;
-  // let rct_species;
-  // let rct_weight;
-  //
-  // $(document).ready(function () {
-  //   get_notification_list();
-  // });
-  //
-  // axios.defaults.withCredentials = true;
-  // let lastId = 10000000;
-  //
 
-  // async function get_notification_list() {
-  //   await axios.get("/api/v1/notification" ,
-  //       {params:{
-  //           lastNotificationId:value_lastNotificationId,
-  //           size:value_size
-  //         }}, {
-  //     headers: {
-  //       "Content-Type": `application/json`
-  //     },
-  //   }).then(res => {
-  //     console.log(res)
-  //     if (res.data.resultCode == 'SUCCESS') {
-  //       let notifications = res.data.result.notifications;
-  //       console.log(notifications)
-  //       for (let i = 0; i < notifications.length; i++) {
-  //         let id = notifications[i]['id'];
-  //         let title = notifications[i]['title'];
-  //         let body = notifications[i]['body'];
-  //         let checked = notifications[i]['checked'];
-  //         let notificationType_enum = notifications[i]['notificationType'];
-  //
-  //         let temp_html = `
-  //               <div class="card" style="width: 500px;" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  //                 <img class="pet-img" src="https://cdn-icons-png.flaticon.com/512/2138/2138245.png">
-  //                 <div class="info">
-  //                   <h3 class="name card-title">${title}</h3>
-  //                   <h6 class="card-subtitle mb-2 text-muted">
-  //                     <span class="alarm_id" style="display: none;">${id}</span>
-  //                     <span class="title">${title}</span> |
-  //                     <span class="body">${body}</span> |
-  //                     <span class="checked">${checked}</span> |
-  //                     <span class="notificationType">${notificationType_enum}</span>
-  //                   </h6>
-  //                 </div>
-  //               </div>
-  //         `
-  //         $('#notification-list').append(temp_html);
-  //         lastId = id; // 마지막건 ID 저장
-  //
-  //       }
-  //     } else {
-  //       console.log("실패임" + res.resultCode)
-  //     }
-  //   });
-  // }
+  axios.defaults.withCredentials = true;
+  let value_lastNotificationId = Number.MAX_SAFE_INTEGER;  //처음값은 Number.MAX_SAFE_INTEGER로 주기
+  let size = 3;
 
-
-
+  //스크롤 감지
   window.addEventListener("scroll", function () {
     const SCROLLED_HEIGHT = window.scrollY;
     const WINDOW_HEIGHT = window.innerHeight;
     const DOC_TOTAL_HEIGHT = document.body.offsetHeight;
-    const IS_BOTTOM = WINDOW_HEIGHT + SCROLLED_HEIGHT === DOC_TOTAL_HEIGHT;
-
-    if (IS_BOTTOM) {
+    // console.log("SCROLLED_HEIGHT: " + SCROLLED_HEIGHT);
+    // console.log("WINDOW_HEIGHT: " + WINDOW_HEIGHT);
+    // console.log("DOC_TOTAL_HEIGHT: " + DOC_TOTAL_HEIGHT);
+    const IS_BOTTOM = WINDOW_HEIGHT + SCROLLED_HEIGHT > (DOC_TOTAL_HEIGHT - 100);
+    if (IS_BOTTOM && !isFetching) {
       get_notification_list();
+      console.log("bottom");
     }
   });
 
+  //알람 리스트 조회
+  async function get_notification_list() {
+    isFetching = true;
+    await axios.get("/api/v1/notification",
+        {
+          params: {
+            lastNotificationId: value_lastNotificationId,
+            size: size
+          }
+        }, {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem(
+                "accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        let notifications = res.data.result.notifications;
+        console.log(notifications)
+        for (let i = 0; i < notifications.length; i++) {
+          let id = notifications[i]['id'];
+          let title = notifications[i]['title'];
+          let body = notifications[i]['body'];
+          let checked = notifications[i]['checked'];
+          let notificationType_enum = notifications[i]['notificationType'];
+          let url = convert_notification_type_to_url(notificationType_enum);
+          let createdAt = notifications[i]['createdAt'];
+          let temp_html = ``;
+          console.log(checked);
+          if (checked) {
+            //읽은 알람
+            temp_html = `
+          <div class="card" style="width: 700px;">
+            <div class="row no-gutters">
+              <div class="col-4">
+                <img src="/image/notificationChecked.jpg" alt="" class="card-img" />
+              </div>
+              <div class="col-8">
+                <div class="card-body">
+                  <h3 class="name card-title" style="display: inline;font-weight: lighter" >${title} </h3>
+                   <h7 class="card-text"><small class=""text-muted">${createdAt}</small></h7>
+                   <p></p>
+                   <p class="card-text">${body}</p>
+                   <a href="${url}" class="btn btn-primary mt-3" onclick="move_notification()">이동하기</a>
+                   <button type="button" class="btn btn-primary mt-3" onclick="delete_notification(${id})">삭제하기</button>
+                </div>
+              </div>
+             </div>
+             </div>
+            </div>
+          `
+          } else {
+            temp_html = `
+          <div class="card" style="width: 700px;">
+            <div class="row no-gutters">
+              <div class="col-4">
+                <img src="https://png.pngtree.com/png-vector/20190508/ourmid/pngtree-bell-vector-icon-png-image_1028049.jpg" alt="" class="card-img" />
+              </div>
+              <div class="col-8">
+                <div class="card-body">
+                  <h3 class="name card-title" style="display: inline" > <strong>${title} </strong></h3>
+                   <h7 class="card-text"><small class=""text-muted">${createdAt}</small></h7>
+                   <p></p>
+                   <p class="card-text">${body}</p>
+                   <a href="${url}" class="btn btn-primary mt-3" onclick="read_notification(${id})">이동하기</a>
+                   <button type="button" class="btn btn-primary mt-3" onclick="delete_notification(${id})">삭제하기</button>
+                </div>
+              </div>
+             </div>
+            </div>
+          `
+          }
 
-  axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers.Authorization = 'Bearer' + ' ' + "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InRlc3QwMjEyIiwicm9sZSI6WyJST0xFX1VTRVIiXSwiaWF0IjoxNjc2MTQyODE1LCJleHAiOjE2NzYxNDY0MTV9._UwKp_8rMWElq-hKAptTkZioTcjfchzIcTF2CLweBKA"
-    } else {
-      console.log("headers" + config.headers);
+          if (i == notifications.length - 1) {
+            value_lastNotificationId = id;
+          }
+          $('#notification-list').append(temp_html);
+          console.log(value_lastNotificationId)
+
+        }
+        isFetching = false;
+      }
+    }).catch(err => {
+      console.log(err.response)
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });;
+  }
+
+  function convert_notification_type_to_url(notificationType_enum) {
+    switch (notificationType_enum) {
+      case "SCHEDULE_CREATE":
+        return "/view/groups/choice" //일정 페이지-캘린더로 가도 좋을듯
+      case "SCHEDULE_COMPLETE":
+        return "" //일정 페이지
+      case "RECORD_CREATE":
+        return ""  //일기 페이지
+      case "GROUP_INVITE":
+        return "" //그룹 선택 페이지
+      case "SCHEDULE_ASSIGN":
+        return ""  //일정페이지
+      case "COMMENT_CREATE":
+        return ""  //피드페이지
+      default:
+        return "?"
     }
-    return config;
-  })
+  }
+
+  // 해당 알림 읽음처리
+  async function read_notification(id) {
+    console.log("이동버튼 누르기");
+    await axios.put("/api/v1/notification/" + id, {}
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        alert(res.data.result.message);
+      }
+    }).catch(err => {
+      console.log(err.response)
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });
+  }
+
+  // 알림삭제하는 함수
+  async function delete_notification(id) {
+    console.log(id);
+    await axios.delete("/api/v1/notification/" + id, {}
+        , {
+          headers: {
+            "Content-Type": `application/json`,
+            Authorization: "Bearer " + localStorage.getItem("accessToken")
+          },
+        }).then(res => {
+      console.log(res)
+      if (res.data.resultCode == 'SUCCESS') {
+        console.log(res.data.result);
+        alert(res.data.result.message);
+        document.location.href = "/view/notification?lastNotificationId=" + Number.MAX_SAFE_INTEGER
+            + "&size=3";
+      }
+    }).catch(err => {
+      console.log(err.response)
+      let res = err.response.data.result;
+      let message = res.errorCode + " : " + res.message;
+      alert(message);
+    });
+  }
 
 
 </script>
-
-
 </body>
 </html>
