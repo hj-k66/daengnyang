@@ -91,6 +91,19 @@
     });
   }
 
+  axios.interceptors.response.use(
+      success => success,
+      async (error) => {
+        console.log("err " + error)
+        console.log("err.response " + JSON.stringify(error.response))
+        let errCode = error.response.data.result.errorCode;
+
+        if (errCode === 'INVALID_TOKEN') {
+          document.location.href = "/view/users/login"
+        }
+      }
+  )
+
 
 
 
