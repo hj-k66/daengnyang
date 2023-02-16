@@ -43,16 +43,6 @@
                 어디서 나오는지 모르겠다. 너무 힘들다... 그래도 귀여워서 참는다.</p>
               <a href="#" class="stretched-link" th:href="@{/view/detail}">자세히 보러가기</a>
             </div>
-            <!--                                동영상-->
-<!--            <video autoplay controls loop muted-->
-<!--                   poster="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"-->
-<!--                   preload="auto">-->
-<!--              <source-->
-<!--                  src="https://s3.ap-northeast-2.amazonaws.com/daengnyang-bucket/test/records/45b576a0-7dd4-4169-98c2-e391e5f8da2f.mp4"-->
-<!--                  type="video/mp4">-->
-<!--              동영상을 사용할 수 없습니다.-->
-<!--            </video>-->
-            <!--              이미지-->
             <div class="col-4 p-4 d-flex flex-column position-static">
                 <img
                     src="https://cdn.pixabay.com/photo/2019/07/23/13/51/shepherd-dog-4357790_1280.jpg"
@@ -101,12 +91,10 @@
         Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
 
         //여기서부터 작성
         let records = res.data.result.content;
-        console.log(records);
         for (let i = 0; i < records.length; i++) {
           let id = records[i]['id'];
           let petId = records[i]['petId'];
@@ -141,7 +129,6 @@
           $('#record-wrapper').append(temp_html);
         }
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -163,12 +150,10 @@
   }
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

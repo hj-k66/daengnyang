@@ -25,7 +25,6 @@
   let tokenVal = [[${token}]].toString();
   $(document).ready(function () {
     window.localStorage.setItem("accessToken", tokenVal);
-    console.log(tokenVal);
 
     document.location.href = "/view/groups";
     const accessToken = window.localStorage.getItem("accessToken");

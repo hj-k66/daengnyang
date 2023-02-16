@@ -134,7 +134,6 @@
       return;
     }
     let isPublic = $("input:radio[name=isPublic]:checked").val();
-    console.log(name)
 
     await axios.post("/api/v1/pets/" + petId + "/records",
         {
@@ -149,7 +148,6 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         recordId = res.data.result.id;
         alert("일기가 성공적으로 저장되었습니다. 사진을 추가하시려면 아래에서 진행해주세요.");
@@ -178,9 +176,7 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/records/"+recordId;
       }
     }).catch(err => {
@@ -197,7 +193,6 @@
       headers: {},
     }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         $('#tag-box').empty();
         let plus_html = `
                 <button type="button" class="btn btn-primary" onclick="moveToTagPage();">+</button>
@@ -225,19 +220,16 @@
 
   function moveToTagPage() {
     const groupId = sessionStorage.getItem("groupId");
-    console.log(groupId)
     if (confirm("태그 관리 페이지로 이동합니다.")) {
       document.location.href = "/view/groups/"+groupId+"/tags";
     }
   }
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

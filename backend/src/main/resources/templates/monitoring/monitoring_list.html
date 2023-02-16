@@ -60,7 +60,6 @@
                 successCallback(events);
                 make_table();
               } else {
-                console.log("실패임" + res.resultCode)
               }
             }).catch(err => {
               let res = err.response.data.result;
@@ -774,15 +773,12 @@
 
       "notes": notes
     };
-    console.log(params.toString());
 
     await axios.post("/api/v1/pets/" + petId + "/monitorings", params, {}
     ).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/monitorings";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }
@@ -846,7 +842,6 @@
   async function modify_monitoring() {
     let date = rct_date;
     let id = $('#id-col').text();
-    console.log(id);
     let weight = $("#weight-mod").val();
 
     let vomit = $("#vomit-mod").is(':checked');
@@ -891,7 +886,6 @@
     await axios.put("/api/v1/pets/" + petId + "/monitorings/" + id, params, {}
     ).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/pets/" + petId + "/monitorings";
       }
     }).catch(err => {
@@ -924,17 +918,14 @@
 
     let url = "/view/pets/" + petId + "/monitorings/report?fromDate="
         + fromDate + "&toDate=" + toDate;
-    console.log(url);
     window.open(url, "레포트", "top=10, left=10, width=1500, height=800");
   }
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })
@@ -951,7 +942,6 @@
         monitorings = res.data.result.monthlyMonitorings;
         make_table();
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }

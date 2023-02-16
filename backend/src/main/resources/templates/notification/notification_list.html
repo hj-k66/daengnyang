@@ -71,7 +71,6 @@
     const IS_BOTTOM = WINDOW_HEIGHT + SCROLLED_HEIGHT > (DOC_TOTAL_HEIGHT - 100);
     if (IS_BOTTOM && !isFetching) {
       get_notification_list();
-      console.log("bottom");
     }
   });
 
@@ -91,10 +90,8 @@
                 "accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let notifications = res.data.result.notifications;
-        console.log(notifications)
         for (let i = 0; i < notifications.length; i++) {
           let id = notifications[i]['id'];
           let title = notifications[i]['title'];
@@ -104,7 +101,6 @@
           let url = convert_notification_type_to_url(notificationType_enum);
           let createdAt = notifications[i]['createdAt'];
           let temp_html = ``;
-          console.log(checked);
           if (checked) {
             //읽은 알람
             temp_html = `
@@ -153,13 +149,11 @@
             value_lastNotificationId = id;
           }
           $('#notification-list').append(temp_html);
-          console.log(value_lastNotificationId)
 
         }
         isFetching = false;
       }
     }).catch(err => {
-      console.log(err.response)
       let res = err.response.data.result;
       let message = res.errorCode + " : " + res.message;
       alert(message);
@@ -169,17 +163,17 @@
   function convert_notification_type_to_url(notificationType_enum) {
     switch (notificationType_enum) {
       case "SCHEDULE_CREATE":
-        return "/view/groups/choice" //일정 페이지-캘린더로 가도 좋을듯
+        return "/view/records/feed" //일정 페이지-캘린더로 가도 좋을듯
       case "SCHEDULE_COMPLETE":
-        return "" //일정 페이지
+        return "/view/records/feed" //일정 페이지
       case "RECORD_CREATE":
-        return ""  //일기 페이지
+        return "/view/records/feed"  //일기 페이지
       case "GROUP_INVITE":
-        return "" //그룹 선택 페이지
+        return "view/groups/mygroups" //그룹 선택 페이지
       case "SCHEDULE_ASSIGN":
-        return ""  //일정페이지
+        return "/view/records/feed"  //일정페이지
       case "COMMENT_CREATE":
-        return ""  //피드페이지
+        return "/view/records/feed"  //피드페이지
       default:
         return "?"
     }
@@ -187,7 +181,6 @@
 
   // 해당 알림 읽음처리
   async function read_notification(id) {
-    console.log("이동버튼 누르기");
     await axios.put("/api/v1/notification/" + id, {}
         , {
           headers: {
@@ -195,13 +188,10 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         alert(res.data.result.message);
       }
     }).catch(err => {
-      console.log(err.response)
       let res = err.response.data.result;
       let message = res.errorCode + " : " + res.message;
       alert(message);
@@ -210,7 +200,6 @@
 
   // 알림삭제하는 함수
   async function delete_notification(id) {
-    console.log(id);
     await axios.delete("/api/v1/notification/" + id, {}
         , {
           headers: {
@@ -218,15 +207,12 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         alert(res.data.result.message);
         document.location.href = "/view/notification?lastNotificationId=" + Number.MAX_SAFE_INTEGER
             + "&size=3";
       }
     }).catch(err => {
-      console.log(err.response)
       let res = err.response.data.result;
       let message = res.errorCode + " : " + res.message;
       alert(message);

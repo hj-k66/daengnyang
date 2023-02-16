@@ -66,7 +66,6 @@
     const token = localStorage.getItem("accessToken")
     const cookie = document.cookie;
 
-    console.log("쿠키" + cookie);
 
     await axios.post("/api/v1/groups", {
       "name": name,
@@ -77,16 +76,11 @@
         Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log("바로 실행 로그");
-        console.log(res.data.resultCode);
-        console.log(res.data.result.id);
 
         sessionStorage.setItem("groupId", res.data.result.id);
         document.location.href = "/view/groups/mygroups"
       } else {
-        console.log("실패임" + res.resultCode)
       }
     });
   }

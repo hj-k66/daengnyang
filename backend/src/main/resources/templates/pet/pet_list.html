@@ -223,10 +223,8 @@
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let pets = res.data.result.pets;
-        console.log(pets)
         for (let i = 0; i < pets.length; i++) {
           let id = pets[i]['id'];
           let name = pets[i]['name'];
@@ -292,7 +290,6 @@
     await axios.get("/api/v1/groups/" + groupId + "/pets/" + petId, {}, {
       headers: {},
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         rct_id = petId;
         rct_name = res.data.result.name;
@@ -332,7 +329,6 @@
     let sex = $("input:radio[name=sex]:checked").val();
     let birthday = $("#birthday-inp").val();
     let weight = $("#weight-inp").val();
-    console.log(name)
 
     await axios.put("/api/v1/groups/" + groupId + "/pets/" + rct_id,
         {
@@ -349,9 +345,7 @@
         Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-          console.log(res.data.result);
           document.location.href = "/view/groups/"+groupId+"/pets";
       }
     }).catch(err => {
@@ -369,7 +363,6 @@
         Authorization: "Bearer " + localStorage.getItem("accessToken")
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
           console.log(res.data.result);
           document.location.href = "/view/groups/"+groupId+"/pets";
@@ -427,12 +420,10 @@
   }
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })

@@ -1,51 +1,46 @@
-# (가제) 개묘한 이야기 - 댕냥뽀짝
-> 반려동물의 모든 것을 기록할 수 있는 일상 기록 어플
+<div align="center" >
 
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
+<img src="readme_img/댕냥타이틀.png" width="600" height="200">    
 
-✔ 배포주소 : http://ec2-52-79-250-80.ap-northeast-2.compute.amazonaws.com:8080
+<a href="https://daengnyang.site"><img src="https://img.shields.io/badge/daengnyang-4285F4?style=flat&logo=Google Chrome&logoColor=white" /></a>
+<a href="https://daengnyang.site/docs/index.html"><img src="https://img.shields.io/badge/restdocs-83B81A?style=flat&logo=Google Chrome&logoColor=white" /></a>
+<a href="https://daengnyangproject.tistory.com/"><img src="https://img.shields.io/badge/techblog-ECD53F?style=flat&logo=Google Chrome&logoColor=white" /></a>
 
-## 설치 방법
+<img src="readme_img/댕냥소개글수정.png">
 
-OS X & 리눅스:
+<img src="readme_img/팀원.png">
 
+|                                PM,Backend                                 |                                CTO,Backend                                |                               Infra,Backend                               |                               Infra,Backend                               |                                기획, Backend                                |                                기획, Backend                                |
+|:-------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|:-------------------------------------------------------------------------:|
+|                      <img src="readme_img/예지.png" width="120">                       |                      <img src="readme_img/희정.png" width="120">                       |                      <img src="readme_img/승근.png" width="120">                       |                      <img src="readme_img/민경.png" width="120">                       |                      <img src="readme_img/문주.png" width="120">                       |                      <img src="readme_img/상훈.png" width="120">                       |
+|                                    조예지                                    |                                    김희정                                    |                                    백승근                                    |                                    김민경                                    |                                    조문주                                    |                                    이상훈                                    |
 
-윈도우:
+</div>
 
+<br>
+<br>
 
-## 사용 예제
-
-스크린 샷과 코드 예제를 통해 사용 방법을 자세히 설명합니다.
-
-_더 많은 예제와 사용법은 [Wiki][wiki]를 참고하세요._
-
-## 개발 환경 설정
-
-모든 개발 의존성 설치 방법과 자동 테스트 슈트 실행 방법을 운영체제 별로 작성합니다.
-
-
-## 업데이트 내역
+## 📋 요구 사항 정의서
+- [요구 사항 정의서](https://nebulous-purple-edf.notion.site/8f77852e26d24510ab582ab5b9eb03b5)
 
 
-## 정보
+<br>
 
-이름 – @트위터 주소 – 이메일주소@example.com
+## ⚙ 기술 스택
+<img src="readme_img/스택10.png">
+<img src="readme_img/스택11.png">
 
-XYZ 라이센스를 준수하며 ``LICENSE``에서 자세한 정보를 확인할 수 있습니다.
+<br>
 
-## 기여 방법
+## 📊 ERD
+<img src="readme_img/daengnyang.png">
 
-1. (<https://github.com/yourname/yourproject/fork>)을 포크합니다.
-2. `git checkout -b feature/fooBar` 명령어로 새 브랜치를 만드세요.
-3. `git commit -am 'Add some fooBar'` 명령어로 커밋하세요.
-4. `git push origin feature/fooBar` 명령어로 브랜치에 푸시하세요.
-5. Merge Request를 보내주세요.
+<br>
 
-<!-- Markdown link & img dfn's -->
-[npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/datadog-metrics
-[npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
-[wiki]: https://github.com/yourname/yourproject/wiki
+## 📌 Architecture
+<img src="readme_img/댕냥뽀짝아키텍쳐.png">
+
+<br>
+
+## 📌 CI/CD
+<img src="readme_img/댕냥뽀짝CICD.png">

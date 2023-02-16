@@ -215,7 +215,6 @@
 
   axios.defaults.withCredentials = true;
 
-  console.log("그룹아이디 " + groupId);
 
   <!-- 그룹장 정보 가져오기  -->
   async function get_group_owner() {
@@ -244,7 +243,6 @@
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
 
         let users = res.data.result.users;
@@ -268,7 +266,6 @@
           $('#group-list').append(temp_html);
         }
       } else {
-        console.log("실패 " + res.resultCode)
       }
     });
   }
@@ -284,10 +281,6 @@
       if (res.data.resultCode == 'SUCCESS') {
         let users = res.data.result.users;
         groupName = users[0].groupName;
-        // roleInGroup = users[0].roleInGroup
-        // userName = users[0].userName;
-        //
-        // $('input[name=roleInGroup]').attr('value', roleInGroup)
 
         $('#groupName').text(groupName);
         $('#exampleModalLabel').text(groupName);
@@ -314,12 +307,9 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         document.location.href = "/view/groups/"+groupId+"/users";
       } else {
-        console.log("실패 " + res.resultCode)
       }
     });
   }
@@ -340,12 +330,9 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result)
         document.location.href = "/view/groups/" + groupId + "/users";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
@@ -370,10 +357,8 @@
           },
         }).then(res => {
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/groups/mygroups";
       } else {
-        console.log("실패 " + res.data.resultCode)
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message
@@ -394,7 +379,6 @@
         "Content-Type": `application/json`
       },
     }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
         let users = res.data.result.users;
         let deleteMemberSelect = document.querySelector("#deleteMemberSelect");
@@ -416,7 +400,6 @@
 
   async function delete_member() {
     let userId = $("#deleteMemberSelect option:selected").val();
-    console.log("userId: " + userId);
 
     await axios.delete("/api/v1/groups/" + groupId + "/users/" + userId, {}
         , {
@@ -425,12 +408,9 @@
             Authorization: "Bearer " + localStorage.getItem("accessToken")
           },
         }).then(res => {
-      console.log(res)
       if (res.data.resultCode == 'SUCCESS') {
-        console.log(res.data.result);
         document.location.href = "/view/groups/"+groupId+"/users";
       } else {
-        console.log("실패임" + res.resultCode)
       }
     }).catch(err => {
       let errMsg = err.response.data.result.message;
@@ -443,12 +423,10 @@
 
 
   axios.interceptors.request.use(function (config) {
-    console.log("인터셉터 시작")
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = 'Bearer' + ' ' + accessToken
     } else {
-      console.log("headers" + config.headers);
     }
     return config;
   })
